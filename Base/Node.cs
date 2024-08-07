@@ -10,11 +10,12 @@ namespace LF2Clone.Base
     {
         private Node parent;
 
-        private Lazy<List<Node>> child;
+        private List<Node> children;
 
         public Node()
         {
             parent = this;
+            children = new List<Node>();
         }
     }
 }
