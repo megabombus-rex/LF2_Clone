@@ -1,12 +1,8 @@
 ﻿using Raylib_cs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LF2Clone.Base
 {
+    // Components should work as attributes for the nodes, so each node has its own set of components
     public class Component
     {
         public Transform transform;
