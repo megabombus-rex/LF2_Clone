@@ -14,7 +14,7 @@ namespace LF2Clone.UI
         private Rectangle _sourceRec;
         private float _frameHeight;
         string _text;
-        int _btnState;
+        ButtonState _btnState;
 
         private readonly Texture2D _texture;
         private readonly Texture2D? _texturePressed;
@@ -31,10 +31,7 @@ namespace LF2Clone.UI
             _textureHighlight = textureHighlight;
             _onclickFunc = func;
             _frameHeight = _texture.Height;
-            //_frameHeight = (float)_texture.Height / NUM_FRAMES;
-            //_sourceRec = new Rectangle(0, 0, _texture.Width, _frameHeight);
             _btnBounds = new Rectangle(position.X, position.Y, _texture.Width, _frameHeight);
-            //_btnBounds = new Rectangle(SCREEN_WIDTH / 2.0f - _texture.Width / 2.0f, SCREEN_HEIGHT / 2.0f - _texture.Height / NUM_FRAMES / 2.0f, (float)_texture.Width, _frameHeight);
             _position = position;
             _currentTexture = _texture;
             Console.WriteLine("BUTTON CREATED");
@@ -43,9 +40,10 @@ namespace LF2Clone.UI
         public void Draw()
         {
             Raylib.DrawTexture(_currentTexture, (int)_position.X, (int)_position.Y, Color.White);
+            Raylib.DrawText(_text, (int)_position.X, (int)_position.Y, 10, Color.White);
         }
 
-        public void OnClick()
+        public void Run()
         {
             //if (Raylib.IsMouseButtonPressed(MouseButton.Left))
             //{
@@ -58,44 +56,44 @@ namespace LF2Clone.UI
                 //Console.WriteLine("Mouse inside button");
                 if (Raylib.IsMouseButtonDown(MouseButton.Left))
                 {
-                    _btnState = 2;
+                    _btnState = ButtonState.Pressed;
                     _currentTexture = _texturePressed.HasValue ? _texturePressed.Value : _texture;
                 }
                 else
                 {
-                    _btnState = 1;
+                    _btnState = ButtonState.MouseHovering;
                     _currentTexture = _textureHighlight.HasValue ? _textureHighlight.Value : _texture;
                 }
 
-                if (Raylib.IsMouseButtonReleased(MouseButton.Left))
-                {
-                    _currentTexture = _texture;
-                    btnAction = true;
-                }
+                if (Raylib.IsMouseButtonReleased(MouseButton.Left)) btnAction = true;
             }
             else
             {
-                _btnState = 0;
+                _btnState = ButtonState.Idle;
                 _currentTexture = _texture;
             }
             if (btnAction)
             {
                 _onclickFunc();
                 //Raylib.PlaySound(fxButton);
-
-                // TODO: Any desired action
             }
 
-            // Calculate button frame rectangle to draw depending on button state
-            //_sourceRec.Y = _btnState * _frameHeight;
-            //}
+            _currentTexture = _btnState switch
+            {
+                ButtonState.Idle => _texture,
+                ButtonState.MouseHovering => _textureHighlight.HasValue ? _textureHighlight.Value : _texture,
+                ButtonState.Pressed => _texturePressed.HasValue ? _texturePressed.Value : _texture,
+                _ => _texture
+            };
+
+            Draw();
         }
         
         public enum ButtonState
         {
             Idle = 0,
-            Pressed = 1,
-            Hovering = 2,
+            MouseHovering = 1,
+            Pressed = 2,
             Locked = 3,
         }
 

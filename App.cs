@@ -27,9 +27,8 @@ namespace LF2Clone
                 Raylib.ClearBackground(_backgroundColor);
 
                 Raylib.DrawText("Hello, world!", 12, 12, 20, Color.Black);
-                //Raylib.DrawTexture(buttonTex, 100, 100, Color.White);
-                but.Draw();
-                but.OnClick();
+                but.Run();
+                Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
             }
 
