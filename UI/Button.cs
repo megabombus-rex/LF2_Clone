@@ -6,12 +6,7 @@ namespace LF2Clone.UI
 {
     public class Button : Component
     {
-        private const int SCREEN_WIDTH = 1920;
-        private const int SCREEN_HEIGHT = 1080;
-        //private const int NUM_FRAMES = 3;
-
         private Rectangle _btnBounds;
-        private Rectangle _sourceRec;
         private float _frameHeight;
         string _text;
         ButtonState _btnState;
@@ -34,48 +29,34 @@ namespace LF2Clone.UI
             _btnBounds = new Rectangle(position.X, position.Y, _texture.Width, _frameHeight);
             _position = position;
             _currentTexture = _texture;
-            Console.WriteLine("BUTTON CREATED");
         }
 
         public void Draw()
         {
             Raylib.DrawTexture(_currentTexture, (int)_position.X, (int)_position.Y, Color.White);
-            Raylib.DrawText(_text, (int)_position.X, (int)_position.Y, 10, Color.White);
+            Raylib.DrawText(_text, (int)_position.X, (int)_position.Y, 100, Color.White);
         }
 
         public void Run()
         {
-            //if (Raylib.IsMouseButtonPressed(MouseButton.Left))
-            //{
             var mousePoint = Raylib.GetMousePosition();
             var btnAction = false;
 
             // Check button state
             if (Raylib.CheckCollisionPointRec(mousePoint, _btnBounds))
             {
-                //Console.WriteLine("Mouse inside button");
-                if (Raylib.IsMouseButtonDown(MouseButton.Left))
-                {
-                    _btnState = ButtonState.Pressed;
-                    _currentTexture = _texturePressed.HasValue ? _texturePressed.Value : _texture;
-                }
-                else
-                {
-                    _btnState = ButtonState.MouseHovering;
-                    _currentTexture = _textureHighlight.HasValue ? _textureHighlight.Value : _texture;
-                }
+                if (Raylib.IsMouseButtonDown(MouseButton.Left)) _btnState = ButtonState.Pressed;
+                else _btnState = ButtonState.MouseHovering;
 
                 if (Raylib.IsMouseButtonReleased(MouseButton.Left)) btnAction = true;
             }
             else
             {
                 _btnState = ButtonState.Idle;
-                _currentTexture = _texture;
             }
             if (btnAction)
             {
                 _onclickFunc();
-                //Raylib.PlaySound(fxButton);
             }
 
             _currentTexture = _btnState switch

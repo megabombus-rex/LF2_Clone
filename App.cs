@@ -25,8 +25,6 @@ namespace LF2Clone
             {
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
-
-                Raylib.DrawText("Hello, world!", 12, 12, 20, Color.Black);
                 but.Run();
                 Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
