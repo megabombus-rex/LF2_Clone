@@ -4,14 +4,14 @@ namespace LF2Clone.Systems
 {
     public class SceneManager : System<SceneManager>
     {
-        private List<Scene> loadedScenesList = new List<Scene>();
+        private List<Scene> _loadedScenesList = new List<Scene>();
 
-        private Scene? currentScene;
+        private Scene? _currentScene;
 
         public void SetCurrentScene(int id)
         {
-            currentScene = loadedScenesList.FirstOrDefault(x => x._id == id);
-            if (currentScene == null)
+            _currentScene = _loadedScenesList.FirstOrDefault(x => x._id == id);
+            if (_currentScene == null)
             {
                 Console.WriteLine(string.Format("Scene with id {0} not found.", id));
             }
@@ -19,8 +19,8 @@ namespace LF2Clone.Systems
 
         public void SetCurrentScene(string name)
         {
-            currentScene = loadedScenesList.FirstOrDefault(x => x._name == name);
-            if (currentScene == null)
+            _currentScene = _loadedScenesList.FirstOrDefault(x => x._name == name);
+            if (_currentScene == null)
             {
                 Console.WriteLine(string.Format("Scene with name {0} not found.", name));
             }
