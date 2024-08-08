@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LF2Clone.Base
+﻿namespace LF2Clone.Base
 {
+    // Game objects that work as a tree graph
     public class Node
     {
         private Node parent;
 
-        private Lazy<List<Node>> child;
+        private List<Node> children;
 
         public Node()
         {
             parent = this;
+            children = new List<Node>();
         }
     }
 }
