@@ -26,9 +26,19 @@
             _components = new List<Component>();
         }
 
-        public void Draw()
+        public void Update()
         {
 
+        }
+
+        public void Draw()
+        {
+            for (int i = 0; i < _components.Count; i++)
+            {
+                if(_components[i]._isDrawable) {
+                   _components[i].Draw();
+                }
+            }
         }
     }
 }

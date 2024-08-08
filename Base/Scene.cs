@@ -6,6 +6,7 @@
         public string _name;
         public Node _root;
 
+        // read serialized scene with scene loader
         public Scene(int id, string name)
         {
             _id = id;
