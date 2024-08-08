@@ -6,9 +6,14 @@ namespace LF2Clone.Base
     public class Component
     {
         public Transform transform;
-
+        
         public Component()
         {
+        }
+
+        public virtual void Draw()
+        {
+
         }
     }
 }
