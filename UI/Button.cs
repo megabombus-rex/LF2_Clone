@@ -25,8 +25,7 @@ namespace LF2Clone.UI
             _texturePressed = texturePressed;
             _textureHighlight = textureHighlight;
             _onclickFunc = func;
-            _frameHeight = _texture.Height;
-            _btnBounds = new Rectangle(position.X, position.Y, _texture.Width, _frameHeight);
+            _btnBounds = new Rectangle(position.X, position.Y, _texture.Width, _texture.Height);
             _position = position;
             _currentTexture = _texture;
         }
