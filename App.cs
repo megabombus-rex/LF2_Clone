@@ -7,28 +7,24 @@ namespace LF2Clone
     public class Application
     {
         Color _backgroundColor;
-        Random _random = new();
+        Random _random;
 
         private string _assetsBaseRoot;
 
         public Application()
         {
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
-
+            _backgroundColor = Color.White;
+            _random = new Random();
         }
 
         public void Run()
         {
             Raylib.InitWindow(960, 900, "Hello World");
-
-
-            Console.WriteLine(_assetsBaseRoot);
-
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
 
-            _backgroundColor = Color.White;
             Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
             var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, this.ChangeBackgroundColor, pos);
             Raylib.SetTargetFPS(60);
@@ -42,16 +38,12 @@ namespace LF2Clone
                 Raylib.EndDrawing();
             }
 
-            //Raylib.DrawTextureV();
-
             Raylib.CloseWindow();
         }
 
         void ChangeBackgroundColor()
         {
-            var val = _random.Next(0, 5);
-
-            switch (val)
+            switch (_random.Next(0, 5))
             {
                 case 0:
                     _backgroundColor = Color.White; break;
