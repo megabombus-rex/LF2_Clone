@@ -8,13 +8,25 @@ namespace LF2Clone
     {
         Color _backgroundColor;
         Random _random = new();
+
+        private string _assetsBaseRoot;
+
+        public Application()
+        {
+            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
+
+        }
+
         public void Run()
         {
-            Raylib.InitWindow(1920, 1080, "Hello World");
+            Raylib.InitWindow(960, 900, "Hello World");
 
-            var buttonTex = Raylib.LoadTexture("C:\\Data\\Aseprite\\Misc\\Testing palletes\\Apple-31.png");
-            var buttonTexPressed = Raylib.LoadTexture("C:\\Data\\Aseprite\\Misc\\Testing palletes\\Book-curiosity.png");
-            var buttonTexHighlight = Raylib.LoadTexture("C:\\Data\\Aseprite\\Misc\\Testing palletes\\not-coconut-splendor-128.png");
+
+            Console.WriteLine(_assetsBaseRoot);
+
+            var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
+            var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
+            var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
 
             _backgroundColor = Color.White;
             Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);

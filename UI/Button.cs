@@ -79,6 +79,5 @@ namespace LF2Clone.UI
         }
 
         public delegate void Callback();
-
     }
 }
