@@ -7,7 +7,6 @@ namespace LF2Clone.UI
     public class Button : Component
     {
         private Rectangle _btnBounds;
-        private float _frameHeight;
         string _text;
         ButtonState _btnState;
 
