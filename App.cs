@@ -25,11 +25,9 @@ namespace LF2Clone
             var scene = new Scene(1, "default");
             var scene2 = new Scene(2, "default_too");
 
+            SceneManager.Instance.ScenesFolderPath = string.Format("{0}\\Scenes", _assetsBaseRoot);
 
             Raylib.InitWindow(960, 900, "Hello World");
-            
-            SceneManager.Instance.SerializeScene(_assetsBaseRoot, scene, true);
-            SceneManager.Instance.SerializeScene(_assetsBaseRoot, scene2, true);
 
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");

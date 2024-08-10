@@ -10,12 +10,20 @@ namespace LF2Clone.Systems
         private Scene? _currentScene;
 
         private List<int> _scenesIds = new List<int>();
+        private string _scenesFolderPath;
 
         public SceneManager()
         {
             _id = 0;
             _name = "SceneManager";
             _scenesIds = new List<int>();
+            _scenesFolderPath = string.Empty;
+        }
+
+        public string ScenesFolderPath 
+        { 
+            get { return _scenesFolderPath; } 
+            set { _scenesFolderPath = value; } 
         }
 
     public void SetCurrentScene(int id)
@@ -36,18 +44,49 @@ namespace LF2Clone.Systems
             }
         }
 
-        // it should deserialize a scene
+        // it should deserialize a scene, add it to _loadedScenesList
         public void LoadScene(string name)
         {
 
         }
 
+        // serialize the scene, remove it from _loadedScenesList
         public void UnloadScene(string name)
         {
+            if(string.IsNullOrEmpty(_scenesFolderPath))
+            {
+                Console.WriteLine("Scene folder path not found.");
+                return;
+            }
 
+            Scene scene;
+
+            try
+            {
+                scene = _loadedScenesList.First(x => x._name == name);
+                Console.WriteLine(string.Format("Found scene with the name {0}", name));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(string.Format("Scene with name {0}, could not be found. Exception: {1}", name, ex.Message));
+                return;
+            }
+
+            try
+            {
+                SerializeScene(_scenesFolderPath, scene, true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(string.Format("Could not serialize a scene. Exception: {0}", ex.Message));
+                return;
+            }
+
+            
+            _loadedScenesList.Remove(scene);
         }
 
-        public void SerializeScene(string path, Scene scene, bool overwrite = false)
+        private void SerializeScene(string path, Scene scene, bool overwrite = false)
         {
             try
             {
@@ -89,7 +128,7 @@ namespace LF2Clone.Systems
             catch  (Exception ex)
             {
                 Console.WriteLine(string.Format("Exception finding the directory", ex.Message));
-                return;
+                throw;
             }
         }
 
