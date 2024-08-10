@@ -3,6 +3,7 @@
     // Game objects that work as a tree graph
     public class Node
     {
+        // ids should not repeat on one scene as nodes should be destroyed on scene unload
         public int _id;
         public string _name;
 
@@ -14,14 +15,18 @@
 
         public Node()
         {
+            _id = 0;
+            _name = "root";
             _parent = this;
             _children = new List<Node>();
             _components = new List<Component>();
         }
 
-        public Node(Node parent)
+        public Node(Node parent, int id, string name)
         {
             _parent = parent;
+            _id = id;
+            _name = name;
             _children = new List<Node>();
             _components = new List<Component>();
         }

@@ -3,7 +3,7 @@
     // lifetime until destroyed, systems should be created with this
     public class Singleton<T> where T : class, new()
     {
-        protected static T _instance = null;
+        protected static T? _instance = null;
         protected static readonly object _padlock = new object();
 
         protected Singleton()

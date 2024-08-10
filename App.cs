@@ -1,4 +1,6 @@
-﻿using LF2Clone.UI;
+﻿using LF2Clone.Base;
+using LF2Clone.Systems;
+using LF2Clone.UI;
 using Raylib_cs;
 using System.Numerics;
 
@@ -20,7 +22,15 @@ namespace LF2Clone
 
         public void Run()
         {
+            var scene = new Scene(1, "default");
+            var scene2 = new Scene(2, "default_too");
+
+
             Raylib.InitWindow(960, 900, "Hello World");
+            
+            SceneManager.Instance.SerializeScene(_assetsBaseRoot, scene, true);
+            SceneManager.Instance.SerializeScene(_assetsBaseRoot, scene2, true);
+
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
