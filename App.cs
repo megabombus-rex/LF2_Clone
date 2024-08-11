@@ -1,5 +1,6 @@
 ﻿using LF2Clone.Base;
 using LF2Clone.Systems;
+using LF2Clone.Misc.Logger;
 using LF2Clone.UI;
 using Raylib_cs;
 using System.Numerics;
@@ -10,6 +11,8 @@ namespace LF2Clone
     {
         Color _backgroundColor;
         Random _random;
+        ILogger _logger;
+
 
         private string _assetsBaseRoot;
 
@@ -18,6 +21,8 @@ namespace LF2Clone
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
             _backgroundColor = Color.White;
             _random = new Random();
+            _logger = new Logger();
+            
         }
 
         public void Run()
@@ -32,6 +37,8 @@ namespace LF2Clone
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
+
+            _logger.LoggingLevel = ILogger.LogLevel.Info;
 
             Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
             var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, this.ChangeBackgroundColor, pos);
