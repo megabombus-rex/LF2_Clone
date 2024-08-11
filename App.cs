@@ -37,6 +37,13 @@ namespace LF2Clone
 
             SceneManager.Instance.ScenesFolderPath = string.Format("{0}\\Scenes", _assetsBaseRoot);
 
+            SceneManager.Instance.LoadScene("default");
+            SceneManager.Instance.LoadScene("default_too");
+            SceneManager.Instance.ShowLoadedScenes();
+            SceneManager.Instance.UnloadScene("default");
+            SceneManager.Instance.UnloadScene("default_too");
+            SceneManager.Instance.ShowLoadedScenes();
+
             Raylib.InitWindow(960, 900, "Hello World");
 
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
