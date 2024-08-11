@@ -30,33 +30,7 @@ namespace LF2Clone
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
 
-            _logger.LoggingLevel = ILogger.LogLevel.Debug;
-
-            _logger.LogError("ERROR LOG D");
-            _logger.LogWarning("WARNING LOG D");
-            _logger.LogInfo("INFO LOG D");
-            _logger.LogDebug("DEBUG LOG D");
-
             _logger.LoggingLevel = ILogger.LogLevel.Info;
-
-            _logger.LogError("ERROR LOG I");
-            _logger.LogWarning("WARNING LOG I");
-            _logger.LogInfo("INFO LOG I");
-            _logger.LogDebug("DEBUG LOG I");
-
-            _logger.LoggingLevel = ILogger.LogLevel.Warning;
-
-            _logger.LogError("ERROR LOG W");
-            _logger.LogWarning("WARNING LOG W");
-            _logger.LogInfo("INFO LOG W");
-            _logger.LogDebug("DEBUG LOG W");
-
-            _logger.LoggingLevel = ILogger.LogLevel.Error;
-
-            _logger.LogError("ERROR LOG E");
-            _logger.LogWarning("WARNING LOG E");
-            _logger.LogInfo("INFO LOG E");
-            _logger.LogDebug("DEBUG LOG E");
 
             Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
             var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, this.ChangeBackgroundColor, pos);
