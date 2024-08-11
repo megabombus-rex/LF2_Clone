@@ -31,7 +31,7 @@ namespace LF2Clone.Systems
             _currentScene = _loadedScenesList.FirstOrDefault(x => x._id == id);
             if (_currentScene == null)
             {
-                Console.WriteLine(string.Format("Scene with id {0} not found.", id));
+                _logger.LogError(string.Format("Scene with id {0} not found.", id));
             }
         }
 
@@ -40,7 +40,7 @@ namespace LF2Clone.Systems
             _currentScene = _loadedScenesList.FirstOrDefault(x => x._name == name);
             if (_currentScene == null)
             {
-                Console.WriteLine(string.Format("Scene with name {0} not found.", name));
+                _logger.LogError(string.Format("Scene with name {0} not found.", name));
             }
         }
 
@@ -55,7 +55,7 @@ namespace LF2Clone.Systems
         {
             if(string.IsNullOrEmpty(_scenesFolderPath))
             {
-                Console.WriteLine("Scene folder path not found.");
+                _logger.LogError("Scene folder path not found.");
                 return;
             }
 
@@ -64,11 +64,11 @@ namespace LF2Clone.Systems
             try
             {
                 scene = _loadedScenesList.First(x => x._name == name);
-                Console.WriteLine(string.Format("Found scene with the name {0}", name));
+                _logger.LogInfo(string.Format("Found scene with the name {0}", name));
             }
             catch (Exception ex)
             {
-                Console.WriteLine(string.Format("Scene with name {0}, could not be found. Exception: {1}", name, ex.Message));
+                _logger.LogError(string.Format("Scene with name {0}, could not be found. Exception: {1}", name, ex.Message));
                 return;
             }
 
@@ -78,7 +78,7 @@ namespace LF2Clone.Systems
             }
             catch (Exception ex)
             {
-                Console.WriteLine(string.Format("Could not serialize a scene. Exception: {0}", ex.Message));
+                _logger.LogError(string.Format("Could not serialize a scene. Exception: {0}", ex.Message));
                 return;
             }
 
@@ -103,22 +103,22 @@ namespace LF2Clone.Systems
                                 var sw = new StreamWriter(filename);
                                 sw.Write(JsonConvert.SerializeObject(scene, Formatting.Indented));
                                 sw.Dispose();
-                                Console.WriteLine(string.Format("File written as {0}", filename));
+                                _logger.LogInfo(string.Format("File written as {0}", filename));
                                 return;
                             }
                         }
-                        Console.WriteLine("Directory not found.");
+                        _logger.LogError("Directory not found.");
                         return;
                     default:
                         if (File.Exists(path) || File.Exists(filename))
                         {
-                            Console.WriteLine("There is already a file with a name like this.");
+                            _logger.LogWarning("There is already a file with a name like this.");
                             if (overwrite)
                             {
                                 var sw = new StreamWriter(filename);
                                 sw.Write(JsonConvert.SerializeObject(scene, Formatting.Indented));
                                 sw.Dispose();
-                                Console.WriteLine(string.Format("File written as {0}", filename));
+                                _logger.LogInfo(string.Format("File written as {0}", filename));
                             }
                             return;
                         }
@@ -127,7 +127,7 @@ namespace LF2Clone.Systems
             }
             catch  (Exception ex)
             {
-                Console.WriteLine(string.Format("Exception finding the directory", ex.Message));
+                _logger.LogError(string.Format("Exception finding the directory", ex.Message));
                 throw;
             }
         }

@@ -1,4 +1,5 @@
 ﻿using LF2Clone.Common;
+using LF2Clone.Misc.Logger;
 
 namespace LF2Clone.Base
 {
@@ -6,6 +7,7 @@ namespace LF2Clone.Base
     {
         protected int _id;
         protected string _name;
+        protected ILogger? _logger;
 
         protected System()
         {
@@ -13,9 +15,9 @@ namespace LF2Clone.Base
             _name = "system";
         }
 
-        public void Test()
+        public virtual void Setup(ILogger logger)
         {
-
+            _logger = logger;
         }
     }
 }
