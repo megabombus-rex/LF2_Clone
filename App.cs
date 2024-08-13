@@ -33,16 +33,10 @@ namespace LF2Clone
         {
             Setup();
 
-            var scene = new Scene(1, "default");
-            var scene2 = new Scene(2, "default_too");
-
-            SceneManager.Instance.TryLoadScene("default");
-            SceneManager.Instance.TryLoadScene("default_too");
-            SceneManager.Instance.ShowLoadedScenes();
             SceneManager.Instance.TrySetCurrentScene("default");
-            SceneManager.Instance.TryUnloadScene("default");
-            SceneManager.Instance.ShowLoadedScenes();
-            SceneManager.Instance.TryLoadScene("default");
+            SceneManager.Instance.TrySetCurrentScene(2);
+            // current scene = default_too
+
             SceneManager.Instance.ShowLoadedScenes();
 
             Raylib.InitWindow(960, 900, "Hello World");

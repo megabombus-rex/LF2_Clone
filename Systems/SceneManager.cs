@@ -9,11 +9,8 @@ namespace LF2Clone.Systems
     public class SceneManager : System<SceneManager>
     {
         private List<Scene> _loadedScenesList = new List<Scene>();
-
         private Scene? _currentScene;
-
         private Dictionary<int, string> _serializedScenesNamesDict = new();
-
         private string _scenesFolderPath;
 
         public SceneManager()
@@ -26,8 +23,8 @@ namespace LF2Clone.Systems
 
         public string ScenesFolderPath 
         { 
-            get { return _scenesFolderPath; } 
-            set { _scenesFolderPath = value; } 
+            get => _scenesFolderPath;
+            private set => _scenesFolderPath = value; 
         }
 
         public Scene? CurrentScene
@@ -40,7 +37,6 @@ namespace LF2Clone.Systems
         {
             base.Setup(logger);
             _scenesFolderPath = scenesPath;
-
             var sceneFiles = Directory.GetFiles(scenesPath).Where(x => x.EndsWith(".LFsc.json")).ToArray();
 
             if (string.IsNullOrEmpty(_scenesFolderPath) || sceneFiles.Length < 1)
@@ -72,6 +68,11 @@ namespace LF2Clone.Systems
             foreach (var scene in _loadedScenesList)
             {
                 _logger.LogInfo(scene._name);
+            }
+
+            if (_currentScene != null)
+            {
+                _logger.LogInfo(string.Format("Currently loaded scene: {0}", _currentScene._name));
             }
         }
 
@@ -110,7 +111,7 @@ namespace LF2Clone.Systems
             {
                 if (!TryLoadScene(name))
                 {
-                    _logger.LogInfo(string.Format("Scene with id {0} could not be loaded.", name));
+                    _logger.LogInfo(string.Format("Scene with name {0} could not be loaded.", name));
                 }
             }
 
@@ -129,14 +130,16 @@ namespace LF2Clone.Systems
             {
                 return false;
             }
-            var currentName = scene._name;
+
+            if(_currentScene != null)
+            {
+                if (_currentScene._name != scene._name)
+                {
+                    TryUnloadScene(_currentScene._name);
+                }
+            }
             _currentScene = scene;
             _logger.LogInfo(string.Format("Current scene loaded: {0}", scene._name));
-
-            if (!string.IsNullOrEmpty(currentName) && _currentScene._name != scene._name)
-            {
-                TryUnloadScene(currentName);
-            }
             return true;
         }
 
