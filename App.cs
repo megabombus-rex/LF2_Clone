@@ -13,6 +13,7 @@ namespace LF2Clone
         private Random _random;
         private ILogger? _logger;
         private string _assetsBaseRoot;
+        private int _currentSceneId;
 
         public Application()
         {
@@ -25,7 +26,7 @@ namespace LF2Clone
         private void Setup()
         {
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
-            SceneManager.Instance.Setup(_logger);
+            SceneManager.Instance.Setup(_logger, string.Format("{0}\\Scenes", _assetsBaseRoot));
         }
 
         public void Run()
@@ -35,13 +36,13 @@ namespace LF2Clone
             var scene = new Scene(1, "default");
             var scene2 = new Scene(2, "default_too");
 
-            SceneManager.Instance.ScenesFolderPath = string.Format("{0}\\Scenes", _assetsBaseRoot);
-
-            SceneManager.Instance.LoadScene("default");
-            SceneManager.Instance.LoadScene("default_too");
+            SceneManager.Instance.TryLoadScene("default");
+            SceneManager.Instance.TryLoadScene("default_too");
             SceneManager.Instance.ShowLoadedScenes();
-            SceneManager.Instance.UnloadScene("default");
-            SceneManager.Instance.UnloadScene("default_too");
+            SceneManager.Instance.TrySetCurrentScene("default");
+            SceneManager.Instance.TryUnloadScene("default");
+            SceneManager.Instance.ShowLoadedScenes();
+            SceneManager.Instance.TryLoadScene("default");
             SceneManager.Instance.ShowLoadedScenes();
 
             Raylib.InitWindow(960, 900, "Hello World");
@@ -66,6 +67,10 @@ namespace LF2Clone
             }
 
             Raylib.CloseWindow();
+        }
+
+        void ChangeScene(int sceneId)
+        {
         }
 
         void ChangeBackgroundColor()
