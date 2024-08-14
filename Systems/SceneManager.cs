@@ -1,8 +1,6 @@
 ﻿using LF2Clone.Base;
 using LF2Clone.Misc.Logger;
 using Newtonsoft.Json;
-using System.Xml.Linq;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace LF2Clone.Systems
 {
@@ -304,6 +302,48 @@ namespace LF2Clone.Systems
             }
             _currentScene = scene;
             _logger.LogInfo(string.Format("Current scene loaded: {0}", scene._name));
+            return true;
+        }
+
+        #endregion
+
+        #region Scene edition
+
+        public bool TryAddNewScene(Scene scene)
+        {
+            if (string.IsNullOrEmpty(_scenesFolderPath))
+            {
+                _logger.LogError("Scenes folder is not specified. Adding new scene aborted.");
+                return false;
+            }
+
+            if (_serializedScenesNamesDict.ContainsKey(scene._id))
+            {
+                _logger.LogError(string.Format("Scene with id {0} already exists.", scene._id));
+                return false;
+            }
+
+            if (_serializedScenesNamesDict.ContainsValue(scene._name))
+            {
+                _logger.LogError(string.Format("Scene with name {0} already exists.", scene._name));
+                return false;
+            }
+
+            try
+            {
+                if (!SerializeScene(_scenesFolderPath, scene, true))
+                {
+                    _logger.LogError("Could not serialize a scene. Check if the provided path is correct.");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format("Could not serialize a scene. Exception: {0}", ex.Message));
+                return false;
+            }
+
+            _serializedScenesNamesDict.Add(scene._id, scene._name);
             return true;
         }
 

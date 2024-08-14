@@ -33,6 +33,14 @@ namespace LF2Clone
         {
             Setup();
 
+            //Scene sceneTest = new Scene(3, "added_test_correct");
+            //Scene sceneTestBad = new Scene(3, "added_test_NOT_correct");
+            //Scene sceneTestBad2 = new Scene(4, "added_test_correct");
+            //
+            //var v1 = SceneManager.Instance.TryAddNewScene(sceneTest);    // should return true
+            //var v2 = SceneManager.Instance.TryAddNewScene(sceneTestBad); // should return false
+            //var v3 = SceneManager.Instance.TryAddNewScene(sceneTestBad2); // should return false
+
             SceneManager.Instance.TrySetCurrentScene("default");
             SceneManager.Instance.TrySetCurrentScene(2);
             // current scene = default_too
