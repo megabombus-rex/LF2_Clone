@@ -238,6 +238,16 @@ namespace LF2Clone.Systems
 
         #region Scene switching
 
+        public string[] SceneNames
+        {
+            get => _serializedScenesNamesDict.Values.ToArray();
+        }
+
+        public int[] SceneIds
+        {
+            get => _serializedScenesNamesDict.Keys.ToArray();
+        }
+
         public bool TrySetCurrentScene(int id)
         {
             if (!_serializedScenesNamesDict.ContainsKey(id))
