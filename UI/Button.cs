@@ -7,7 +7,6 @@ namespace LF2Clone.UI
     public class Button : Component
     {
         private Rectangle _btnBounds;
-        private float _frameHeight;
         string _text;
         ButtonState _btnState;
 
@@ -30,7 +29,7 @@ namespace LF2Clone.UI
             _currentTexture = _texture;
         }
 
-        public void Draw()
+        public override void Draw()
         {
             Raylib.DrawTexture(_currentTexture, (int)_position.X, (int)_position.Y, Color.White);
             Raylib.DrawText(_text, (int)_position.X, (int)_position.Y, 100, Color.White);

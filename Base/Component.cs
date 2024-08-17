@@ -7,8 +7,20 @@ namespace LF2Clone.Base
     {
         public Transform transform;
 
+        public bool _isDrawable;
+        
         public Component()
         {
+        }
+
+        public virtual void Draw()
+        {
+
+        }
+
+        public virtual void Update()
+        {
+
         }
     }
 }

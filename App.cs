@@ -1,39 +1,56 @@
-﻿using LF2Clone.Misc.Logger;
+﻿using LF2Clone.Base;
+using LF2Clone.Systems;
+using LF2Clone.Misc.Logger;
 using LF2Clone.UI;
 using Raylib_cs;
 using System.Numerics;
 
 namespace LF2Clone
 {
-    public class Application
+    public sealed class Application
     {
-        Color _backgroundColor;
-        Random _random;
-        ILogger _logger;
-
-
+        private Color _backgroundColor;
+        private ILogger? _logger;
         private string _assetsBaseRoot;
+        private int _currentSceneIdIndex;
+        private int[] _sceneIds;
 
         public Application()
         {
-            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
             _backgroundColor = Color.White;
-            _random = new Random();
+            _assetsBaseRoot = "";
             _logger = new Logger();
-            
+        }
+
+        // set up every system needed
+        private void Setup()
+        {
+            _logger.LoggingLevel = ILogger.LogLevel.Info; // TODO: get it from config
+            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
+            SceneManager.Instance.Setup(_logger, string.Format("{0}\\Scenes", _assetsBaseRoot));
+            _currentSceneIdIndex = 0;
         }
 
         public void Run()
         {
+            Setup();
+
+            SceneManager.Instance.TrySetCurrentScene("default");
+            // current scene = default_too
+
+            SceneManager.Instance.ShowLoadedScenes();
+            _sceneIds = SceneManager.Instance.SceneIds;
+
+
             Raylib.InitWindow(960, 900, "Hello World");
+
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
 
-            _logger.LoggingLevel = ILogger.LogLevel.Info;
 
             Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
-            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, this.ChangeBackgroundColor, pos);
+            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);
             Raylib.SetTargetFPS(60);
 
             while (!Raylib.WindowShouldClose())
@@ -48,21 +65,10 @@ namespace LF2Clone
             Raylib.CloseWindow();
         }
 
-        void ChangeBackgroundColor()
+        void ChangeScene()
         {
-            switch (_random.Next(0, 5))
-            {
-                case 0:
-                    _backgroundColor = Color.White; break;
-                case 1:
-                    _backgroundColor = Color.Black; break;
-                case 2:
-                    _backgroundColor = Color.Red; break;
-                case 3:
-                    _backgroundColor = Color.Green; break;
-                case 4:
-                    _backgroundColor = Color.Blue; break;
-            }
+            SceneManager.Instance.TrySetCurrentScene(_sceneIds[_currentSceneIdIndex]);
+            _currentSceneIdIndex = (_currentSceneIdIndex + 1) % _sceneIds.Length;
         }
     }
 }
