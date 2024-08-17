@@ -23,6 +23,7 @@ namespace LF2Clone
             _logger = new Logger();
         }
 
+        // set up every system needed
         private void Setup()
         {
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
@@ -45,6 +46,11 @@ namespace LF2Clone
             SceneManager.Instance.TrySetCurrentScene(2);
             // current scene = default_too
 
+            SceneManager.Instance.ShowLoadedScenes();
+
+            _logger.LogInfo("Scene default should be deleted now.");
+
+            SceneManager.Instance.TryDeleteScene(1);
             SceneManager.Instance.ShowLoadedScenes();
 
             Raylib.InitWindow(960, 900, "Hello World");

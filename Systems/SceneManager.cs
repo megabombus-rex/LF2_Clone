@@ -347,6 +347,52 @@ namespace LF2Clone.Systems
             return true;
         }
 
+        public bool TryDeleteScene(int id)
+        {
+            if (!_serializedScenesNamesDict.ContainsKey(id))
+            {
+                _logger.LogError(string.Format("Scene with id {0} does not exist.", id.ToString()));
+                return false;
+            }
+
+            var sceneName = _serializedScenesNamesDict[id];
+            var filename = string.Format("{0}\\{1}.LFsc.json", _scenesFolderPath, sceneName);
+            bool anySceneChanged = false;
+            // remove file and the serialized scene version
+            try
+            {
+                if (File.Exists(filename))
+                {
+                    File.Delete(filename);
+                    _serializedScenesNamesDict.Remove(id);
+                    anySceneChanged = true;
+                }
+                else
+                {
+                    _logger.LogInfo(string.Format("Scene {0} is not serialized.", sceneName));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format("Exception while deleting file {0}: {1}", filename, ex.Message));
+                return false;
+            }
+
+            // remove the deserialized version
+            var scene = _loadedScenesList.Where(x => x._id == id).FirstOrDefault();
+            if (scene != null)
+            {
+                if (_currentScene != null && _currentScene._id == id)
+                {
+                    _currentScene = null;
+                }
+
+                _loadedScenesList.Remove(scene);
+                anySceneChanged = true;
+            }
+            return anySceneChanged;
+        }
+
         #endregion
 
     }
