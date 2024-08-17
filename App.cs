@@ -48,11 +48,6 @@ namespace LF2Clone
 
             SceneManager.Instance.ShowLoadedScenes();
 
-            _logger.LogInfo("Scene default should be deleted now.");
-
-            SceneManager.Instance.TryDeleteScene(1);
-            SceneManager.Instance.ShowLoadedScenes();
-
             Raylib.InitWindow(960, 900, "Hello World");
 
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
