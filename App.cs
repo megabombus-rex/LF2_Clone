@@ -49,6 +49,8 @@ namespace LF2Clone
 
             // set current version
             _appVersion = _configuration.Version;
+            _screenHeight = _configuration.StartingScreenResolution.Height;
+            _screenWidth = _configuration.StartingScreenResolution.Width;
 
             // initialize systems
             _sceneManager = new SceneManager();
@@ -84,7 +86,7 @@ namespace LF2Clone
             _sceneIds = _sceneManager.SceneIds;
 
 
-            Raylib.InitWindow(960, 900, "Hello World");
+            Raylib.InitWindow(_screenWidth, _screenHeight, "Hello World");
 
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
@@ -102,6 +104,7 @@ namespace LF2Clone
                     _screenHeight = Raylib.GetScreenHeight();
                 }
 
+                // TODO: change placement of UI in currently loaded scene -> resize -> sceneManager.resizeCurrentScene(resolution)
                 if (Raylib.IsKeyPressed(KeyboardKey.One)) _currentResolution = 1;
                 if (Raylib.IsKeyPressed(KeyboardKey.Two)) _currentResolution = 2;
                 if (Raylib.IsKeyPressed(KeyboardKey.Three)) _currentResolution = 3;
