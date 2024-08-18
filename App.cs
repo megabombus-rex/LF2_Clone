@@ -18,11 +18,24 @@ namespace LF2Clone
         private SceneManager _sceneManager; // only one SceneManager instance will exist
         private Configuration _configuration;
         private string _appVersion;
+        private int _screenWidth;
+        private int _screenHeight;
+        private Dictionary<int, (int width, int height)> _resolutions;
+        private int _currentResolution;
 
         public Application()
         {
             _backgroundColor = Color.White;
             _assetsBaseRoot = "";
+            _resolutions = new();
+        }
+
+        private void AddResolutions()
+        {
+            _resolutions.Add(1, (1920, 1080));
+            _resolutions.Add(2, (960, 540));
+            _resolutions.Add(3, (480, 270));
+            _resolutions.Add(4, (240, 135));
         }
 
         // set up every system needed
@@ -55,6 +68,9 @@ namespace LF2Clone
 
             // setup application
             _currentSceneIdIndex = 0;
+            _currentResolution = 1;
+            AddResolutions();
+
             _logger.LogDebug("App setup finished.");
         }
 
@@ -80,6 +96,19 @@ namespace LF2Clone
 
             while (!Raylib.WindowShouldClose())
             {
+                if (Raylib.IsWindowResized() && !Raylib.IsWindowFullscreen())
+                {
+                    _screenWidth = Raylib.GetScreenWidth();
+                    _screenHeight = Raylib.GetScreenHeight();
+                }
+
+                if (Raylib.IsKeyPressed(KeyboardKey.One)) _currentResolution = 1;
+                if (Raylib.IsKeyPressed(KeyboardKey.Two)) _currentResolution = 2;
+                if (Raylib.IsKeyPressed(KeyboardKey.Three)) _currentResolution = 3;
+                if (Raylib.IsKeyPressed(KeyboardKey.Four)) _currentResolution = 4;
+                Raylib.SetWindowSize(_resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
+
+
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
                 but.Run();
