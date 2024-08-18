@@ -4,6 +4,8 @@
     {
         LogLevel LoggingLevel { get; set; }
 
+        void ParseAndSetLoggingLevel(string value);
+
         void LogError(string message);
         void LogWarning(string message);
         void LogInfo(string message);

@@ -107,5 +107,18 @@
 
             Log(TraceForegroundColor, TraceBackgroundColor, ILogger<T>.LogLevel.Trace, message);
         }
+
+        public void ParseAndSetLoggingLevel(string value)
+        {
+            _loggingLevel = value switch
+            {
+                "Trace" => ILogger<T>.LogLevel.Trace,
+                "Debug" => ILogger<T>.LogLevel.Debug,
+                "Info" => ILogger<T>.LogLevel.Info,
+                "Warning" => ILogger<T>.LogLevel.Warning,
+                "Error" => ILogger<T>.LogLevel.Error,
+                _ => ILogger<T>.LogLevel.Info,
+            };
+        }
     }
 }

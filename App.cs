@@ -1,7 +1,8 @@
-﻿using LF2Clone.Base;
-using LF2Clone.Systems;
+﻿using LF2Clone.Misc.Configuration;
 using LF2Clone.Misc.Logger;
+using LF2Clone.Systems;
 using LF2Clone.UI;
+using Newtonsoft.Json;
 using Raylib_cs;
 using System.Numerics;
 
@@ -14,24 +15,45 @@ namespace LF2Clone
         private string _assetsBaseRoot;
         private int _currentSceneIdIndex;
         private int[] _sceneIds;
-        private readonly SceneManager _sceneManager; // only one SceneManager instance will exist
+        private SceneManager _sceneManager; // only one SceneManager instance will exist
+        private Configuration _configuration;
+        private string _appVersion;
 
         public Application()
         {
             _backgroundColor = Color.White;
             _assetsBaseRoot = "";
-            _logger = new Logger<Application>();
-            _sceneManager = new SceneManager();
         }
 
         // set up every system needed
         private async Task SetupAsync()
         {
-            _logger.LoggingLevel = ILogger<Application>.LogLevel.Info; // TODO: get it from config
-            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
+            if (!ReadConfig())
+            {
+                Environment.Exit(0);
+                return;
+            }
+
+            // set current version
+            _appVersion = _configuration.Version;
+
+            // initialize systems
+            _sceneManager = new SceneManager();
+
+            // initialize loggers
+            _logger = new Logger<Application>();
             var SMlogger = new Logger<SceneManager>();
-            SMlogger.LoggingLevel = ILogger<SceneManager>.LogLevel.Debug;
+
+            // set logging levels, 
+            var defaultLoggingLevel = "Info";
+            _logger.ParseAndSetLoggingLevel(_configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
+            SMlogger.ParseAndSetLoggingLevel(_configuration.LoggerConfigs.ContainsKey("SceneManager") ? _configuration.LoggerConfigs["SceneManager"].LogLevel : defaultLoggingLevel);
+
+            // setup systems
+            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
             await _sceneManager.SetupAsync(SMlogger, string.Format("{0}\\Scenes", _assetsBaseRoot));
+
+            // setup application
             _currentSceneIdIndex = 0;
             _logger.LogDebug("App setup finished.");
         }
@@ -72,6 +94,24 @@ namespace LF2Clone
         {
             _sceneManager.TrySetCurrentScene(_sceneIds[_currentSceneIdIndex]);
             _currentSceneIdIndex = (_currentSceneIdIndex + 1) % _sceneIds.Length;
+        }
+
+        bool ReadConfig() // serial not async
+        {
+            try
+            {
+                using (var sw = new StreamReader(string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\appsettings.json")))
+                {
+                    var config = sw.ReadToEnd();
+                    _configuration = JsonConvert.DeserializeObject<Configuration>(config);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+            return true;
         }
     }
 }
