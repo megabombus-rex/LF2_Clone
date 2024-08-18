@@ -2,4 +2,4 @@
 
 Application app = new Application();
 
-app.Run();
+await app.RunAsync();
