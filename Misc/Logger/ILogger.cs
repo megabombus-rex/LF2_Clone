@@ -1,6 +1,6 @@
 ﻿namespace LF2Clone.Misc.Logger
 {
-    public interface ILogger
+    public interface ILogger<T>
     {
         LogLevel LoggingLevel { get; set; }
 

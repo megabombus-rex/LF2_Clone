@@ -7,39 +7,43 @@ using System.Numerics;
 
 namespace LF2Clone
 {
-    public sealed class Application
+    public sealed class Application // only one application instance will be present
     {
         private Color _backgroundColor;
-        private ILogger? _logger;
+        private ILogger<Application>? _logger;
         private string _assetsBaseRoot;
         private int _currentSceneIdIndex;
         private int[] _sceneIds;
+        private readonly SceneManager _sceneManager; // only one SceneManager instance will exist
 
         public Application()
         {
             _backgroundColor = Color.White;
             _assetsBaseRoot = "";
-            _logger = new Logger();
+            _logger = new Logger<Application>();
+            _sceneManager = new SceneManager();
         }
 
         // set up every system needed
-        private void Setup()
+        private async Task SetupAsync()
         {
-            _logger.LoggingLevel = ILogger.LogLevel.Info; // TODO: get it from config
+            _logger.LoggingLevel = ILogger<Application>.LogLevel.Info; // TODO: get it from config
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
-            SceneManager.Instance.Setup(_logger, string.Format("{0}\\Scenes", _assetsBaseRoot));
+            var SMlogger = new Logger<SceneManager>();
+            SMlogger.LoggingLevel = ILogger<SceneManager>.LogLevel.Debug;
+            await _sceneManager.SetupAsync(SMlogger, string.Format("{0}\\Scenes", _assetsBaseRoot));
             _currentSceneIdIndex = 0;
+            _logger.LogDebug("App setup finished.");
         }
 
-        public void Run()
+        public async Task RunAsync()
         {
-            Setup();
-
-            SceneManager.Instance.TrySetCurrentScene("default");
+            await SetupAsync();
+            _sceneManager.TrySetCurrentScene("default");
             // current scene = default_too
 
-            SceneManager.Instance.ShowLoadedScenes();
-            _sceneIds = SceneManager.Instance.SceneIds;
+            _sceneManager.ShowLoadedScenes();
+            _sceneIds = _sceneManager.SceneIds;
 
 
             Raylib.InitWindow(960, 900, "Hello World");
@@ -47,7 +51,6 @@ namespace LF2Clone
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
-
 
             Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
             var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);
@@ -67,7 +70,7 @@ namespace LF2Clone
 
         void ChangeScene()
         {
-            SceneManager.Instance.TrySetCurrentScene(_sceneIds[_currentSceneIdIndex]);
+            _sceneManager.TrySetCurrentScene(_sceneIds[_currentSceneIdIndex]);
             _currentSceneIdIndex = (_currentSceneIdIndex + 1) % _sceneIds.Length;
         }
     }

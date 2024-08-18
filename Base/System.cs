@@ -1,13 +1,12 @@
-﻿using LF2Clone.Common;
-using LF2Clone.Misc.Logger;
+﻿using LF2Clone.Misc.Logger;
 
 namespace LF2Clone.Base
 {
-    public class System<T> : Singleton<T> where T : class, new()
+    public class System<T> where T : class
     {
         protected int _id;
         protected string _name;
-        protected ILogger? _logger;
+        protected ILogger<T>? _logger;
 
         protected System()
         {
@@ -15,7 +14,7 @@ namespace LF2Clone.Base
             _name = "system";
         }
 
-        public virtual void Setup(ILogger logger)
+        public virtual void Setup(ILogger<T> logger)
         {
             _logger = logger;
         }
