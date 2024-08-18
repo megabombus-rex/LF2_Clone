@@ -1,28 +1,45 @@
 ﻿namespace LF2Clone.Misc.Logger
 {
-    public sealed class Logger : ILogger
+    public sealed class Logger<T> : ILogger<T>
     {
-        public ConsoleColor ErrorForegroundColor = ConsoleColor.Red;
-        public ConsoleColor ErrorBackgroundColor = ConsoleColor.Black;
-        public ConsoleColor InfoForegroundColor = ConsoleColor.Cyan;
-        public ConsoleColor InfoBackgroundColor = ConsoleColor.Black;
-        public ConsoleColor DebugForegroundColor = ConsoleColor.Green;
-        public ConsoleColor DebugBackgroundColor = ConsoleColor.Black;
-        public ConsoleColor WarningForegroundColor = ConsoleColor.Yellow;
-        public ConsoleColor WarningBackgroundColor = ConsoleColor.Black;
-        public ConsoleColor DefaultForegroundColor = ConsoleColor.White;
-        public ConsoleColor DefaultBackgroundColor = ConsoleColor.Black;
+        private ConsoleColor ErrorForegroundColor = ConsoleColor.Red;
+        private ConsoleColor ErrorBackgroundColor = ConsoleColor.Black;
+        private ConsoleColor InfoForegroundColor = ConsoleColor.Cyan;
+        private ConsoleColor InfoBackgroundColor = ConsoleColor.Black;
+        private ConsoleColor DebugForegroundColor = ConsoleColor.Green;
+        private ConsoleColor DebugBackgroundColor = ConsoleColor.Black;
+        private ConsoleColor WarningForegroundColor = ConsoleColor.Yellow;
+        private ConsoleColor WarningBackgroundColor = ConsoleColor.Black;
+        private ConsoleColor DefaultForegroundColor = ConsoleColor.White;
+        private ConsoleColor DefaultBackgroundColor = ConsoleColor.Black;
 
-        public ILogger.LogLevel _loggingLevel = ILogger.LogLevel.Info;
+        public ILogger<T>.LogLevel _loggingLevel = ILogger<T>.LogLevel.Info;
 
-        public ILogger.LogLevel LoggingLevel { get => _loggingLevel; set => _loggingLevel = value; }
+        public ILogger<T>.LogLevel LoggingLevel { get => _loggingLevel; set => _loggingLevel = value; }
 
         public Logger()
         {
-            
+            ErrorForegroundColor = ConsoleColor.Red;
+            ErrorBackgroundColor = ConsoleColor.Black;
+            InfoForegroundColor = ConsoleColor.Cyan;
+            InfoBackgroundColor = ConsoleColor.Black;
+            DebugForegroundColor = ConsoleColor.Green;
+            DebugBackgroundColor = ConsoleColor.Black;
+            WarningForegroundColor = ConsoleColor.Yellow;
+            WarningBackgroundColor = ConsoleColor.Black;
+            DefaultForegroundColor = ConsoleColor.White;
+            DefaultBackgroundColor = ConsoleColor.Black;
         }
 
-        public Logger(ConsoleColor errorForegroundColor, ConsoleColor errorBackgroundColor, ConsoleColor infoForegroundColor, ConsoleColor infoBackgroundColor, ConsoleColor debugForegroundColor, ConsoleColor debugBackgroundColor, ConsoleColor warningForegroundColor, ConsoleColor warningBackgroundColor, ILogger.LogLevel loggingLevel)
+        public Logger(ConsoleColor errorForegroundColor, 
+            ConsoleColor errorBackgroundColor, 
+            ConsoleColor infoForegroundColor, 
+            ConsoleColor infoBackgroundColor, 
+            ConsoleColor debugForegroundColor, 
+            ConsoleColor debugBackgroundColor, 
+            ConsoleColor warningForegroundColor, 
+            ConsoleColor warningBackgroundColor, 
+            ILogger<T>.LogLevel loggingLevel)
         {
             ErrorForegroundColor = errorForegroundColor;
             ErrorBackgroundColor = errorBackgroundColor;
@@ -35,47 +52,47 @@
             _loggingLevel = loggingLevel;
         }
 
-        private void Log(ConsoleColor foreground, ConsoleColor background, ILogger.LogLevel logLevel, string message)
+        private void Log(ConsoleColor foreground, ConsoleColor background, ILogger<T>.LogLevel logLevel, string message)
         {
             Console.ForegroundColor = foreground;
             Console.BackgroundColor = background;
 
-            Console.WriteLine(string.Format("[{0}] {1}: {2}",DateTime.UtcNow.ToString("G"), logLevel.ToString(), message));
+            Console.WriteLine(string.Format("[{0}] System: {1}. {2}: {3}",DateTime.UtcNow.ToString("G"), typeof(T).Name, logLevel.ToString(), message));
 
             Console.ForegroundColor = DefaultForegroundColor; 
             Console.BackgroundColor = DefaultBackgroundColor;
         }
 
-        private bool CheckIfShouldLog(ILogger.LogLevel logLevel)
+        private bool CheckIfShouldLog(ILogger<T>.LogLevel logLevel)
         {
             return (int)_loggingLevel > (int)logLevel;
         }
 
         public void LogError(string message)
         {
-            if (CheckIfShouldLog(ILogger.LogLevel.Error)) { return; }
+            if (CheckIfShouldLog(ILogger<T>.LogLevel.Error)) { return; }
 
-            Log(ErrorForegroundColor, ErrorBackgroundColor, ILogger.LogLevel.Error, message);
+            Log(ErrorForegroundColor, ErrorBackgroundColor, ILogger<T>.LogLevel.Error, message);
         }
         public void LogWarning(string message)
         {
-            if (CheckIfShouldLog(ILogger.LogLevel.Warning)) { return; }
+            if (CheckIfShouldLog(ILogger<T>.LogLevel.Warning)) { return; }
 
-            Log(WarningForegroundColor, WarningBackgroundColor, ILogger.LogLevel.Warning, message);
+            Log(WarningForegroundColor, WarningBackgroundColor, ILogger<T>.LogLevel.Warning, message);
         }
 
         public void LogInfo(string message)
         {
-            if (CheckIfShouldLog(ILogger.LogLevel.Info)) { return; }
+            if (CheckIfShouldLog(ILogger<T>.LogLevel.Info)) { return; }
 
-            Log(InfoForegroundColor, InfoBackgroundColor, ILogger.LogLevel.Info, message);
+            Log(InfoForegroundColor, InfoBackgroundColor, ILogger<T>.LogLevel.Info, message);
         }
 
         public void LogDebug(string message)
         {
-            if (CheckIfShouldLog(ILogger.LogLevel.Debug)) { return; }
+            if (CheckIfShouldLog(ILogger<T>.LogLevel.Debug)) { return; }
 
-            Log(DebugForegroundColor, DebugBackgroundColor, ILogger.LogLevel.Debug, message);
+            Log(DebugForegroundColor, DebugBackgroundColor, ILogger<T>.LogLevel.Debug, message);
         }
     }
 }
