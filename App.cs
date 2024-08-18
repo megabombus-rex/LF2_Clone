@@ -33,13 +33,12 @@ namespace LF2Clone
             SMlogger.LoggingLevel = ILogger<SceneManager>.LogLevel.Debug;
             await _sceneManager.SetupAsync(SMlogger, string.Format("{0}\\Scenes", _assetsBaseRoot));
             _currentSceneIdIndex = 0;
-            _logger.LogInfo("App setup finished.");
+            _logger.LogDebug("App setup finished.");
         }
 
         public async Task RunAsync()
         {
             await SetupAsync();
-            _logger.LogInfo("Setting scene.");
             _sceneManager.TrySetCurrentScene("default");
             // current scene = default_too
 

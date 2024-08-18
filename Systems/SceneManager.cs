@@ -60,7 +60,7 @@ namespace LF2Clone.Systems
                 _logger.LogInfo(string.Format("Scene with id {0} is serialized and readable.", id.ToString()));
             }
 
-            _logger.LogInfo("Scene Manager setup finished.");
+            _logger.LogDebug("Scene Manager setup finished.");
         }
 
         #region Scene loading
