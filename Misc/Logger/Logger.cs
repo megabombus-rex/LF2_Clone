@@ -10,6 +10,8 @@
         private ConsoleColor DebugBackgroundColor = ConsoleColor.Black;
         private ConsoleColor WarningForegroundColor = ConsoleColor.Yellow;
         private ConsoleColor WarningBackgroundColor = ConsoleColor.Black;
+        private ConsoleColor TraceForegroundColor = ConsoleColor.DarkYellow;
+        private ConsoleColor TraceBackgroundColor = ConsoleColor.Black;
         private ConsoleColor DefaultForegroundColor = ConsoleColor.White;
         private ConsoleColor DefaultBackgroundColor = ConsoleColor.Black;
 
@@ -38,7 +40,9 @@
             ConsoleColor debugForegroundColor, 
             ConsoleColor debugBackgroundColor, 
             ConsoleColor warningForegroundColor, 
-            ConsoleColor warningBackgroundColor, 
+            ConsoleColor warningBackgroundColor,
+            ConsoleColor traceBackgroundColor,
+            ConsoleColor traceForegroundColor,
             ILogger<T>.LogLevel loggingLevel)
         {
             ErrorForegroundColor = errorForegroundColor;
@@ -49,6 +53,8 @@
             DebugBackgroundColor = debugBackgroundColor;
             WarningForegroundColor = warningForegroundColor;
             WarningBackgroundColor = warningBackgroundColor;
+            TraceForegroundColor = traceForegroundColor;
+            TraceBackgroundColor = traceBackgroundColor;
             _loggingLevel = loggingLevel;
         }
 
@@ -93,6 +99,26 @@
             if (CheckIfShouldLog(ILogger<T>.LogLevel.Debug)) { return; }
 
             Log(DebugForegroundColor, DebugBackgroundColor, ILogger<T>.LogLevel.Debug, message);
+        }
+
+        public void LogTrace(string message)
+        {
+            if (CheckIfShouldLog(ILogger<T>.LogLevel.Trace)) {  return; }
+
+            Log(TraceForegroundColor, TraceBackgroundColor, ILogger<T>.LogLevel.Trace, message);
+        }
+
+        public void ParseAndSetLoggingLevel(string value)
+        {
+            _loggingLevel = value switch
+            {
+                "Trace" => ILogger<T>.LogLevel.Trace,
+                "Debug" => ILogger<T>.LogLevel.Debug,
+                "Info" => ILogger<T>.LogLevel.Info,
+                "Warning" => ILogger<T>.LogLevel.Warning,
+                "Error" => ILogger<T>.LogLevel.Error,
+                _ => ILogger<T>.LogLevel.Info,
+            };
         }
     }
 }
