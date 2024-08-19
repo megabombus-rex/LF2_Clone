@@ -31,16 +31,6 @@ namespace LF2Clone
             _assetsBaseRoot = "";
             _resolutions = new();
         }
-
-        private void AddResolutions()
-        {
-            _resolutions.Add(0, (_screenWidth, _screenHeight));
-            _resolutions.Add(1, (1920, 1080));
-            _resolutions.Add(2, (960, 540));
-            _resolutions.Add(3, (480, 270));
-            _resolutions.Add(4, (240, 135));
-        }
-
         private void InitWindow()
         {
             Raylib.InitWindow(_screenWidth, _screenHeight, "Hello World");
@@ -57,12 +47,22 @@ namespace LF2Clone
                 Raylib.ToggleFullscreen();
                 _isFullscreen = true;
             }
-            else
+            
+            if (!_configuration.Fullscreen && !_configuration.BorderlessWindowed)
             {
                 SetWindowPositionCentered(_currentMonitor, _screenWidth, _screenHeight);
             }
 
             AddResolutions();
+        }
+
+        private void AddResolutions()
+        {
+            _resolutions.Add(0, (_screenWidth, _screenHeight));
+            _resolutions.Add(1, (1920, 1080));
+            _resolutions.Add(2, (960, 540));
+            _resolutions.Add(3, (480, 270));
+            _resolutions.Add(4, (240, 135));
         }
 
         private void SetWindowPositionCentered(int currentMonitor, int width, int height)
