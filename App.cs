@@ -55,7 +55,6 @@ namespace LF2Clone
 
             AddResolutions();
         }
-
         private void AddResolutions()
         {
             _resolutions.Add(0, (_screenWidth, _screenHeight));
@@ -64,7 +63,49 @@ namespace LF2Clone
             _resolutions.Add(3, (480, 270));
             _resolutions.Add(4, (240, 135));
         }
+        private void ChangeResolution(int currentWidth, int currentHeight)
+        {
+            // TODO: change placement of UI in currently loaded scene -> resize -> sceneManager.resizeCurrentScene(resolution)
+            if (Raylib.IsKeyPressed(KeyboardKey.Enter))
+            {
+                _currentResolution = 0;
+                _screenWidth = _resolutions[_currentResolution].width;
+                _screenHeight = _resolutions[_currentResolution].height;
+            }
+            if (Raylib.IsKeyPressed(KeyboardKey.One))
+            {
+                _currentResolution = 1;
+                _screenWidth = _resolutions[_currentResolution].width;
+                _screenHeight = _resolutions[_currentResolution].height;
+            }
 
+            if (Raylib.IsKeyPressed(KeyboardKey.Two))
+            {
+                _currentResolution = 2;
+                _screenWidth = _resolutions[_currentResolution].width;
+                _screenHeight = _resolutions[_currentResolution].height;
+            }
+
+            if (Raylib.IsKeyPressed(KeyboardKey.Three))
+            {
+                _currentResolution = 3;
+                _screenWidth = _resolutions[_currentResolution].width;
+                _screenHeight = _resolutions[_currentResolution].height;
+            }
+
+            if (Raylib.IsKeyPressed(KeyboardKey.Four))
+            {
+                _currentResolution = 4;
+                _screenWidth = _resolutions[_currentResolution].width;
+                _screenHeight = _resolutions[_currentResolution].height;
+            }
+
+            if ((currentHeight != _screenHeight || currentWidth != _screenWidth) && !(_isFullscreen || _isBorderless))
+            {
+                SetWindowPositionCentered(_currentMonitor, _screenWidth, _screenHeight);
+                Raylib.SetWindowSize(_screenWidth, _screenHeight);
+            }
+        }
         private void SetWindowPositionCentered(int currentMonitor, int width, int height)
         {
             var setX = width == 0 ? 0 : (Raylib.GetMonitorWidth(currentMonitor) / 2) - (width / 2);
@@ -137,58 +178,7 @@ namespace LF2Clone
 
             while (!Raylib.WindowShouldClose())
             {
-                if (Raylib.IsWindowResized() && !Raylib.IsWindowFullscreen())
-                {
-                    _screenWidth = Raylib.GetScreenWidth();
-                    _screenHeight = Raylib.GetScreenHeight();
-                }
-
-                // TODO: change placement of UI in currently loaded scene -> resize -> sceneManager.resizeCurrentScene(resolution)
-                if (Raylib.IsKeyPressed(KeyboardKey.Enter))
-                {
-                    _currentResolution = 0;
-                    Raylib.SetWindowSize(_resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
-                    if (!_isFullscreen)
-                    {
-                        SetWindowPositionCentered(_currentMonitor, _resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
-                    }
-                }
-                if (Raylib.IsKeyPressed(KeyboardKey.One))
-                {
-                    _currentResolution = 1;
-                    Raylib.SetWindowSize(_resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
-                    if (!_isFullscreen)
-                    {
-                        SetWindowPositionCentered(_currentMonitor, _resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
-                    }
-                }
-
-                if (Raylib.IsKeyPressed(KeyboardKey.Two)) {
-                    _currentResolution = 2;
-                    Raylib.SetWindowSize(_resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
-                    if (!_isFullscreen) SetWindowPositionCentered(_currentMonitor, _resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
-                }
-
-                if (Raylib.IsKeyPressed(KeyboardKey.Three))
-                {
-                    _currentResolution = 3;
-                    Raylib.SetWindowSize(_resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
-                    if (!_isFullscreen)
-                    {
-                        SetWindowPositionCentered(_currentMonitor, _resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
-                    }
-                }
-
-                if (Raylib.IsKeyPressed(KeyboardKey.Four))
-                {
-                    _currentResolution = 4;
-                    Raylib.SetWindowSize(_resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
-                    if (!_isFullscreen)
-                    {
-                        SetWindowPositionCentered(_currentMonitor, _resolutions[_currentResolution].width, _resolutions[_currentResolution].height);
-                    }
-                }
-
+                ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
                 but.Run();
