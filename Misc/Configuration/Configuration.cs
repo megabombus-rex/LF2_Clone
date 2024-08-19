@@ -5,6 +5,9 @@
         public Dictionary<string, Logging> LoggerConfigs;
         public string Version;
         public Resolution StartingScreenResolution;
+        public bool Fullscreen;
+        public bool BorderlessWindowed;
+        public bool UseDefaultScreenResolution;
         public class Logging
         {
             public string LogLevel { get; set; } // Trace, Debug, Info, Warning, Error
