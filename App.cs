@@ -14,15 +14,107 @@ namespace LF2Clone
         private ILogger<Application>? _logger;
         private string _assetsBaseRoot;
         private int _currentSceneIdIndex;
-        private int[] _sceneIds;
         private SceneManager _sceneManager; // only one SceneManager instance will exist
         private Configuration _configuration;
         private string _appVersion;
+        private int _screenWidth;
+        private int _screenHeight;
+        private Dictionary<int, (int width, int height)> _resolutions;
+        private int _currentResolution;
+        private int _currentMonitor;
+        private bool _isBorderless;
+        private bool _isFullscreen;
 
         public Application()
         {
             _backgroundColor = Color.White;
             _assetsBaseRoot = "";
+            _resolutions = new();
+        }
+        private void InitWindow()
+        {
+            Raylib.InitWindow(_screenWidth, _screenHeight, "Hello World");
+            _currentMonitor = Raylib.GetCurrentMonitor();
+
+            if (_configuration.BorderlessWindowed)
+            {
+                Raylib.ToggleBorderlessWindowed();
+                _isBorderless = true;
+            }
+
+            if (_configuration.Fullscreen)
+            {
+                Raylib.ToggleFullscreen();
+                _isFullscreen = true;
+            }
+            
+            if (!_configuration.Fullscreen && !_configuration.BorderlessWindowed)
+            {
+                SetWindowPositionCentered(_currentMonitor, _screenWidth, _screenHeight);
+            }
+
+            AddResolutions();
+        }
+        private void AddResolutions()
+        {
+            _resolutions.Add(0, (_screenWidth, _screenHeight));
+            _resolutions.Add(1, (1920, 1080));
+            _resolutions.Add(2, (960, 540));
+            _resolutions.Add(3, (480, 270));
+            _resolutions.Add(4, (240, 135));
+        }
+        private void ChangeResolution(int currentWidth, int currentHeight)
+        {
+            // TODO: change placement of UI in currently loaded scene -> resize -> sceneManager.resizeCurrentScene(resolution)
+            if (Raylib.IsKeyPressed(KeyboardKey.Enter))
+            {
+                _currentResolution = 0;
+                _screenWidth = _resolutions[_currentResolution].width;
+                _screenHeight = _resolutions[_currentResolution].height;
+            }
+            if (Raylib.IsKeyPressed(KeyboardKey.One))
+            {
+                _currentResolution = 1;
+                _screenWidth = _resolutions[_currentResolution].width;
+                _screenHeight = _resolutions[_currentResolution].height;
+            }
+
+            if (Raylib.IsKeyPressed(KeyboardKey.Two))
+            {
+                _currentResolution = 2;
+                _screenWidth = _resolutions[_currentResolution].width;
+                _screenHeight = _resolutions[_currentResolution].height;
+            }
+
+            if (Raylib.IsKeyPressed(KeyboardKey.Three))
+            {
+                _currentResolution = 3;
+                _screenWidth = _resolutions[_currentResolution].width;
+                _screenHeight = _resolutions[_currentResolution].height;
+            }
+
+            if (Raylib.IsKeyPressed(KeyboardKey.Four))
+            {
+                _currentResolution = 4;
+                _screenWidth = _resolutions[_currentResolution].width;
+                _screenHeight = _resolutions[_currentResolution].height;
+            }
+
+            if ((currentHeight != _screenHeight || currentWidth != _screenWidth) && !(_isFullscreen || _isBorderless))
+            {
+                SetWindowPositionCentered(_currentMonitor, _screenWidth, _screenHeight);
+                Raylib.SetWindowSize(_screenWidth, _screenHeight);
+            }
+        }
+        private void SetWindowPositionCentered(int currentMonitor, int width, int height)
+        {
+            var setX = width == 0 ? 0 : (Raylib.GetMonitorWidth(currentMonitor) / 2) - (width / 2);
+            var setY = height == 0 ? 0 : (Raylib.GetMonitorHeight(currentMonitor) / 2) - (height / 2);
+
+            _logger.LogInfo(string.Format("SetX: {0} SetY: {1}", setX, setY));
+
+            Raylib.SetWindowPosition(setX, setY);
+            _logger.LogInfo(string.Format("Width set: {0} Height set: {1}. Position: {2}", width.ToString(), height.ToString(), Raylib.GetWindowPosition().ToString()));
         }
 
         // set up every system needed
@@ -36,6 +128,16 @@ namespace LF2Clone
 
             // set current version
             _appVersion = _configuration.Version;
+            if (!_configuration.UseDefaultScreenResolution)
+            {
+                _screenHeight = _configuration.StartingScreenResolution.Height;
+                _screenWidth = _configuration.StartingScreenResolution.Width;
+            }
+            else
+            {
+                _screenHeight = 0;
+                _screenWidth = 0;
+            }
 
             // initialize systems
             _sceneManager = new SceneManager();
@@ -55,6 +157,7 @@ namespace LF2Clone
 
             // setup application
             _currentSceneIdIndex = 0;
+            _currentResolution = 0;
             _logger.LogDebug("App setup finished.");
         }
 
@@ -62,14 +165,9 @@ namespace LF2Clone
         {
             await SetupAsync();
             _sceneManager.TrySetCurrentScene("default");
-            // current scene = default_too
-
             _sceneManager.ShowLoadedScenes();
-            _sceneIds = _sceneManager.SceneIds;
 
-
-            Raylib.InitWindow(960, 900, "Hello World");
-
+            InitWindow();
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
@@ -80,6 +178,7 @@ namespace LF2Clone
 
             while (!Raylib.WindowShouldClose())
             {
+                ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
                 but.Run();
@@ -92,8 +191,8 @@ namespace LF2Clone
 
         void ChangeScene()
         {
-            _sceneManager.TrySetCurrentScene(_sceneIds[_currentSceneIdIndex]);
-            _currentSceneIdIndex = (_currentSceneIdIndex + 1) % _sceneIds.Length;
+            _sceneManager.TrySetCurrentScene(_sceneManager.SceneIds[_currentSceneIdIndex]);
+            _currentSceneIdIndex = (_currentSceneIdIndex + 1) % _sceneManager.SceneIds.Length;
         }
 
         bool ReadConfig() // serial not async
