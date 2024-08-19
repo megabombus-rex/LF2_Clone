@@ -18,6 +18,7 @@
         public ILogger<T>.LogLevel _loggingLevel = ILogger<T>.LogLevel.Info;
 
         public ILogger<T>.LogLevel LoggingLevel { get => _loggingLevel; set => _loggingLevel = value; }
+        public string LoggingFilePath { get; set; }
 
         public Logger()
         {

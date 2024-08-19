@@ -3,7 +3,7 @@
     public interface ILogger<T>
     {
         LogLevel LoggingLevel { get; set; }
-
+        string LoggingFilePath { get; set; }
         void ParseAndSetLoggingLevel(string value);
 
         void LogError(string message);

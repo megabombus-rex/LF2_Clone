@@ -151,6 +151,10 @@ namespace LF2Clone
             _logger.ParseAndSetLoggingLevel(_configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
             SMlogger.ParseAndSetLoggingLevel(_configuration.LoggerConfigs.ContainsKey("SceneManager") ? _configuration.LoggerConfigs["SceneManager"].LogLevel : defaultLoggingLevel);
 
+            // set loggers logging file path
+            _logger.LoggingFilePath = _configuration.LoggingFilePath;
+            SMlogger.LoggingFilePath = _configuration.LoggingFilePath;
+
             // setup systems
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
             await _sceneManager.SetupAsync(SMlogger, string.Format("{0}\\Scenes", _assetsBaseRoot));
