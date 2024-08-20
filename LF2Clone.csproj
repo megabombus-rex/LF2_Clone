@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Assets\UI\Buttons\" />
+    <Folder Include="Logs\" />
   </ItemGroup>
 
 </Project>

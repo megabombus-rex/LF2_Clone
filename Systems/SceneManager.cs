@@ -11,7 +11,7 @@ namespace LF2Clone.Systems
         private Dictionary<int, string> _serializedScenesNamesDict = new();
         private string _scenesFolderPath;
 
-        public SceneManager()
+        public SceneManager(ILogger<SceneManager> logger) : base(logger)
         {
             _id = 0;
             _name = "SceneManager";
@@ -31,9 +31,9 @@ namespace LF2Clone.Systems
             private set => _currentScene = value;
         }
 
-        public async Task SetupAsync(ILogger<SceneManager> logger, string scenesPath)
+        public async Task SetupAsync(string scenesPath)
         {
-            base.Setup(logger);
+            base.Setup();
             _scenesFolderPath = scenesPath;
             var sceneFiles = Directory.GetFiles(scenesPath).Where(x => x.EndsWith(".LFsc.json")).ToArray();
 
