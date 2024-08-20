@@ -31,7 +31,7 @@ namespace LF2Clone.Systems
             private set => _currentScene = value;
         }
 
-        public async Task SetupAsync( string scenesPath)
+        public async Task SetupAsync(string scenesPath)
         {
             base.Setup();
             _scenesFolderPath = scenesPath;
