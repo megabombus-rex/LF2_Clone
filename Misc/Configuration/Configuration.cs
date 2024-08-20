@@ -3,7 +3,7 @@
     public class Configuration
     {
         public Dictionary<string, Logging> LoggerConfigs;
-        public string LoggingFilePath { get; set; } // one file for all AllLog-date.log
+        public string LoggingFilePath; // one file for all AllLog-date.log
         public string Version;
         public Resolution StartingScreenResolution;
         public bool Fullscreen;
@@ -11,12 +11,12 @@
         public bool UseDefaultScreenResolution;
         public class Logging
         {
-            public string LogLevel { get; set; } // Trace, Debug, Info, Warning, Error
+            public string LogLevel; // Trace, Debug, Info, Warning, Error
         } // may add sinks later
         public class Resolution
         {
-            public int Width { get; set; }
-            public int Height { get; set; }
+            public int Width;
+            public int Height;
         }
     }
 }
