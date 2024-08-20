@@ -138,26 +138,23 @@ namespace LF2Clone
                 _screenHeight = 0;
                 _screenWidth = 0;
             }
-
-            // initialize systems
-            _sceneManager = new SceneManager();
-
             // initialize loggers
-            _logger = new Logger<Application>();
-            var SMlogger = new Logger<SceneManager>();
+            var logPath = string.IsNullOrEmpty(_configuration.LoggingFilePath) ? "" : _configuration.LoggingFilePath;
+
+            _logger = new Logger<Application>(logPath);
+            var SMlogger = new Logger<SceneManager>(logPath);
 
             // set logging levels, 
             var defaultLoggingLevel = "Info";
             _logger.ParseAndSetLoggingLevel(_configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
             SMlogger.ParseAndSetLoggingLevel(_configuration.LoggerConfigs.ContainsKey("SceneManager") ? _configuration.LoggerConfigs["SceneManager"].LogLevel : defaultLoggingLevel);
 
-            // set loggers logging file path
-            _logger.LoggingFilePath = _configuration.LoggingFilePath;
-            SMlogger.LoggingFilePath = _configuration.LoggingFilePath;
+            // initialize systems
+            _sceneManager = new SceneManager(SMlogger);
 
             // setup systems
-            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "\\..\\..\\..\\Assets");
-            await _sceneManager.SetupAsync(SMlogger, string.Format("{0}\\Scenes", _assetsBaseRoot));
+            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets");
+            await _sceneManager.SetupAsync(string.Format("{0}\\Scenes", _assetsBaseRoot));
 
             // setup application
             _currentSceneIdIndex = 0;
@@ -189,6 +186,9 @@ namespace LF2Clone
                 Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
             }
+
+            _logger.Dispose();
+            _sceneManager.Destroy();
 
             Raylib.CloseWindow();
         }

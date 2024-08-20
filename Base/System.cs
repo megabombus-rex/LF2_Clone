@@ -6,17 +6,22 @@ namespace LF2Clone.Base
     {
         protected int _id;
         protected string _name;
-        protected ILogger<T>? _logger;
+        protected ILogger<T> _logger;
 
-        protected System()
+        protected System(ILogger<T> logger)
         {
             _id = 0;
             _name = "system";
+            _logger = logger;
         }
 
-        public virtual void Setup(ILogger<T> logger)
+        public virtual void Setup()
         {
-            _logger = logger;
+        }
+
+        public virtual void Destroy()
+        {
+            _logger.Dispose();
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿namespace LF2Clone.Misc.Logger
 {
-    public interface ILogger<T>
+    public interface ILogger<T> : IDisposable
     {
         LogLevel LoggingLevel { get; set; }
-        string LoggingFilePath { get; set; }
         void ParseAndSetLoggingLevel(string value);
 
         void LogError(string message);

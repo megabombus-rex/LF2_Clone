@@ -18,45 +18,26 @@
         public ILogger<T>.LogLevel _loggingLevel = ILogger<T>.LogLevel.Info;
 
         public ILogger<T>.LogLevel LoggingLevel { get => _loggingLevel; set => _loggingLevel = value; }
-        public string LoggingFilePath { get; set; }
+        private string _loggingFilePath { get; set; }
+        private StreamWriter _writer;
 
-        public Logger()
+        public void Dispose()
         {
-            ErrorForegroundColor = ConsoleColor.Red;
-            ErrorBackgroundColor = ConsoleColor.Black;
-            InfoForegroundColor = ConsoleColor.Cyan;
-            InfoBackgroundColor = ConsoleColor.Black;
-            DebugForegroundColor = ConsoleColor.Green;
-            DebugBackgroundColor = ConsoleColor.Black;
-            WarningForegroundColor = ConsoleColor.Yellow;
-            WarningBackgroundColor = ConsoleColor.Black;
-            DefaultForegroundColor = ConsoleColor.White;
-            DefaultBackgroundColor = ConsoleColor.Black;
+            _writer.Close();
+            _writer.Dispose();
         }
 
-        public Logger(ConsoleColor errorForegroundColor, 
-            ConsoleColor errorBackgroundColor, 
-            ConsoleColor infoForegroundColor, 
-            ConsoleColor infoBackgroundColor, 
-            ConsoleColor debugForegroundColor, 
-            ConsoleColor debugBackgroundColor, 
-            ConsoleColor warningForegroundColor, 
-            ConsoleColor warningBackgroundColor,
-            ConsoleColor traceBackgroundColor,
-            ConsoleColor traceForegroundColor,
-            ILogger<T>.LogLevel loggingLevel)
+        public Logger(string loggingFilePath)
         {
-            ErrorForegroundColor = errorForegroundColor;
-            ErrorBackgroundColor = errorBackgroundColor;
-            InfoForegroundColor = infoForegroundColor;
-            InfoBackgroundColor = infoBackgroundColor;
-            DebugForegroundColor = debugForegroundColor;
-            DebugBackgroundColor = debugBackgroundColor;
-            WarningForegroundColor = warningForegroundColor;
-            WarningBackgroundColor = warningBackgroundColor;
-            TraceForegroundColor = traceForegroundColor;
-            TraceBackgroundColor = traceBackgroundColor;
-            _loggingLevel = loggingLevel;
+            var loggingFile = string.Format("{0}\\{1}\\LF2C-{2}.log", Environment.CurrentDirectory, loggingFilePath, DateTime.UtcNow.ToString("d"));
+
+            _writer = new StreamWriter(loggingFile, System.Text.Encoding.Default, new FileStreamOptions()
+            {
+                Access = FileAccess.Write,
+                Share = FileShare.ReadWrite,
+                Mode = FileMode.Append,
+                Options = FileOptions.RandomAccess,
+            });
         }
 
         private void Log(ConsoleColor foreground, ConsoleColor background, ILogger<T>.LogLevel logLevel, string message)
@@ -64,7 +45,10 @@
             Console.ForegroundColor = foreground;
             Console.BackgroundColor = background;
 
-            Console.WriteLine(string.Format("[{0}] System: {1}. {2}: {3}",DateTime.UtcNow.ToString("G"), typeof(T).Name, logLevel.ToString(), message));
+            var finalMessage = string.Format("[{0}] System: {1}. {2}: {3}", DateTime.UtcNow.ToString("G"), typeof(T).Name, logLevel.ToString(), message);
+            Console.WriteLine(finalMessage);
+            _writer.WriteLine(finalMessage);
+            _writer.Flush();
 
             Console.ForegroundColor = DefaultForegroundColor; 
             Console.BackgroundColor = DefaultBackgroundColor;
