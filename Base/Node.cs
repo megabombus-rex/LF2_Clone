@@ -13,6 +13,7 @@
         // only one component of each type is permitted
         private List<Component> _components;
 
+        // used only for root node
         public Node()
         {
             _id = 0;
@@ -29,6 +30,28 @@
             _name = name;
             _children = new List<Node>();
             _components = new List<Component>();
+        }
+
+        public bool TryAddChildNode(Node node)
+        {
+            if (node == this)
+            {
+                throw new InvalidOperationException("Node cannot be it's own parent, except the root node.");
+            }
+
+            if (node._parent._children.Remove(node))
+            {
+                node._parent = this;
+                _children.Add(node);
+                return true;
+            }
+            return false;
+        }
+
+        // remove a node from it's parent children so it won't be tracked -> GC will collect it
+        public bool TryRemoveNode(Node node)
+        {
+            return _parent._children.Remove(node);
         }
 
         public void Update()
