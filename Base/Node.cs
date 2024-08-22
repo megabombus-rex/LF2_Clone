@@ -1,4 +1,6 @@
-﻿namespace LF2Clone.Base
+﻿using Newtonsoft.Json;
+
+namespace LF2Clone.Base
 {
     // Game objects that work as a tree graph
     public class Node
@@ -7,11 +9,17 @@
         public int _id;
         public string _name;
 
-        private Node _parent;
+        public Node _parent;
         private List<Node> _children;
 
         // only one component of each type is permitted
         private List<Component> _components;
+
+        public List<Node> GetChildren()
+        {
+            return _children;
+        }
+
 
         // used only for root node
         public Node()
@@ -30,8 +38,10 @@
             _name = name;
             _children = new List<Node>();
             _components = new List<Component>();
+            parent._children.Add(this);
         }
 
+        // reparenting of a node
         public bool TryAddChildNode(Node node)
         {
             if (node == this)

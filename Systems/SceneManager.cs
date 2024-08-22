@@ -167,7 +167,10 @@ namespace LF2Clone.Systems
                             {
                                 using (var sw = new StreamWriter(filename))
                                 {
-                                    await sw.WriteAsync(JsonConvert.SerializeObject(scene, Formatting.Indented));
+                                    await sw.WriteAsync(JsonConvert.SerializeObject(scene, Formatting.Indented, new JsonSerializerSettings()
+                                    {
+                                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                                    }));
                                     sw.Dispose();
                                 }
                                 _logger.LogDebug(string.Format("File written as {0}", filename));
@@ -184,7 +187,11 @@ namespace LF2Clone.Systems
                             {
                                 using (var sw = new StreamWriter(filename))
                                 {
-                                    await sw.WriteAsync(JsonConvert.SerializeObject(scene, Formatting.Indented));
+                                    await sw.WriteAsync(JsonConvert.SerializeObject(scene, Formatting.Indented, new JsonSerializerSettings()
+                                    {
+                                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                                    }));
+                                    sw.Dispose();
                                 }
                                 _logger.LogDebug(string.Format("File written as {0}", filename));
                             }
