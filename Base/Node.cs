@@ -3,13 +3,14 @@
 namespace LF2Clone.Base
 {
     // Game objects that work as a tree graph
+    [Serializable]
     public class Node
     {
         // ids should not repeat on one scene as nodes should be destroyed on scene unload
         public int _id;
         public string _name;
 
-        public Node _parent;
+        public Node? _parent;
         private List<Node> _children;
 
         // only one component of each type is permitted
@@ -39,6 +40,24 @@ namespace LF2Clone.Base
             _children = new List<Node>();
             _components = new List<Component>();
             parent._children.Add(this);
+        }
+
+        // used for proper deserialization with json
+        [JsonConstructor]
+        public Node(int id, string name)
+        {
+            if (id == 0)
+            {
+                _parent = this;
+            }
+            else
+            {
+                _parent = null;
+            }
+            _id = id;
+            _name = name;
+            _children = new List<Node>();
+            _components = new List<Component>();
         }
 
         // reparenting of a node

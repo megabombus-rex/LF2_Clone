@@ -217,9 +217,17 @@ namespace LF2Clone.Systems
                 {
                     using (var sr = new StreamReader(filename))
                     {
-                        
                         var read = await sr.ReadToEndAsync();
+
                         scene = JsonConvert.DeserializeObject<Scene>(read);
+                    }
+                    try
+                    {
+                        if (scene != null) JoinNodesFromScene(scene);
+                    }
+                    catch
+                    {
+                        throw;
                     }
                 }
             }
@@ -229,6 +237,14 @@ namespace LF2Clone.Systems
             }
 
             return scene;
+        }
+
+        private void JoinNodesFromScene(Scene scene)
+        {
+            foreach (var node in scene._nodes.Where(x => x._name != "root"))
+            {
+                node._parent = scene._nodes.FirstOrDefault(x => x._id == node._parent._id);
+            }
         }
 
         public void ShowLoadedScenes()
