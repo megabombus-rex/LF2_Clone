@@ -8,7 +8,6 @@
         public Node _root;
         public List<Node> _nodes;
 
-        // read serialized scene with scene loader
         public Scene(int id, string name)
         {
             _id = id;
@@ -21,6 +20,7 @@
             _defaultRootName = "Node"; // move to config, add as parameter
         }
 
+        // Adds a new node to given parent (param).
         public void AddNewNode(Node parent)
         {
             var nextID = _nodes.Max(x => x._id) + 1;

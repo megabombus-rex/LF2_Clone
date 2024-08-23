@@ -3,7 +3,6 @@
 namespace LF2Clone.Base
 {
     // Game objects that work as a tree graph
-    [Serializable]
     public class Node
     {
         // ids should not repeat on one scene as nodes should be destroyed on scene unload
@@ -16,21 +15,6 @@ namespace LF2Clone.Base
 
         // only one component of each type is permitted
         private List<Component> _components;
-
-        public List<Node> GetChildren()
-        {
-            return _children;
-        }
-
-        public Node? GetParent()
-        {
-            return _parent;
-        }
-
-        public void SetParent(Node parent)
-        {
-            _parent = parent;
-        }
 
         // used only for root node
         public Node()
@@ -75,7 +59,30 @@ namespace LF2Clone.Base
             _components = new List<Component>();
         }
 
-        // reparenting of a node
+        public List<Node> GetChildren()
+        {
+            return _children;
+        }
+
+        // Used for setting initial children list while loading a scene.
+        public void AddChild(Node node)
+        {
+            _children.Add(node);
+        }
+
+        // Returns current parent.
+        public Node? GetParent()
+        {
+            return _parent;
+        }
+
+        // Used for setting initial parent while loading a scene.
+        public void SetParent(Node parent)
+        {
+            _parent = parent;
+        }
+
+        // Removes the parent from this node, removes itself from parent's children list, sets the newParent (param) as parent.
         public bool ReparentCurrentNode(Node newParent)
         {
             if (newParent == this)
@@ -92,13 +99,8 @@ namespace LF2Clone.Base
             return false;
         }
 
-        public void AddNewChild(Node node)
-        {
-            _children.Add(node);
-        }
-
-        // remove a node from it's parent children so it won't be tracked -> GC will collect it
-        // it's children should be destroyed as well
+        // Removes a node (param) from it's parent children so it won't be tracked -> GC will collect it.
+        // Returns true if parent exists and the node is succesfully removed, false otherwise.
         public bool TryRemoveNode(Node node)
         {
             return _parent != null ? _parent._children.Remove(node) : false;

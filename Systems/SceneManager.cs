@@ -242,17 +242,18 @@ namespace LF2Clone.Systems
             return scene;
         }
 
+        // Used for joining the nodes after serialization of a scene (param).
         private void JoinNodesFromScene(Scene scene)
         {
             scene._root = scene._nodes.FirstOrDefault(x => x._id == 0); // root
             try
             {
-                var nodeList = scene._nodes;//.Where(x => x._name != "root").ToList();
+                var nodeList = scene._nodes;
                 foreach (var node in nodeList)
                 {
                     var parent = scene._nodes.FirstOrDefault(x => x._id == node._parentId);
                     node.SetParent(parent);
-                    node.GetParent().AddNewChild(node);
+                    node.GetParent().AddChild(node);
                 }
             }
             catch
