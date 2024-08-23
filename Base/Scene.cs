@@ -1,4 +1,6 @@
-﻿namespace LF2Clone.Base
+﻿using System.Xml.Linq;
+
+namespace LF2Clone.Base
 {
     public class Scene
     {
@@ -25,24 +27,48 @@
         {
             var nextID = _nodes.Max(x => x._id) + 1;
             var name = _defaultRootName;
+            name = GetNextValidNodeName(parent, name);
+            _nodes.Add(new Node(parent, nextID, name));
+        }
 
+        public void RenameNode(int id, string newName)
+        {
+            if (string.IsNullOrEmpty(newName))
+            {
+                throw new InvalidDataException("New node name cannot be empty.");
+            }
+
+            try
+            {
+                var node = _nodes.First(x => x._id == id);
+                node._name = GetNextValidNodeName(node.GetParent()!, newName);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        // Returns the next valid node name based on other children names
+        private string GetNextValidNodeName(Node parent, string newNodeName)
+        {
             int nextNameNumber = 1;
             var childrenCount = parent.GetChildren().Count;
             if (childrenCount > 0)
             {
-                while (parent.GetChildren().Any(x => x._name == name))
+                while (parent.GetChildren().Any(x => x._name == newNodeName))
                 {
                     if (nextNameNumber > 1)
                     {
-                        name = name.Substring(0, name.Length - 1);
+                        newNodeName = newNodeName.Substring(0, newNodeName.Length - 1);
                     }
-                    name += nextNameNumber.ToString();
+                    newNodeName += nextNameNumber.ToString();
                     nextNameNumber++;
                 }
             }
 
-            var node = new Node(parent, nextID, name);
-            _nodes.Add(node);
+            return newNodeName;
         }
+
     }
 }

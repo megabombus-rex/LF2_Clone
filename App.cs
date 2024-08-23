@@ -166,8 +166,11 @@ namespace LF2Clone
         {
             await SetupAsync();
             _sceneManager.TrySetCurrentScene("default");
-            _sceneManager.CurrentScene.AddNewNode(_sceneManager.CurrentScene._root.GetChildren().FirstOrDefault(x => x._id == 1));
-            _sceneManager.CurrentScene.AddNewNode(_sceneManager.CurrentScene._root.GetChildren().FirstOrDefault(x => x._id == 1));
+            var childToAddTheNewNodeTo = _sceneManager.CurrentScene._root.GetChildren().FirstOrDefault(x => x._id == 1);
+            _sceneManager.CurrentScene.AddNewNode(childToAddTheNewNodeTo);
+            _sceneManager.CurrentScene.AddNewNode(childToAddTheNewNodeTo);
+            _sceneManager.CurrentScene.RenameNode(7, "Test");
+            _sceneManager.CurrentScene.RenameNode(8, "Test"); // should be named Test1 after
             _sceneManager.TrySetCurrentScene(2);
             _sceneManager.ShowLoadedScenes();
 
