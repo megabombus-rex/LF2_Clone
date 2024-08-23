@@ -1,8 +1,47 @@
 {
   "_id": 1,
+  "_defaultRootName": "Node",
   "_name": "default",
   "_root": {
     "_id": 0,
-    "_name": "root"
-  }
+    "_name": "root",
+    "_parentId": 0
+  },
+  "_nodes": [
+    {
+      "_id": 0,
+      "_name": "root",
+      "_parentId": 0
+    },
+    {
+      "_id": 1,
+      "_name": "Node",
+      "_parentId": 0
+    },
+    {
+      "_id": 2,
+      "_name": "Node1",
+      "_parentId": 0
+    },
+    {
+      "_id": 3,
+      "_name": "Node2",
+      "_parentId": 0
+    },
+    {
+      "_id": 4,
+      "_name": "Node3",
+      "_parentId": 0
+    },
+    {
+      "_id": 5,
+      "_name": "Node",
+      "_parentId": 1
+    },
+    {
+      "_id": 6,
+      "_name": "Node1",
+      "_parentId": 1
+    }
+  ]
 }

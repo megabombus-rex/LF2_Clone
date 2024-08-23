@@ -9,8 +9,9 @@ namespace LF2Clone.Base
         // ids should not repeat on one scene as nodes should be destroyed on scene unload
         public int _id;
         public string _name;
+        public int? _parentId;
 
-        public Node? _parent;
+        private Node? _parent;
         private List<Node> _children;
 
         // only one component of each type is permitted
@@ -21,6 +22,15 @@ namespace LF2Clone.Base
             return _children;
         }
 
+        public Node? GetParent()
+        {
+            return _parent;
+        }
+
+        public void SetParent(Node parent)
+        {
+            _parent = parent;
+        }
 
         // used only for root node
         public Node()
@@ -28,6 +38,7 @@ namespace LF2Clone.Base
             _id = 0;
             _name = "root";
             _parent = this;
+            _parentId = 0;
             _children = new List<Node>();
             _components = new List<Component>();
         }
@@ -40,19 +51,23 @@ namespace LF2Clone.Base
             _children = new List<Node>();
             _components = new List<Component>();
             parent._children.Add(this);
+            _parentId = parent._id;
         }
 
         // used for proper deserialization with json
         [JsonConstructor]
-        public Node(int id, string name)
+        public Node(int id, string name, int parentId)
         {
             if (id == 0)
             {
                 _parent = this;
+                _parentId = 0;
+                _children = new List<Node>();
             }
             else
             {
                 _parent = null;
+                _parentId = parentId;
             }
             _id = id;
             _name = name;
@@ -61,26 +76,32 @@ namespace LF2Clone.Base
         }
 
         // reparenting of a node
-        public bool TryAddChildNode(Node node)
+        public bool ReparentCurrentNode(Node newParent)
         {
-            if (node == this)
+            if (newParent == this)
             {
                 throw new InvalidOperationException("Node cannot be it's own parent, except the root node.");
             }
 
-            if (node._parent._children.Remove(node))
+            if (newParent._parent != null ? newParent._parent._children.Remove(newParent) : false)
             {
-                node._parent = this;
-                _children.Add(node);
+                newParent._parent = this;
+                _children.Add(newParent);
                 return true;
             }
             return false;
         }
 
+        public void AddNewChild(Node node)
+        {
+            _children.Add(node);
+        }
+
         // remove a node from it's parent children so it won't be tracked -> GC will collect it
+        // it's children should be destroyed as well
         public bool TryRemoveNode(Node node)
         {
-            return _parent._children.Remove(node);
+            return _parent != null ? _parent._children.Remove(node) : false;
         }
 
         public void Update()

@@ -219,7 +219,10 @@ namespace LF2Clone.Systems
                     {
                         var read = await sr.ReadToEndAsync();
 
-                        scene = JsonConvert.DeserializeObject<Scene>(read);
+                        scene = JsonConvert.DeserializeObject<Scene>(read, new JsonSerializerSettings()
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        });
                     }
                     try
                     {
@@ -241,9 +244,20 @@ namespace LF2Clone.Systems
 
         private void JoinNodesFromScene(Scene scene)
         {
-            foreach (var node in scene._nodes.Where(x => x._name != "root"))
+            scene._root = scene._nodes.FirstOrDefault(x => x._id == 0); // root
+            try
             {
-                node._parent = scene._nodes.FirstOrDefault(x => x._id == node._parent._id);
+                var nodeList = scene._nodes;//.Where(x => x._name != "root").ToList();
+                foreach (var node in nodeList)
+                {
+                    var parent = scene._nodes.FirstOrDefault(x => x._id == node._parentId);
+                    node.SetParent(parent);
+                    node.GetParent().AddNewChild(node);
+                }
+            }
+            catch
+            {
+                throw;
             }
         }
 

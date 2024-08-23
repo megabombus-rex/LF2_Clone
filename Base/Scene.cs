@@ -27,7 +27,8 @@
             var name = _defaultRootName;
 
             int nextNameNumber = 1;
-            if(parent.GetChildren().Count > 0)
+            var childrenCount = parent.GetChildren().Count;
+            if (childrenCount > 0)
             {
                 while (parent.GetChildren().Any(x => x._name == name))
                 {
