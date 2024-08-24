@@ -20,6 +20,37 @@
             _defaultRootName = "Node"; // move to config, add as parameter
         }
 
+        // Returns true if the node with nodeId (param) was successfully removed, false otherwise.
+        public bool TryRemoveNode(int nodeId)
+        {
+            var node = _nodes.FirstOrDefault(x => x._id == nodeId);
+
+            if(node == null)
+            {
+                return false;
+            }
+
+            if (!node.TryRemoveNode())
+            {
+                return false;
+            }
+
+            var children = _nodes.Where(x => x._parentId == nodeId).ToList();
+
+            foreach (var child in children)
+            {
+                _nodes.Remove(child);
+            }
+
+            if (!_nodes.Remove(node))
+            {
+                node.GetParent().AddChild(node); // return to the previous state
+                return false;
+            }
+
+            return true;
+        }
+
         // Adds a new node to given parent (param).
         public void AddNewNode(Node parent)
         {

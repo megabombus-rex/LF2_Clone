@@ -116,11 +116,6 @@ namespace LF2Clone.Base
             _speedX = new Vector3(2.0f, 0.0f, 0.0f);
         }
 
-        public void DrawRectangle()
-        {
-            
-        }
-
         public List<Node> GetChildren()
         {
             return _children;
@@ -163,35 +158,45 @@ namespace LF2Clone.Base
 
         // Removes a node (param) from it's parent children so it won't be tracked -> GC will collect it.
         // Returns true if parent exists and the node is succesfully removed, false otherwise.
-        public bool TryRemoveNode(Node node)
+        public bool TryRemoveNode()
         {
-            return _parent != null ? _parent._children.Remove(node) : false;
+            return _parent != null ? _parent._children.Remove(this) : false;
         }
 
         public void MoveNodeByVector(Vector3 vec)
         {
+            if (_id != 0)
+            {
 #if DEBUG
-            _bounds.X += vec.X;
-            _bounds.Y += vec.Y;
+                _bounds.X += vec.X;
+                _bounds.Y += vec.Y;
 #endif
-            _globalTransform.Translation += vec;
-            _relativeTransform.Translation += vec;
+                _globalTransform.Translation += vec;
+                _relativeTransform.Translation += vec;
+            }
+
             Console.WriteLine(string.Format("Parent node: {0}, global position: {1}, relative position: {2}", _id, _globalTransform.Translation.ToString(), _relativeTransform.Translation.ToString()));
-            foreach (var child in _children)
+            var children = _children.Where(x => x._id != 0).ToList();
+            foreach (var child in children)
             {
                 var currentTransGlobal = child.MoveChildren(vec);
                 Console.WriteLine(string.Format("Node: {0}, global position: {1}", child._id, currentTransGlobal.ToString()));
             }
         }
 
-        public Vector3 MoveChildren(Vector3 vec)
+        private Vector3 MoveChildren(Vector3 vec)
         {
-            _globalTransform.Translation += vec;
+            if (_id != 0)
+            {
+                _globalTransform.Translation += vec;
 #if DEBUG
             _bounds.X += vec.X;
             _bounds.Y += vec.Y;
 #endif
-            foreach (var child in _children)
+            }
+
+            var children = _children.Where(x => x._id != 0);
+            foreach (var child in children)
             {
                 var currentTransGlobal = child.MoveChildren(vec);
                 Console.WriteLine(string.Format("Node: {0}, global position: {1}", child._id, currentTransGlobal.ToString()));
@@ -201,23 +206,27 @@ namespace LF2Clone.Base
 
         public void Update()
         {
+            // will have to remove this check _id != 0
+            foreach (var child in _children.Where(x => x._id != 0))
+            {
+                child.Update();
+            }
+
 #if DEBUG
-            if (Math.Abs(_globalTransform.Translation.X + _startPositionX) > 250.0f)
+            if (Math.Abs(_globalTransform.Translation.X) > 250.0f)
             {
                 _speedX = -_speedX;
             }
             MoveNodeByVector(_speedX);
-#endif
+#endif      
             Draw();
         }
 
         public void Draw()
         {
-            //for (int i = 0; i < _components.Count; i++)
+            //foreach(var child in _children.Where(x => x._id != 0))
             //{
-            //    if(_components[i]._isDrawable) {
-            //       _components[i].Draw();
-            //    }
+            //    child.Draw();
             //}
 
             Raylib.DrawRectangleRec(_bounds, _boundsColor);
