@@ -1,10 +1,14 @@
 ﻿using Newtonsoft.Json;
+using Raylib_cs;
+using System.Numerics;
 
 namespace LF2Clone.Base
 {
     // Game objects that work as a tree graph
     public class Node
     {
+        public Transform _relativeTransform; // relative to parent's transform, if root doesn't matter, if child of root -> _transform = _globalTransform
+        public Transform _globalTransform;
         // ids should not repeat on one scene as nodes should be destroyed on scene unload
         public int _id;
         public string _name;
@@ -25,6 +29,18 @@ namespace LF2Clone.Base
             _parentId = 0;
             _children = new List<Node>();
             _components = new List<Component>();
+            _relativeTransform = new Transform()        // relative
+            {
+                Translation = new Vector3(),
+                Rotation = new Quaternion(),
+                Scale = new Vector3()
+            };
+            _globalTransform = new Transform()  // non-relative
+            {
+                Translation = new Vector3(),
+                Rotation = new Quaternion(),
+                Scale = new Vector3()
+            };
         }
 
         public Node(Node parent, int id, string name)
@@ -36,6 +52,13 @@ namespace LF2Clone.Base
             _components = new List<Component>();
             parent._children.Add(this);
             _parentId = parent._id;
+            _relativeTransform = new Transform()                // always relative so it's 0, 0, 0 at the beggining
+            {
+                Translation = new Vector3(),
+                Rotation = new Quaternion(),
+                Scale = new Vector3()
+            };
+            _globalTransform = parent._globalTransform; // at the beggining it is the same
         }
 
         // used for proper deserialization with json
@@ -104,6 +127,29 @@ namespace LF2Clone.Base
         public bool TryRemoveNode(Node node)
         {
             return _parent != null ? _parent._children.Remove(node) : false;
+        }
+
+        public void MoveNodeByVector(Vector3 vec)
+        {
+            _globalTransform.Translation += vec;
+            _relativeTransform.Translation += vec;
+            Console.WriteLine(string.Format("Parent node: {0}, global position: {1}, relative position: {2}", _id, _globalTransform.Translation.ToString(), _relativeTransform.Translation.ToString()));
+            foreach (var child in _children)
+            {
+                var currentTransGlobal = child.MoveChildren(vec);
+                Console.WriteLine(string.Format("Node: {0}, global position: {1}", child._id, currentTransGlobal.ToString()));
+            }
+        }
+
+        public Vector3 MoveChildren(Vector3 vec)
+        {
+            _globalTransform.Translation += vec;
+            foreach(var child in _children)
+            {
+                var currentTransGlobal = child.MoveChildren(vec);
+                Console.WriteLine(string.Format("Node: {0}, global position: {1}", child._id, currentTransGlobal.ToString()));
+            }
+            return _globalTransform.Translation;
         }
 
         public void Update()

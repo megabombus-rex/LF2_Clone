@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace LF2Clone.Base
+﻿namespace LF2Clone.Base
 {
     public class Scene
     {

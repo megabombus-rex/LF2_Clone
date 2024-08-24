@@ -166,12 +166,15 @@ namespace LF2Clone
         {
             await SetupAsync();
             _sceneManager.TrySetCurrentScene("default");
-            var childToAddTheNewNodeTo = _sceneManager.CurrentScene._root.GetChildren().FirstOrDefault(x => x._id == 1);
-            _sceneManager.CurrentScene.AddNewNode(childToAddTheNewNodeTo);
-            _sceneManager.CurrentScene.AddNewNode(childToAddTheNewNodeTo);
-            _sceneManager.CurrentScene.RenameNode(7, "Test");
-            _sceneManager.CurrentScene.RenameNode(8, "Test"); // should be named Test1 after
-            _sceneManager.TrySetCurrentScene(2);
+
+
+            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 5).MoveNodeByVector(new Vector3(10.0f, 12.0f, 0.0f));
+            //var childToAddTheNewNodeTo = _sceneManager.CurrentScene._root.GetChildren().FirstOrDefault(x => x._id == 1);
+            //_sceneManager.CurrentScene.AddNewNode(childToAddTheNewNodeTo);
+            //_sceneManager.CurrentScene.AddNewNode(childToAddTheNewNodeTo);
+            //_sceneManager.CurrentScene.RenameNode(7, "Test");
+            //_sceneManager.CurrentScene.RenameNode(8, "Test"); // should be named Test1 after
+            //_sceneManager.TrySetCurrentScene(2);
             _sceneManager.ShowLoadedScenes();
 
 

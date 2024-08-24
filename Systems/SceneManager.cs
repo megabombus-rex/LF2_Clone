@@ -63,6 +63,12 @@ namespace LF2Clone.Systems
             _logger.LogDebug("Scene Manager setup finished.");
         }
 
+        public override void Destroy()
+        {
+            TryUnloadScene(CurrentScene._name);
+            base.Destroy();
+        }
+
         #region Scene loading
 
 
