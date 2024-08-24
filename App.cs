@@ -167,8 +167,10 @@ namespace LF2Clone
             await SetupAsync();
             _sceneManager.TrySetCurrentScene("default");
 
+            var node5 = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 5);
 
-            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 5).MoveNodeByVector(new Vector3(10.0f, 12.0f, 0.0f));
+            node5.MoveNodeByVector(new Vector3(100.0f, 25.0f, 0.0f));
+            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 5).MoveNodeByVector(new Vector3(10.0f, 12.0f, 0.0f));
             //var childToAddTheNewNodeTo = _sceneManager.CurrentScene._root.GetChildren().FirstOrDefault(x => x._id == 1);
             //_sceneManager.CurrentScene.AddNewNode(childToAddTheNewNodeTo);
             //_sceneManager.CurrentScene.AddNewNode(childToAddTheNewNodeTo);
@@ -187,12 +189,17 @@ namespace LF2Clone
             var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);
             Raylib.SetTargetFPS(60);
 
+            var node1 = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 1);
+
             while (!Raylib.WindowShouldClose())
             {
                 ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
                 but.Run();
+                node1.Update();
+                node5.Draw();
+                
                 Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
             }
