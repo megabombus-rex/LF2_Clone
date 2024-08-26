@@ -259,6 +259,10 @@ namespace LF2Clone.Systems
                 {
                     var parent = scene._nodes.FirstOrDefault(x => x._id == node._parentId);
                     node.SetParent(parent);
+                    if(node._id == 0)
+                    {
+                        continue; // do not add _root as a child of _root
+                    }
                     node.GetParent().AddChild(node);
                 }
             }

@@ -20,6 +20,15 @@
             _defaultRootName = "Node"; // move to config, add as parameter
         }
 
+        public void Update()
+        {
+            _root.Update();
+            foreach (Node node in _nodes)
+            {
+                node.Draw();
+            }
+        }
+
         // Returns true if the node with nodeId (param) was successfully removed, false otherwise.
         public bool TryRemoveNode(int nodeId)
         {

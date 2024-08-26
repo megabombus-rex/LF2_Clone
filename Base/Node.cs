@@ -11,7 +11,6 @@ namespace LF2Clone.Base
         private Rectangle _bounds;
         private Color _boundsColor;
         private Vector3 _speedX;
-        private float _startPositionX;
 #endif
         public Transform _relativeTransform; // relative to parent's transform, if root doesn't matter, if child of root -> _transform = _globalTransform
         public Transform _globalTransform;
@@ -47,6 +46,7 @@ namespace LF2Clone.Base
                 Rotation = new Quaternion(),
                 Scale = new Vector3()
             };
+#if DEBUG
             _bounds = new Rectangle() {
             X = _globalTransform.Translation.X,
             Y = _globalTransform.Translation.Y,
@@ -55,6 +55,7 @@ namespace LF2Clone.Base
             var rand = new Random();
             _boundsColor = new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
             _speedX = new Vector3(2.0f, 0.0f, 0.0f);
+#endif
         }
 
         public Node(Node parent, int id, string name)
@@ -73,6 +74,7 @@ namespace LF2Clone.Base
                 Scale = new Vector3()
             };
             _globalTransform = parent._globalTransform; // at the beggining it is the same
+#if DEBUG
             _bounds = new Rectangle()
             {
                 X = _globalTransform.Translation.X,
@@ -82,6 +84,7 @@ namespace LF2Clone.Base
             var rand = new Random();
             _boundsColor = new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
             _speedX = new Vector3(2.0f, 0.0f, 0.0f);
+#endif
         }
 
         // used for proper deserialization with json
@@ -103,17 +106,19 @@ namespace LF2Clone.Base
             _name = name;
             _children = new List<Node>();
             _components = new List<Component>();
+            _globalTransform = globalTransform;
+            _relativeTransform = relativeTransform;
+#if DEBUG
             _bounds = new Rectangle()
             {
                 X = _globalTransform.Translation.X,
                 Y = _globalTransform.Translation.Y,
                 Size = new Vector2(30.0f, 30.0f)
             };
-            _globalTransform = globalTransform;
-            _relativeTransform = relativeTransform;
             var rand = new Random();
             _boundsColor = new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
             _speedX = new Vector3(2.0f, 0.0f, 0.0f);
+#endif
         }
 
         public List<Node> GetChildren()
@@ -176,8 +181,7 @@ namespace LF2Clone.Base
             }
 
             Console.WriteLine(string.Format("Parent node: {0}, global position: {1}, relative position: {2}", _id, _globalTransform.Translation.ToString(), _relativeTransform.Translation.ToString()));
-            var children = _children.Where(x => x._id != 0).ToList();
-            foreach (var child in children)
+            foreach (var child in _children)
             {
                 var currentTransGlobal = child.MoveChildren(vec);
                 Console.WriteLine(string.Format("Node: {0}, global position: {1}", child._id, currentTransGlobal.ToString()));
@@ -190,13 +194,12 @@ namespace LF2Clone.Base
             {
                 _globalTransform.Translation += vec;
 #if DEBUG
-            _bounds.X += vec.X;
-            _bounds.Y += vec.Y;
+                _bounds.X += vec.X;
+                _bounds.Y += vec.Y;
 #endif
             }
 
-            var children = _children.Where(x => x._id != 0);
-            foreach (var child in children)
+            foreach (var child in _children)
             {
                 var currentTransGlobal = child.MoveChildren(vec);
                 Console.WriteLine(string.Format("Node: {0}, global position: {1}", child._id, currentTransGlobal.ToString()));
@@ -204,22 +207,35 @@ namespace LF2Clone.Base
             return _globalTransform.Translation;
         }
 
+        public void Awake()
+        {
+            if(_id == 0)
+            {
+                _speedX = new Vector3(0.0f, 0.0f, 0.0f);
+            }
+
+            foreach (var child in _children) { 
+                child.Awake();
+            }
+        }
+
         public void Update()
         {
+#if DEBUG
+            MoveNodeByVector(_speedX);
+
+            // if node is further than 250 -> stop
+            if(_bounds.X > 250.0f && _speedX.X > 0.0f)
+            {
+                _speedX = new Vector3(0.0f, 0.0f, 0.0f);
+            }
+#endif
             // will have to remove this check _id != 0
-            foreach (var child in _children.Where(x => x._id != 0))
+            foreach (var child in _children)
             {
                 child.Update();
             }
 
-#if DEBUG
-            if (Math.Abs(_globalTransform.Translation.X) > 250.0f)
-            {
-                _speedX = -_speedX;
-            }
-            MoveNodeByVector(_speedX);
-#endif      
-            Draw();
         }
 
         public void Draw()
