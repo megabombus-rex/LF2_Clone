@@ -4,28 +4,33 @@ using System.Numerics;
 
 namespace LF2Clone.Base
 {
-    // Game objects that work as a tree graph
+    // Game objects that work as a tree graph.
     public class Node
     {
 #if DEBUG
+        // Used for testing only.
         private Rectangle _bounds;
         private Color _boundsColor;
-        private Vector3 _speedX;
 #endif
-        public Transform _relativeTransform; // relative to parent's transform, if root doesn't matter, if child of root -> _transform = _globalTransform
+        // Relative to parent's transform, if root -> doesn't matter, if child of root -> _relativeTransform = _globalTransform
+        public Transform _relativeTransform; 
         public Transform _globalTransform;
-        // ids should not repeat on one scene as nodes should be destroyed on scene unload
+        
+        // Ids should not repeat on one scene.
         public int _id;
         public string _name;
         public int? _parentId;
 
+        // Parent of current Node, it is null during initiailzation or reparenting process, otherwise not.
         private Node? _parent;
+
+        // List of current's Node children, the children are unique for a list.
         private List<Node> _children;
 
-        // only one component of each type is permitted, except different CustomScripts
+        // Only one component of each type is permitted, except different CustomScripts.
         private List<Component> _components;
 
-        // used only for root node
+        // Constructor used only for root node at scene creation.
         public Node()
         {
             _id = 0;
@@ -50,14 +55,15 @@ namespace LF2Clone.Base
             _bounds = new Rectangle() {
             X = _globalTransform.Translation.X,
             Y = _globalTransform.Translation.Y,
-            Size = new Vector2(30.0f, 30.0f)
+                Width = 30.0f,
+                Height = 30.0f
             };
             var rand = new Random();
             _boundsColor = new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
-            _speedX = new Vector3(2.0f, 0.0f, 0.0f);
 #endif
         }
 
+        // Constructor for new nodes added to a previous one.
         public Node(Node parent, int id, string name)
         {
             _parent = parent;
@@ -73,21 +79,21 @@ namespace LF2Clone.Base
                 Rotation = new Quaternion(),
                 Scale = new Vector3()
             };
-            _globalTransform = parent._globalTransform; // at the beggining it is the same
+            _globalTransform = parent._globalTransform;         // at the beggining it is the same
 #if DEBUG
             _bounds = new Rectangle()
             {
                 X = _globalTransform.Translation.X,
                 Y = _globalTransform.Translation.Y,
-                Size = new Vector2(30.0f, 30.0f)
+                Width = 30.0f,
+                Height = 30.0f
             };
             var rand = new Random();
             _boundsColor = new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
-            _speedX = new Vector3(2.0f, 0.0f, 0.0f);
 #endif
         }
 
-        // used for proper deserialization with json
+        // Constructor used for proper deserialization with JSON.
         [JsonConstructor]
         public Node(int id, string name, int parentId, Transform globalTransform, Transform relativeTransform)
         {
@@ -111,16 +117,17 @@ namespace LF2Clone.Base
 #if DEBUG
             _bounds = new Rectangle()
             {
-                X = _globalTransform.Translation.X,
-                Y = _globalTransform.Translation.Y,
-                Size = new Vector2(30.0f, 30.0f)
+                X = globalTransform.Translation.X,
+                Y = globalTransform.Translation.Y,
+                Width = 30.0f,
+                Height = 30.0f
             };
             var rand = new Random();
             _boundsColor = new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
-            _speedX = new Vector3(2.0f, 0.0f, 0.0f);
 #endif
         }
 
+        // Returns a list of nodes consisting of the children of this Node.
         public List<Node> GetChildren()
         {
             return _children;
@@ -139,12 +146,16 @@ namespace LF2Clone.Base
         }
 
         // Used for setting initial parent while loading a scene.
+        // Sets the parent (param) node to current's one, it is not advised to use this outside initialization.
         public void SetParent(Node parent)
         {
             _parent = parent;
         }
 
+        // When the node is created it is added to a selected node, this should enable changing the parent to a correct one.
+        // The name has to be valid!
         // Removes the parent from this node, removes itself from parent's children list, sets the newParent (param) as parent.
+        // Returns true if the reparenting was a success.
         public bool ReparentCurrentNode(Node newParent)
         {
             if (newParent == this)
@@ -161,6 +172,7 @@ namespace LF2Clone.Base
             return false;
         }
 
+        // This method exists for freeing up the memory from nodes by letting them be destroyed.
         // Removes a node (param) from it's parent children so it won't be tracked -> GC will collect it.
         // Returns true if parent exists and the node is succesfully removed, false otherwise.
         public bool TryRemoveNode()
@@ -168,6 +180,10 @@ namespace LF2Clone.Base
             return _parent != null ? _parent._children.Remove(this) : false;
         }
 
+
+        // This method exists for simple moving an object on scene.
+        // Moves a node and all of it's children accordingly by a Vector3 vec (param).
+        // Root node cannot be translated, scaled or rotated.
         public void MoveNodeByVector(Vector3 vec)
         {
             if (_id != 0)
@@ -180,57 +196,43 @@ namespace LF2Clone.Base
                 _relativeTransform.Translation += vec;
             }
 
-            Console.WriteLine(string.Format("Parent node: {0}, global position: {1}, relative position: {2}", _id, _globalTransform.Translation.ToString(), _relativeTransform.Translation.ToString()));
             foreach (var child in _children)
             {
                 var currentTransGlobal = child.MoveChildren(vec);
-                Console.WriteLine(string.Format("Node: {0}, global position: {1}", child._id, currentTransGlobal.ToString()));
             }
         }
 
+        // Moves children of a node by a Vector3 vec (param) recurrently.
         private Vector3 MoveChildren(Vector3 vec)
         {
-            if (_id != 0)
-            {
-                _globalTransform.Translation += vec;
+            _globalTransform.Translation += vec;
 #if DEBUG
-                _bounds.X += vec.X;
-                _bounds.Y += vec.Y;
+            _bounds.X += vec.X;
+            _bounds.Y += vec.Y;
 #endif
-            }
 
             foreach (var child in _children)
             {
                 var currentTransGlobal = child.MoveChildren(vec);
-                Console.WriteLine(string.Format("Node: {0}, global position: {1}", child._id, currentTransGlobal.ToString()));
             }
             return _globalTransform.Translation;
         }
 
+        // This method is called on object awakening.
         public void Awake()
         {
-            if(_id == 0)
-            {
-                _speedX = new Vector3(0.0f, 0.0f, 0.0f);
-            }
+            _bounds.X = _globalTransform.Translation.X;
+            _bounds.Y = _globalTransform.Translation.Y;
 
             foreach (var child in _children) { 
                 child.Awake();
             }
         }
 
+
+        // This method is called every frame.
         public void Update()
         {
-#if DEBUG
-            MoveNodeByVector(_speedX);
-
-            // if node is further than 250 -> stop
-            if(_bounds.X > 250.0f && _speedX.X > 0.0f)
-            {
-                _speedX = new Vector3(0.0f, 0.0f, 0.0f);
-            }
-#endif
-            // will have to remove this check _id != 0
             foreach (var child in _children)
             {
                 child.Update();
@@ -238,13 +240,9 @@ namespace LF2Clone.Base
 
         }
 
+        // This method is called after updating node.
         public void Draw()
         {
-            //foreach(var child in _children.Where(x => x._id != 0))
-            //{
-            //    child.Draw();
-            //}
-
             Raylib.DrawRectangleRec(_bounds, _boundsColor);
         }
     }
