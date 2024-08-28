@@ -15,7 +15,8 @@ namespace LF2Clone.Base
         // Relative to parent's transform, if root -> doesn't matter, if child of root -> _relativeTransform = _globalTransform
         public Transform _relativeTransform; 
         public Transform _globalTransform;
-        
+        private float _rotation;
+
         // Ids should not repeat on one scene.
         public int _id;
         public string _name;
@@ -180,6 +181,36 @@ namespace LF2Clone.Base
             return _parent != null ? _parent._children.Remove(this) : false;
         }
 
+        public Quaternion RotateNode(Quaternion quaternion)
+        {
+            if (_id != 0)
+            {
+                _rotation += quaternion.W;
+                _globalTransform.Rotation *= quaternion;
+                _relativeTransform.Rotation *= quaternion;
+            }
+
+            foreach (var child in _children)
+            {
+                var currentGlobalRotation = child.RotateChildren(quaternion);
+            }
+
+            return _globalTransform.Rotation;
+        }
+
+        private Quaternion RotateChildren(Quaternion quaternion)
+        {
+            _globalTransform.Rotation *= quaternion;
+            _rotation += quaternion.W;
+
+            foreach (var child in _children)
+            {
+                var currentGlobalRotation = child.RotateChildren(quaternion);
+            }
+
+            return _globalTransform.Rotation;
+        }
+
 
         // This method exists for simple moving an object on scene.
         // Moves a node and all of it's children accordingly by a Vector3 vec (param).
@@ -223,6 +254,7 @@ namespace LF2Clone.Base
         {
             _bounds.X = _globalTransform.Translation.X;
             _bounds.Y = _globalTransform.Translation.Y;
+            _rotation = 0.0f;
 
             foreach (var child in _children) { 
                 child.Awake();
@@ -235,8 +267,12 @@ namespace LF2Clone.Base
         {
             if (_id != 0)
             {
-                MoveNodeByVector(new Vector3(1.0f, 2.0f, 0.0f));
+                //RotateNode(new Quaternion(_globalTransform.Translation.X, _globalTransform.Translation.Y, _globalTransform.Translation.Z, _rot % 360.0f));
+
+                //_rot += 0.5f;
+                //MoveNodeByVector(new Vector3(0.01f, 1.0f, 0.0f));
             }
+            
 
             foreach (var child in _children)
             {
@@ -248,7 +284,13 @@ namespace LF2Clone.Base
         // This method is called after updating node.
         public void Draw()
         {
-            Raylib.DrawRectangleRec(_bounds, _boundsColor);
+            var center = GetCenterOfObject();
+            Raylib.DrawRectanglePro(_bounds, new Vector2(center.X, center.Z), _rotation, _boundsColor);
+        }
+
+        private Vector3 GetCenterOfObject()
+        {
+            return new Vector3((_globalTransform.Translation.X + _bounds.Width) / 2, (_globalTransform.Translation.Y + _bounds.Height) / 2, 0.0f); // 0.0f for Z currently
         }
     }
 }

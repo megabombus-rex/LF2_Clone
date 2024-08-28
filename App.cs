@@ -166,13 +166,7 @@ namespace LF2Clone
         {
             await SetupAsync();
             _sceneManager.TrySetCurrentScene("default");
-
-            //test
-            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 5).MoveNodeByVector(new Vector3(0.0f, 100.0f, 0.0f));
-            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 6).MoveNodeByVector(new Vector3(0.0f, 150.0f, 0.0f));
-            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 7).MoveNodeByVector(new Vector3(0.0f, 200.0f, 0.0f));
             _sceneManager.ShowLoadedScenes();
-
 
             InitWindow();
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
