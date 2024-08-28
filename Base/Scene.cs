@@ -20,12 +20,29 @@
             _defaultRootName = "Node"; // move to config, add as parameter
         }
 
+        public void Awake()
+        {
+            _root.Awake();
+        }
+
         public void Update()
         {
             _root.Update();
             foreach (Node node in _nodes)
             {
                 node.Draw();
+            }
+        }
+
+        public Node GetNodeById(int nodeId)
+        {
+            try
+            {
+                return _nodes.First(x => x._id == nodeId);
+            }
+            catch
+            {
+                throw;
             }
         }
 
@@ -69,7 +86,8 @@
             _nodes.Add(new Node(parent, nextID, name));
         }
 
-        public void RenameNode(int id, string newName)
+        // Renames a node selected by nodeId (param) to a newName (param) or next possible name.
+        public void RenameNode(int nodeId, string newName)
         {
             if (string.IsNullOrEmpty(newName))
             {
@@ -78,8 +96,34 @@
 
             try
             {
-                var node = _nodes.First(x => x._id == id);
+                var node = _nodes.First(x => x._id == nodeId);
                 node._name = GetNextValidNodeName(node.GetParent()!, newName);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        // Reparents node indicated by nodeId (param) to a parent node.
+        public void ReparentNode(Node parent, int nodeId)
+        {
+            if (nodeId == 0)
+            {
+                // It should not be possible when the engine is finished.
+                throw new ArgumentException("Cannot reparent root node.");
+            }
+
+            if (parent._id == nodeId)
+            {
+                throw new ArgumentException("Cannot reparent node to itself.");
+            }
+
+            try
+            {
+                var node = _nodes.First(x => x._id == nodeId);
+                node._name = GetNextValidNodeName(parent, _name);
+                node.ReparentCurrentNode(parent);
             }
             catch
             {

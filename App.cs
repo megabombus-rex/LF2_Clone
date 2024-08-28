@@ -171,8 +171,6 @@ namespace LF2Clone
             _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 5).MoveNodeByVector(new Vector3(0.0f, 100.0f, 0.0f));
             _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 6).MoveNodeByVector(new Vector3(0.0f, 150.0f, 0.0f));
             _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 7).MoveNodeByVector(new Vector3(0.0f, 200.0f, 0.0f));
-            //var childToAddTheNewNodeTo = _sceneManager.CurrentScene._root.GetChildren().FirstOrDefault(x => x._id == 1);
-            //_sceneManager.TrySetCurrentScene(2);
             _sceneManager.ShowLoadedScenes();
 
 
@@ -185,17 +183,15 @@ namespace LF2Clone
             var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);
             Raylib.SetTargetFPS(60);
 
-            //var node1 = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 1);
+            _sceneManager.CurrentScene.Awake();
 
-            _sceneManager.CurrentScene._root.Awake();
-
+            // game loop in here
             while (!Raylib.WindowShouldClose())
             {
                 ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
                 but.Run();
-                _logger.LogInfo(string.Format("Mouse position: {0}", Raylib.GetMousePosition().ToString()));
                 _sceneManager.CurrentScene.Update();
                 
                 Raylib.DrawFPS(10, 10);
@@ -210,15 +206,12 @@ namespace LF2Clone
 
         void ChangeScene()
         {
-            // delete a node
-            //_sceneManager.CurrentScene.TryRemoveNode(1);
-            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 1).TryRemoveNode();
-
             _sceneManager.TrySetCurrentScene(_sceneManager.SceneIds[_currentSceneIdIndex]);
+            _sceneManager.CurrentScene.Awake();
             _currentSceneIdIndex = (_currentSceneIdIndex + 1) % _sceneManager.SceneIds.Length;
         }
 
-        bool ReadConfig() // serial not async
+        bool ReadConfig()
         {
             try
             {

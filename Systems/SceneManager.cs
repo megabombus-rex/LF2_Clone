@@ -454,6 +454,27 @@ namespace LF2Clone.Systems
             return anySceneChanged;
         }
 
+        public bool TryReparentNode(int newParentId, int nodeId)
+        {
+            if (newParentId == nodeId)
+            {
+                _logger.LogError("Node cannot be it's own parent.");
+                return false;
+            }
+
+            try
+            {
+                var parent = _currentScene.GetNodeById(newParentId);
+                _currentScene.ReparentNode(parent, nodeId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format("Exception while reparenting. Exception: {0} \n Stack Trace: {1}", ex.Message, ex.StackTrace));
+                return false;
+            }
+        }
+
         #endregion
 
     }

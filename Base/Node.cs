@@ -156,20 +156,20 @@ namespace LF2Clone.Base
         // The name has to be valid!
         // Removes the parent from this node, removes itself from parent's children list, sets the newParent (param) as parent.
         // Returns true if the reparenting was a success.
-        public bool ReparentCurrentNode(Node newParent)
+        public void ReparentCurrentNode(Node newParent)
         {
             if (newParent == this)
             {
-                throw new InvalidOperationException("Node cannot be it's own parent, except the root node.");
+                throw new ArgumentException("Node cannot be it's own parent, except the root node.");
             }
 
-            if (newParent._parent != null ? newParent._parent._children.Remove(newParent) : false)
+            if (newParent.TryRemoveNode())
             {
                 newParent._parent = this;
                 _children.Add(newParent);
-                return true;
+                return;
             }
-            return false;
+            throw new InvalidOperationException("Node could not be removed from it's previous parent.");
         }
 
         // This method exists for freeing up the memory from nodes by letting them be destroyed.
@@ -233,6 +233,11 @@ namespace LF2Clone.Base
         // This method is called every frame.
         public void Update()
         {
+            if (_id != 0)
+            {
+                MoveNodeByVector(new Vector3(1.0f, 2.0f, 0.0f));
+            }
+
             foreach (var child in _children)
             {
                 child.Update();
