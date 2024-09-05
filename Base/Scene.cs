@@ -56,7 +56,7 @@
                 return false;
             }
 
-            if (!node.TryRemoveNode())
+            if (!node.TryRemoveNodeFromParent())
             {
                 return false;
             }
@@ -71,6 +71,11 @@
             if (!_nodes.Remove(node))
             {
                 node.GetParent().AddChild(node); // return to the previous state
+
+                foreach(var child in children)
+                {
+                    _nodes.Add(child);
+                }
                 return false;
             }
 

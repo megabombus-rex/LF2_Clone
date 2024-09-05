@@ -35,7 +35,9 @@ namespace LF2Clone.Base
 
         #region Constructors
 
-        // Constructor used only for root node at scene creation.
+        /// <summary>
+        /// Constructor used only for root node at scene creation.
+        /// </summary>
         public Node()
         {
             _id = 0;
@@ -68,7 +70,12 @@ namespace LF2Clone.Base
 #endif
         }
 
-        // Constructor for new nodes added to a previous one.
+        /// <summary>
+        /// Constructor for new nodes added to a previous one.
+        /// </summary>
+        /// <param name="parent"> Parent node. </param>
+        /// <param name="id"> Node id. </param>
+        /// <param name="name"> Node name. </param>
         public Node(Node parent, int id, string name)
         {
             _parent = parent;
@@ -98,7 +105,14 @@ namespace LF2Clone.Base
 #endif
         }
 
-        // Constructor used for proper deserialization with JSON.
+        /// <summary>
+        /// Constructor used for proper deserialization with JSON.
+        /// </summary>
+        /// <param name="id"> Node id. </param>
+        /// <param name="name"> Node name. </param>
+        /// <param name="parentId"> Parent node id. </param>
+        /// <param name="globalTransform"> Deserialized global transform. </param>
+        /// <param name="relativeTransform"> Deserialized relative transform. </param>
         [JsonConstructor]
         public Node(int id, string name, int parentId, Transform globalTransform, Transform relativeTransform)
         {
@@ -136,35 +150,52 @@ namespace LF2Clone.Base
 
         #region Children-parent relations
 
-        // Returns a list of nodes consisting of the children of this Node.
+        /// <summary>
+        /// Returns a list of nodes consisting of the children of this Node.
+        /// </summary>
+        /// <returns></returns>
         public List<Node> GetChildren()
         {
             return _children;
         }
 
-        // Used for setting initial children list while loading a scene.
+        /// <summary>
+        /// Used for setting initial children list while loading a scene.
+        /// </summary>
+        /// <param name="node"> Child node. </param>
         public void AddChild(Node node)
         {
             _children.Add(node);
         }
 
-        // Returns current parent.
+        /// <summary>
+        /// Returns current parent.
+        /// </summary>
+        /// <returns></returns>
         public Node? GetParent()
         {
             return _parent;
         }
 
-        // Used for setting initial parent while loading a scene.
-        // Sets the parent (param) node to current's one, it is not advised to use this outside initialization.
+        /// <summary>
+        /// Used for setting initial parent while loading a scene.
+        /// Sets the parent node to current's one, it is not advised to use this outside initialization.
+        /// </summary>
+        /// <param name="parent"> Parent node. </param>
         public void SetParent(Node parent)
         {
             _parent = parent;
         }
 
-        // When the node is created it is added to a selected node, this should enable changing the parent to a correct one.
-        // The name has to be valid!
-        // Removes the parent from this node, removes itself from parent's children list, sets the newParent (param) as parent.
-        // Returns true if the reparenting was a success.
+        /// <summary>
+        /// When the node is created it is added to a selected node, this should enable changing the parent to a correct one.
+        /// The name has to be valid!
+        /// Removes the parent from this node, removes itself from parent's children list, sets the newParent (param) as parent.
+        /// Returns true if the reparenting was a success.
+        /// </summary>
+        /// <param name="newParent"> New parent of current node. </param>
+        /// <exception cref="ArgumentException"> Throws when the node is its parent. </exception>
+        /// <exception cref="InvalidOperationException"> Throws when there were problems while removing the node. </exception>
         public void ReparentCurrentNode(Node newParent)
         {
             if (newParent == this)
@@ -172,7 +203,7 @@ namespace LF2Clone.Base
                 throw new ArgumentException("Node cannot be it's own parent, except the root node.");
             }
 
-            if (newParent.TryRemoveNode())
+            if (TryRemoveNodeFromParent())
             {
                 newParent._parent = this;
                 _children.Add(newParent);
@@ -181,10 +212,13 @@ namespace LF2Clone.Base
             throw new InvalidOperationException("Node could not be removed from it's previous parent.");
         }
 
-        // This method exists for freeing up the memory from nodes by letting them be destroyed.
-        // Removes a node (param) from it's parent children so it won't be tracked -> GC will collect it.
-        // Returns true if parent exists and the node is succesfully removed, false otherwise.
-        public bool TryRemoveNode()
+        /// <summary>
+        /// This method exists for freeing up the memory from nodes by letting them be destroyed.
+        /// Removes a node (param) from it's parent children so it won't be tracked -> GC will collect it.
+        /// Returns true if parent exists and the node is succesfully removed, false otherwise.
+        /// </summary>
+        /// <returns> True if node was removed, false otherwise or if the parent is null. </returns>
+        public bool TryRemoveNodeFromParent()
         {
             return _parent != null ? _parent._children.Remove(this) : false;
         }
@@ -193,6 +227,11 @@ namespace LF2Clone.Base
 
         #region Node transformations
 
+        /// <summary>
+        /// Rotates a node and its children by a quaternion.
+        /// </summary>
+        /// <param name="quaternion"> Quaternion by which the node is rotated.</param>
+        /// <returns></returns>
         public Quaternion RotateNode(Quaternion quaternion)
         {
             if (_id != 0)
@@ -210,6 +249,11 @@ namespace LF2Clone.Base
             return _globalTransform.Rotation;
         }
 
+        /// <summary>
+        /// Rotates children of a node by a quaternion.
+        /// </summary>
+        /// <param name="quaternion"> Quaternion by which the children are rotated.</param>
+        /// <returns></returns>
         private Quaternion RotateChildren(Quaternion quaternion)
         {
             _globalTransform.Rotation *= quaternion;
@@ -224,9 +268,13 @@ namespace LF2Clone.Base
         }
 
 
-        // This method exists for simple moving an object on scene.
-        // Moves a node and all of it's children accordingly by a Vector3 vec (param).
-        // Root node cannot be translated, scaled or rotated.
+        /// <summary>
+        /// This method exists for simple moving an object on scene.
+        /// Moves a node and all of it's children accordingly by a Vector3 vec (param).
+        /// Root node cannot be translated, scaled or rotated.
+        /// </summary>
+        /// <param name="vec"> Vector3 by which the node (and its children) are moved.</param>
+        /// <returns></returns>
         public Vector3 MoveNodeByVector(Vector3 vec)
         {
             if (_id != 0)
@@ -247,7 +295,11 @@ namespace LF2Clone.Base
             return _globalTransform.Translation;
         }
 
-        // Moves children of a node by a Vector3 vec (param) recurrently.
+        /// <summary>
+        /// Moves children of a node by a Vector3 recurrently.
+        /// </summary>
+        /// <param name="vec"> Vector3 by which the children are moved.</param>
+        /// <returns></returns>
         private Vector3 MoveChildren(Vector3 vec)
         {
             _globalTransform.Translation += vec;
@@ -263,6 +315,10 @@ namespace LF2Clone.Base
             return _globalTransform.Translation;
         }
 
+        /// <summary>
+        /// Scales the node and its children.
+        /// </summary>
+        /// <param name="newScale"> Vector3 that is the new Scale to be set.</param>
         public void ScaleNode(Vector3 newScale)
         {
             _globalTransform.Scale = newScale;
@@ -277,6 +333,11 @@ namespace LF2Clone.Base
             }
         }
 
+        /// <summary>
+        /// Scales children of given node.
+        /// </summary>
+        /// <param name="newScale"> Vector3 that is the new Scale to be set.</param>
+        /// <returns></returns>
         public Vector3 ScaleChildren(Vector3 newScale)
         {
             _globalTransform.Scale = newScale;
@@ -295,7 +356,9 @@ namespace LF2Clone.Base
 
         #region Lifespan methods
 
-        // This method is called on object awakening.
+        /// <summary>
+        /// This method is called on object awakening.
+        /// </summary>
         public void Awake()
         {
             _bounds.X = _globalTransform.Translation.X;
@@ -308,15 +371,14 @@ namespace LF2Clone.Base
         }
 
 
-        // This method is called every frame.
+        /// <summary>
+        /// This method is called every frame.
+        /// </summary>
         public void Update()
         {
             if (_id != 0)
             {
-                //RotateNode(new Quaternion(_globalTransform.Translation.X, _globalTransform.Translation.Y, _globalTransform.Translation.Z, _rot % 360.0f));
-
-                //_rot += 0.5f;
-                //MoveNodeByVector(new Vector3(0.01f, 1.0f, 0.0f));
+                // do stuff, not for root
             }
             
 
@@ -327,16 +389,22 @@ namespace LF2Clone.Base
 
         }
 
-        // This method is called after updating node.
+        /// <summary>
+        /// This method should be called after updating node.
+        /// </summary>
         public void Draw()
         {
-            var center = GetCenterOfObject();
+            var center = GetCenterOfBounds();
             Raylib.DrawRectanglePro(_bounds, new Vector2(center.X, center.Z), _rotation, _boundsColor);
         }
 
-        private Vector3 GetCenterOfObject()
+        /// <summary>
+        /// Returns center of bounds rectangle.
+        /// </summary>
+        /// <returns></returns>
+        private Vector3 GetCenterOfBounds()
         {
-            return new Vector3((_globalTransform.Translation.X + _bounds.Width) / 2, (_globalTransform.Translation.Y + _bounds.Height) / 2, 0.0f); // 0.0f for Z currently
+            return new Vector3(_globalTransform.Translation.X + (_bounds.Width / 2), _globalTransform.Translation.Y + (_bounds.Height / 2), 0.0f); // 0.0f for Z currently
         }
 
         #endregion
