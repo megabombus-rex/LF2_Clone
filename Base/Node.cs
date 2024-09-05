@@ -10,6 +10,8 @@ namespace LF2Clone.Base
 #if DEBUG
         // Used for testing only.
         private Rectangle _bounds;
+        private float _baseWidth;
+        private float _baseHeight;
         private Color _boundsColor;
 #endif
         // Relative to parent's transform, if root -> doesn't matter, if child of root -> _relativeTransform = _globalTransform
@@ -30,6 +32,8 @@ namespace LF2Clone.Base
 
         // Only one component of each type is permitted, except different CustomScripts.
         private List<Component> _components;
+
+        #region Constructors
 
         // Constructor used only for root node at scene creation.
         public Node()
@@ -128,6 +132,10 @@ namespace LF2Clone.Base
 #endif
         }
 
+        #endregion
+
+        #region Children-parent relations
+
         // Returns a list of nodes consisting of the children of this Node.
         public List<Node> GetChildren()
         {
@@ -181,6 +189,10 @@ namespace LF2Clone.Base
             return _parent != null ? _parent._children.Remove(this) : false;
         }
 
+        #endregion
+
+        #region Node transformations
+
         public Quaternion RotateNode(Quaternion quaternion)
         {
             if (_id != 0)
@@ -215,7 +227,7 @@ namespace LF2Clone.Base
         // This method exists for simple moving an object on scene.
         // Moves a node and all of it's children accordingly by a Vector3 vec (param).
         // Root node cannot be translated, scaled or rotated.
-        public void MoveNodeByVector(Vector3 vec)
+        public Vector3 MoveNodeByVector(Vector3 vec)
         {
             if (_id != 0)
             {
@@ -231,6 +243,8 @@ namespace LF2Clone.Base
             {
                 var currentTransGlobal = child.MoveChildren(vec);
             }
+
+            return _globalTransform.Translation;
         }
 
         // Moves children of a node by a Vector3 vec (param) recurrently.
@@ -248,6 +262,38 @@ namespace LF2Clone.Base
             }
             return _globalTransform.Translation;
         }
+
+        public void ScaleNode(Vector3 newScale)
+        {
+            _globalTransform.Scale = newScale;
+            _relativeTransform.Scale = newScale;
+#if DEBUG
+            _bounds.Width = _baseHeight * newScale.X;
+            _bounds.Height = _baseHeight * newScale.Y;
+#endif
+            foreach (var child in _children)
+            {
+                var currentScaleGlobal = child.ScaleChildren(newScale);
+            }
+        }
+
+        public Vector3 ScaleChildren(Vector3 newScale)
+        {
+            _globalTransform.Scale = newScale;
+#if DEBUG
+            _bounds.Width = _baseHeight * newScale.X;
+            _bounds.Height = _baseHeight * newScale.Y;
+#endif
+            foreach (var child in _children)
+            {
+                var currentScaleGlobal = child.ScaleChildren(newScale);
+            }
+            return _globalTransform.Scale;
+        }
+
+        #endregion
+
+        #region Lifespan methods
 
         // This method is called on object awakening.
         public void Awake()
@@ -292,5 +338,7 @@ namespace LF2Clone.Base
         {
             return new Vector3((_globalTransform.Translation.X + _bounds.Width) / 2, (_globalTransform.Translation.Y + _bounds.Height) / 2, 0.0f); // 0.0f for Z currently
         }
+
+        #endregion
     }
 }
