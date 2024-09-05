@@ -1,8 +1,437 @@
 {
   "_id": 1,
+  "_defaultRootName": "Node",
   "_name": "default",
   "_root": {
+    "_relativeTransform": {
+      "Translation": {
+        "X": 0.0,
+        "Y": 0.0,
+        "Z": 0.0
+      },
+      "Rotation": {
+        "X": 0.0,
+        "Y": 0.0,
+        "Z": 0.0,
+        "W": 0.0,
+        "IsIdentity": false
+      },
+      "Scale": {
+        "X": 0.0,
+        "Y": 0.0,
+        "Z": 0.0
+      }
+    },
+    "_globalTransform": {
+      "Translation": {
+        "X": 0.0,
+        "Y": 0.0,
+        "Z": 0.0
+      },
+      "Rotation": {
+        "X": 0.0,
+        "Y": 0.0,
+        "Z": 0.0,
+        "W": 0.0,
+        "IsIdentity": false
+      },
+      "Scale": {
+        "X": 0.0,
+        "Y": 0.0,
+        "Z": 0.0
+      }
+    },
     "_id": 0,
-    "_name": "root"
-  }
+    "_name": "root",
+    "_parentId": 0
+  },
+  "_nodes": [
+    {
+      "_relativeTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_globalTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_id": 0,
+      "_name": "root",
+      "_parentId": 0
+    },
+    {
+      "_relativeTransform": {
+        "Translation": {
+          "X": 20.0,
+          "Y": 24.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_globalTransform": {
+        "Translation": {
+          "X": 20.0,
+          "Y": 24.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_id": 1,
+      "_name": "Node",
+      "_parentId": 0
+    },
+    {
+      "_relativeTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_globalTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_id": 2,
+      "_name": "Node1",
+      "_parentId": 0
+    },
+    {
+      "_relativeTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_globalTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_id": 3,
+      "_name": "Node2",
+      "_parentId": 0
+    },
+    {
+      "_relativeTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_globalTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_id": 4,
+      "_name": "Node3",
+      "_parentId": 0
+    },
+    {
+      "_relativeTransform": {
+        "Translation": {
+          "X": 10.0,
+          "Y": 12.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_globalTransform": {
+        "Translation": {
+          "X": 30.0,
+          "Y": 36.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_id": 5,
+      "_name": "Node",
+      "_parentId": 1
+    },
+    {
+      "_relativeTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_globalTransform": {
+        "Translation": {
+          "X": 20.0,
+          "Y": 24.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_id": 6,
+      "_name": "Node1",
+      "_parentId": 1
+    },
+    {
+      "_relativeTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_globalTransform": {
+        "Translation": {
+          "X": 20.0,
+          "Y": 24.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_id": 7,
+      "_name": "Test",
+      "_parentId": 1
+    },
+    {
+      "_relativeTransform": {
+        "Translation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_globalTransform": {
+        "Translation": {
+          "X": 20.0,
+          "Y": 24.0,
+          "Z": 0.0
+        },
+        "Rotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.0,
+          "IsIdentity": false
+        },
+        "Scale": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        }
+      },
+      "_id": 8,
+      "_name": "Test1",
+      "_parentId": 1
+    }
+  ]
 }

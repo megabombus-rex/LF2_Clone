@@ -63,6 +63,12 @@ namespace LF2Clone.Systems
             _logger.LogDebug("Scene Manager setup finished.");
         }
 
+        public override void Destroy()
+        {
+            TryUnloadScene(CurrentScene._name);
+            base.Destroy();
+        }
+
         #region Scene loading
 
 
@@ -167,7 +173,10 @@ namespace LF2Clone.Systems
                             {
                                 using (var sw = new StreamWriter(filename))
                                 {
-                                    await sw.WriteAsync(JsonConvert.SerializeObject(scene, Formatting.Indented));
+                                    await sw.WriteAsync(JsonConvert.SerializeObject(scene, Formatting.Indented, new JsonSerializerSettings()
+                                    {
+                                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                                    }));
                                     sw.Dispose();
                                 }
                                 _logger.LogDebug(string.Format("File written as {0}", filename));
@@ -184,7 +193,11 @@ namespace LF2Clone.Systems
                             {
                                 using (var sw = new StreamWriter(filename))
                                 {
-                                    await sw.WriteAsync(JsonConvert.SerializeObject(scene, Formatting.Indented));
+                                    await sw.WriteAsync(JsonConvert.SerializeObject(scene, Formatting.Indented, new JsonSerializerSettings()
+                                    {
+                                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                                    }));
+                                    sw.Dispose();
                                 }
                                 _logger.LogDebug(string.Format("File written as {0}", filename));
                             }
@@ -210,9 +223,20 @@ namespace LF2Clone.Systems
                 {
                     using (var sr = new StreamReader(filename))
                     {
-                        
                         var read = await sr.ReadToEndAsync();
-                        scene = JsonConvert.DeserializeObject<Scene>(read);
+
+                        scene = JsonConvert.DeserializeObject<Scene>(read, new JsonSerializerSettings()
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        });
+                    }
+                    try
+                    {
+                        if (scene != null) JoinNodesFromScene(scene);
+                    }
+                    catch
+                    {
+                        throw;
                     }
                 }
             }
@@ -222,6 +246,30 @@ namespace LF2Clone.Systems
             }
 
             return scene;
+        }
+
+        // Used for joining the nodes after serialization of a scene (param).
+        private void JoinNodesFromScene(Scene scene)
+        {
+            scene._root = scene._nodes.FirstOrDefault(x => x._id == 0); // root
+            try
+            {
+                var nodeList = scene._nodes;
+                foreach (var node in nodeList)
+                {
+                    var parent = scene._nodes.FirstOrDefault(x => x._id == node._parentId);
+                    node.SetParent(parent);
+                    if(node._id == 0)
+                    {
+                        continue; // do not add _root as a child of _root
+                    }
+                    node.GetParent().AddChild(node);
+                }
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public void ShowLoadedScenes()
@@ -404,6 +452,27 @@ namespace LF2Clone.Systems
                 anySceneChanged = true;
             }
             return anySceneChanged;
+        }
+
+        public bool TryReparentNode(int newParentId, int nodeId)
+        {
+            if (newParentId == nodeId)
+            {
+                _logger.LogError("Node cannot be it's own parent.");
+                return false;
+            }
+
+            try
+            {
+                var parent = _currentScene.GetNodeById(newParentId);
+                _currentScene.ReparentNode(parent, nodeId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format("Exception while reparenting. Exception: {0} \n Stack Trace: {1}", ex.Message, ex.StackTrace));
+                return false;
+            }
         }
 
         #endregion

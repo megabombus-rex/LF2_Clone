@@ -177,12 +177,17 @@ namespace LF2Clone
             var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);
             Raylib.SetTargetFPS(60);
 
+            _sceneManager.CurrentScene.Awake();
+
+            // game loop in here
             while (!Raylib.WindowShouldClose())
             {
                 ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
                 but.Run();
+                _sceneManager.CurrentScene.Update();
+                
                 Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
             }
@@ -196,10 +201,11 @@ namespace LF2Clone
         void ChangeScene()
         {
             _sceneManager.TrySetCurrentScene(_sceneManager.SceneIds[_currentSceneIdIndex]);
+            _sceneManager.CurrentScene.Awake();
             _currentSceneIdIndex = (_currentSceneIdIndex + 1) % _sceneManager.SceneIds.Length;
         }
 
-        bool ReadConfig() // serial not async
+        bool ReadConfig()
         {
             try
             {
