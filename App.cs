@@ -11,7 +11,7 @@ namespace LF2Clone
     public sealed class Application // only one application instance will be present
     {
         private Color _backgroundColor;
-        private ILogger<Application>? _logger;
+        private ILogger? _logger;
         private string _assetsBaseRoot;
         private int _currentSceneIdIndex;
         private SceneManager _sceneManager; // only one SceneManager instance will exist

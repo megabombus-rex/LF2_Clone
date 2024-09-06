@@ -6,9 +6,9 @@ namespace LF2Clone.Base
     {
         protected int _id;
         protected string _name;
-        protected ILogger<T> _logger;
+        protected ILogger _logger;
 
-        protected System(ILogger<T> logger)
+        protected System(ILogger logger)
         {
             _id = 0;
             _name = "system";
