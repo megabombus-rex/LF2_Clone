@@ -11,7 +11,7 @@ namespace LF2Clone.Systems
         private Dictionary<int, string> _serializedScenesNamesDict = new();
         private string _scenesFolderPath;
 
-        public SceneManager(ILogger<SceneManager> logger) : base(logger)
+        public SceneManager(ILogger logger) : base(logger)
         {
             _id = 0;
             _name = "SceneManager";
