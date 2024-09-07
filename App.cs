@@ -138,16 +138,13 @@ namespace LF2Clone
                 _screenHeight = 0;
                 _screenWidth = 0;
             }
+
             // initialize loggers
             var logPath = string.IsNullOrEmpty(_configuration.LoggingFilePath) ? "" : _configuration.LoggingFilePath;
-
-            _logger = new Logger<Application>(logPath);
-            var SMlogger = new Logger<SceneManager>(logPath);
-
-            // set logging levels, 
             var defaultLoggingLevel = "Info";
-            _logger.ParseAndSetLoggingLevel(_configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
-            SMlogger.ParseAndSetLoggingLevel(_configuration.LoggerConfigs.ContainsKey("SceneManager") ? _configuration.LoggerConfigs["SceneManager"].LogLevel : defaultLoggingLevel);
+
+            _logger = new Logger<Application>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
+            var SMlogger = new Logger<SceneManager>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
 
             // initialize systems
             _sceneManager = new SceneManager(SMlogger);

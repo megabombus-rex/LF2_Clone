@@ -2,15 +2,12 @@
 {
     public interface ILogger : IDisposable
     {
-        LogLevel LoggingLevel { get; set; }
-        void ParseAndSetLoggingLevel(string value);
-
         void LogError(string message);
         void LogWarning(string message);
         void LogInfo(string message);
         void LogDebug(string message);
         void LogTrace(string message);
-
+        ILogger.LogLevel ParseLoggingLevel(string value);
         public enum LogLevel
         {
             Trace = 0,
