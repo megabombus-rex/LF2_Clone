@@ -7,7 +7,7 @@
         void LogInfo(string message);
         void LogDebug(string message);
         void LogTrace(string message);
-        ILogger.LogLevel ParseLoggingLevel(string value);
+        LogLevel ParseLoggingLevel(string value);
         public enum LogLevel
         {
             Trace = 0,
