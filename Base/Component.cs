@@ -20,7 +20,12 @@ namespace LF2Clone.Base
 
         public virtual void Awake()
         {
+            _isActive = true;
+        }
 
+        public virtual void Activate()
+        {
+            _isActive = true;
         }
 
         public virtual void Update()
@@ -28,9 +33,14 @@ namespace LF2Clone.Base
 
         }
 
+        public virtual void Deactivate()
+        {
+            _isActive = false;
+        }
+
         public virtual void Destroy()
         {
-
+            
         }
     }
 }
