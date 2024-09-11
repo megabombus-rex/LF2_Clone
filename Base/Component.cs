@@ -1,12 +1,10 @@
 ﻿using LF2Clone.Base.Interfaces;
-using Raylib_cs;
 
 namespace LF2Clone.Base
 {
     // Components should work as attributes for the nodes, so each node has its own set of components
     public class Component : IDrawable
     {
-        public Transform _transform;
         public bool _isDrawable;
         public bool _isActive;
         public string _name;
@@ -15,6 +13,14 @@ namespace LF2Clone.Base
         public Component()
         {
             _name = "comp";
+        }
+
+        public Component(bool isDrawable, bool isActive, string name, int id)
+        {
+            _isDrawable = isDrawable;
+            _isActive = isActive;
+            _name = name;
+            _id = id;
         }
 
         public virtual void Draw()

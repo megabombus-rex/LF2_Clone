@@ -240,17 +240,17 @@ namespace LF2Clone.Base
         {
             var type = component.GetType();
 
-            if (_components.Any(x => x.GetType().FullName == type.FullName))
+            if (_components.Count > 0 && _components.Any(x => x.GetType().FullName == type.FullName))
             {
                 throw new InvalidOperationException(string.Format("Commponent with the same type ({0}) already exists. Component name: {1}", type.ToString(), component._name));
             }
 
-            if (_components.Any(x => x._id == component._id))
+            if (_components.Count > 0 && _components.Any(x => x._id == component._id))
             {
                 component._id = Helpers.NamingHelper.GetNextAvailableId(_components.Select(x => x._id));
             }
 
-            if (_components.Any(x => x._name == component._name))
+            if (_components.Count > 0 && _components.Any(x => x._name == component._name))
             {
                 component._name = Helpers.NamingHelper.GetNextValidName(_components.Select(x => x._name), component._name);
             }
@@ -265,7 +265,7 @@ namespace LF2Clone.Base
 
             if (component._isDrawable)
             {
-                _drawableComponents = _components.Where(x => x._isDrawable);
+                _drawableComponents = _activeComponents.Where(x => x._isDrawable);
             }
         }
 
@@ -281,15 +281,16 @@ namespace LF2Clone.Base
                 throw new InvalidOperationException(string.Format("Could not remove component {0}.", component._name));
             }
 
-            if (component._isDrawable)
-            {
-                _drawableComponents = _components.Where(x => x._isDrawable);
-            }
-
             if (component._isActive)
             {
                 _activeComponents = _components.Where(x => x._isActive);
             }
+
+            if (component._isDrawable)
+            {
+                _drawableComponents = _activeComponents.Where(x => x._isDrawable);
+            }
+            component.Destroy();
         }
 
         /// <summary>
@@ -314,6 +315,7 @@ namespace LF2Clone.Base
 
             component.Activate();
             _activeComponents = _components.Where(x => x._isActive);
+            _drawableComponents = _activeComponents.Where(x => x._isDrawable);
         }
 
         /// <summary>
@@ -331,8 +333,26 @@ namespace LF2Clone.Base
             }
 
             component.Deactivate();
-            _activeComponents = _components.Where(x => x._id == id);
+            _activeComponents = _components.Where(x => x._isActive);
+
+            if (component._isDrawable)
+            {
+                _drawableComponents = _activeComponents.Where(x => x._isDrawable);
+            }
         }
+
+        /// <summary>
+        /// Gets component by id.
+        /// </summary>
+        /// <param name="id"> Component id. </param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"> Thrown when the component was not found. </exception>
+        public Component GetComponentById(int id)
+        {
+            return _components.FirstOrDefault(x => x._id == id) ?? throw new KeyNotFoundException(string.Format("Component with id {0} not found.", id));
+        }
+
+        public List<Component> GetAllComponents() { return _components; }
 
         #endregion
 
