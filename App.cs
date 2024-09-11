@@ -166,15 +166,24 @@ namespace LF2Clone
             _sceneManager.ShowLoadedScenes();
 
             InitWindow();
+
+            // temp button tests
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
 
-            Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
-            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);
-            Raylib.SetTargetFPS(60);
+            Vector2 pos = new Vector2(0.0f, 0.0f);
+            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, pos, true, "Button_ONE", 1);
+            but.Awake();
+            but.CallbackFinished += ChangeScene;
 
-            _sceneManager.CurrentScene.Awake();
+            _sceneManager.CurrentScene?.Awake();
+            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(but);
+            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.RemoveComponent(but);
+            
+            // end
+
+            Raylib.SetTargetFPS(60);
 
             // game loop in here
             while (!Raylib.WindowShouldClose())
@@ -182,7 +191,6 @@ namespace LF2Clone
                 ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
-                but.Run();
                 _sceneManager.CurrentScene.Update();
                 
                 Raylib.DrawFPS(10, 10);
@@ -195,7 +203,7 @@ namespace LF2Clone
             Raylib.CloseWindow();
         }
 
-        void ChangeScene()
+        void ChangeScene(object sender, EventArgs e)
         {
             _sceneManager.TrySetCurrentScene(_sceneManager.SceneIds[_currentSceneIdIndex]);
             _sceneManager.CurrentScene.Awake();
