@@ -18,15 +18,15 @@ namespace LF2Clone.UI
 
         // the textures setting may have to be moved to Awake method also, they should be cached 
         public Button(string text, Texture2D texture, Texture2D? texturePressed, Texture2D? textureHighlight, 
-            Vector2 position, bool isActive, string name, int id) 
-            : base(true, isActive, name, id)
+            Transform transform, bool isActive, string name, int id) 
+            : base(transform, true, isActive, name, id)
         {
             _text = text;
             _texture = texture;
             _texturePressed = texturePressed;
             _textureHighlight = textureHighlight;
-            _btnBounds = new Rectangle(position.X, position.Y, _texture.Width, _texture.Height);
-            _position = position;
+            _btnBounds = new Rectangle(transform.Translation.X, transform.Translation.Y, _texture.Width, _texture.Height);
+            _position = new Vector2(transform.Translation.X, transform.Translation.Y);
             _currentTexture = _texture;
         }
 
