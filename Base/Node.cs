@@ -1,4 +1,5 @@
-﻿using LF2Clone.Base.Interfaces;
+﻿using LF2Clone.Base.Helpers;
+using LF2Clone.Base.Interfaces;
 using Newtonsoft.Json;
 using Raylib_cs;
 using System.Numerics;
@@ -416,6 +417,11 @@ namespace LF2Clone.Base
 #endif
                 _globalTransform.Translation += vec;
                 _relativeTransform.Translation += vec;
+
+                foreach(var comp in _components)
+                {
+                    comp.Transform(_globalTransform);
+                }
             }
 
             foreach (var child in _children)
@@ -438,6 +444,10 @@ namespace LF2Clone.Base
             _bounds.X += vec.X;
             _bounds.Y += vec.Y;
 #endif
+            foreach (var comp in _components)
+            {
+                comp.Transform(_globalTransform);
+            }
 
             foreach (var child in _children)
             {
@@ -496,10 +506,6 @@ namespace LF2Clone.Base
             _bounds.Y = _globalTransform.Translation.Y;
             _rotation = 0.0f;
 
-            foreach (var child in _children) { 
-                child.Awake();
-            }
-
             foreach (var comp in _components)
             {
                 comp.Awake();
@@ -517,13 +523,9 @@ namespace LF2Clone.Base
         {
             if (_id != 0)
             {
+                MoveNodeByVector(new Vector3(0.3f, 0.0f, 0.0f));
+                RotateNode(new Quaternion(0.0f, 1.0f, 0.0f, 0.3f));
                 // do stuff, not for root
-            }
-            
-
-            foreach (var child in _children)
-            {
-                child.Update();
             }
 
             foreach (var comp in _activeComponents)
@@ -538,22 +540,13 @@ namespace LF2Clone.Base
         /// </summary>
         public void Draw()
         {
-            var center = GetCenterOfBounds();
-            Raylib.DrawRectanglePro(_bounds, new Vector2(center.X, center.Z), _rotation, _boundsColor);
+            var center = PositioningHelper.GetCenterOfRectangle(_bounds);
+            Raylib.DrawRectanglePro(_bounds, new Vector2(center.X, center.Y), _rotation, _boundsColor);
 
             foreach (var comp in _drawableComponents)
             {
                 comp.Draw();
             }
-        }
-
-        /// <summary>
-        /// Returns center of bounds rectangle.
-        /// </summary>
-        /// <returns></returns>
-        private Vector3 GetCenterOfBounds()
-        {
-            return new Vector3(_globalTransform.Translation.X + (_bounds.Width / 2), _globalTransform.Translation.Y + (_bounds.Height / 2), 0.0f); // 0.0f for Z currently
         }
 
         #endregion

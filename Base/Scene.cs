@@ -22,12 +22,22 @@
 
         public void Awake()
         {
-            _root.Awake();
+            foreach (Node node in _nodes)
+            {
+                node.Awake();
+            }
         }
 
         public void Update()
         {
-            _root.Update();
+            foreach (Node node in  _nodes)
+            {
+                node.Update();
+            }
+        }
+
+        public void Draw()
+        {
             foreach (Node node in _nodes)
             {
                 node.Draw();

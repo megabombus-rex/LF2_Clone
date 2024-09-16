@@ -26,6 +26,11 @@ namespace LF2Clone.Base
             _id = id;
         }
 
+        public virtual void Transform(Transform newTransform)
+        {
+            _nodeGlobalTransform = newTransform;
+        }
+
         public virtual void Draw()
         {
             if (!_isDrawable)

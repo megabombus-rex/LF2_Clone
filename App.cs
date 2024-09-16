@@ -195,6 +195,7 @@ namespace LF2Clone
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
                 _sceneManager.CurrentScene.Update();
+                _sceneManager.CurrentScene.Draw();
                 
                 Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
