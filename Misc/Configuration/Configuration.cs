@@ -3,6 +3,7 @@
     public class Configuration
     {
         public Dictionary<string, Logging> LoggerConfigs;
+        public int LoggingDaysOfLife; 
         public string LoggingFilePath; // one file for all AllLog-date.log
         public string Version;
         public Resolution StartingScreenResolution;
