@@ -146,6 +146,8 @@ namespace LF2Clone
             _logger = new Logger<Application>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
             var SMlogger = new Logger<SceneManager>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
 
+            DeleteOldLogFiles();
+
             // initialize systems
             _sceneManager = new SceneManager(SMlogger);
 
@@ -230,6 +232,42 @@ namespace LF2Clone
                 return false;
             }
             return true;
+        }
+
+        void DeleteOldLogFiles()
+        {
+            if (_configuration.LoggingDaysOfLife < 0)
+            {
+                _logger.LogInfo("LoggingDaysOfLife configuration parameter is incorrect. \n No logs will be deleted.");
+                return;
+            }
+
+            var files = Directory.GetFiles(_configuration.LoggingFilePath).Where(x => !x.StartsWith(".git")).ToArray();
+
+            if (files.Length < 1)
+            {
+                _logger.LogInfo("No logs found.");
+                return;
+            }
+
+            var currDate = DateTime.UtcNow.Date;
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    if(File.GetCreationTime(file).Date.AddDays(_configuration.LoggingDaysOfLife) < currDate.Date)
+                    {
+                        File.Delete(file);
+                    }
+
+                }
+                catch
+                {
+                    _logger.LogError(string.Format("Error while checking file {0}. \n No further logs will be removed.", file));
+                    return;
+                }
+            }
         }
     }
 }
