@@ -14,5 +14,23 @@ namespace LF2Clone.Base.Helpers
         {
             return new Vector2(rectangle.Width / 2, rectangle.Height / 2);
         }
+
+        public static Quaternion Translate3DQuaternionTo2D(Quaternion rotation, RotationDirection dir)
+        {
+            return dir switch
+            { 
+                RotationDirection.X => new Quaternion(rotation.X, 0.0f, 0.0f, rotation.W),
+                RotationDirection.Y => new Quaternion(0.0f, rotation.Y, 0.0f, rotation.W), 
+                RotationDirection.Z => new Quaternion(0.0f, 0.0f, rotation.Z, rotation.W),
+                _ => new Quaternion(0.0f, 0.0f, 0.0f, 1.0f)
+            };
+        }
+
+        public enum RotationDirection
+        {
+            X,
+            Y, 
+            Z
+        }
     }
 }

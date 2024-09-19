@@ -6,7 +6,7 @@ namespace LF2Clone.Base
     // Components should work as attributes for the nodes, so each node has its own set of components
     public class Component : IDrawable
     {
-        public Transform _nodeGlobalTransform;
+        protected Transform _nodeGlobalTransform;
         public bool _isDrawable;
         public bool _isActive;
         public string _name;
