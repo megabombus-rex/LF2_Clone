@@ -523,8 +523,6 @@ namespace LF2Clone.Base
         {
             if (_id != 0)
             {
-                MoveNodeByVector(new Vector3(0.3f, 0.0f, 0.0f));
-                RotateNode(new Quaternion(0.0f, 1.0f, 0.0f, 0.3f));
                 // do stuff, not for root
             }
 
