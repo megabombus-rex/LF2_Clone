@@ -173,16 +173,19 @@ namespace LF2Clone
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
-
+            var font = Raylib.LoadFont(_assetsBaseRoot + "\\UI\\Fonts\\Atop-R99O3.ttf");
             Vector2 pos = new Vector2(0.0f, 0.0f);
-            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, pos, true, "Button_ONE", 1);
-            but.Awake();
-            but.CallbackFinished += ChangeScene;
 
             _sceneManager.CurrentScene?.Awake();
+            var glob = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)._globalTransform;
+            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, glob, true, "Button_ONE", 1);
+            but.Awake();
+            but.CallbackFinished += ChangeScene;
             _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(but);
-            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.RemoveComponent(but);
-            
+            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.RemoveComponent(but);
+            var lab = new Label("LABEL TEXT", 40, 0.3f, 20, 20, buttonTex, font, 0.0f, glob,true, "Label_one", 2);
+            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(lab);
+
             // end
 
             Raylib.SetTargetFPS(60);
@@ -194,6 +197,7 @@ namespace LF2Clone
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
                 _sceneManager.CurrentScene.Update();
+                _sceneManager.CurrentScene.Draw();
                 
                 Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
@@ -238,7 +242,7 @@ namespace LF2Clone
                 return;
             }
 
-            var files = Directory.GetFiles(_configuration.LoggingFilePath).Where(x => !x.StartsWith(".git")).ToArray();
+            var files = Directory.GetFiles(_configuration.LoggingFilePath).Where(x => !x.EndsWith(".gitkeep")).ToArray();
 
             if (files.Length < 1)
             {
