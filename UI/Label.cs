@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace LF2Clone.UI
 {
-    public class Label : Component
+    public class Label : UIComponent
     {
         private string _text;
         private int _fontSize;
@@ -15,7 +15,7 @@ namespace LF2Clone.UI
         private Font _font;
 
         public Label(string text, int fontSize, float spacing, int sizeX, int sizeY,Texture2D backText, Font font,
-            Transform transform, bool isActive, string name, int id) : base(transform, true, isActive, name, id)
+             float rotation, Transform transform, bool isActive, string name, int id) : base(rotation, transform, isActive, name, id)
         {
             _text = text;
             _fontSize = fontSize;
@@ -41,12 +41,12 @@ namespace LF2Clone.UI
         {
             base.Draw();
             var center = PositioningHelper.GetCenterOfRectangle(_backgroundRec);
-            
+
             Raylib.DrawTexturePro(_backgroundTexture, new Rectangle(0.0f, 0.0f, new Vector2(_backgroundRec.Width, _backgroundRec.Height)), 
                 _backgroundRec, center, 0.0f, Color.Blank);
-            
+
             Raylib.DrawTextPro(_font, _text, new Vector2(_nodeGlobalTransform.Translation.X, _nodeGlobalTransform.Translation.Y), 
-                center, _nodeGlobalTransform.Rotation.W, _fontSize, _spacing, Color.Black);
+                center, _rotation, _fontSize, _spacing, Color.Black);
         }
     }
 }

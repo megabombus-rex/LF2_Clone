@@ -183,7 +183,7 @@ namespace LF2Clone
             but.CallbackFinished += ChangeScene;
             _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(but);
             //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.RemoveComponent(but);
-            var lab = new Label("LABEL TEXT", 40, 0.3f, 20, 20, buttonTex, font, glob, true, "Label_one", 2);
+            var lab = new Label("LABEL TEXT", 40, 0.3f, 20, 20, buttonTex, font, 0.0f, glob,true, "Label_one", 2);
             _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(lab);
 
             // end
@@ -242,7 +242,7 @@ namespace LF2Clone
                 return;
             }
 
-            var files = Directory.GetFiles(_configuration.LoggingFilePath).Where(x => !x.StartsWith(".git")).ToArray();
+            var files = Directory.GetFiles(_configuration.LoggingFilePath).Where(x => !x.EndsWith(".gitkeep")).ToArray();
 
             if (files.Length < 1)
             {
