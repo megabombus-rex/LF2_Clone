@@ -174,11 +174,10 @@ namespace LF2Clone
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
             var font = Raylib.LoadFont(_assetsBaseRoot + "\\UI\\Fonts\\Atop-R99O3.ttf");
-            Vector2 pos = new Vector2(0.0f, 0.0f);
 
             _sceneManager.CurrentScene?.Awake();
             var glob = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)._globalTransform;
-            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, glob, true, "Button_ONE", 1);
+            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, font, 15.0f, Color.Gold, 0.3f, 0.0f, glob, true, "Button_ONE", 1);
             but.Awake();
             but.CallbackFinished += ChangeScene;
             _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(but);

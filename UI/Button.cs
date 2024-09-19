@@ -1,14 +1,17 @@
 ﻿using LF2Clone.Base;
+using LF2Clone.Base.Helpers;
 using Raylib_cs;
 using System.Numerics;
 
 namespace LF2Clone.UI
 {
-    public class Button : Component
+    public class Button : UIComponent
     {
         // update this so rotation is added, check if highlighting works
         private Rectangle _btnBounds;
+        private Rectangle _targetBounds;
         private string _text;
+        private Vector2 _btnCenter;
         ButtonState _btnState;
 
         private readonly Texture2D _texture;
@@ -17,10 +20,17 @@ namespace LF2Clone.UI
         private Texture2D _currentTexture;
         private Vector2 _position;
 
+        // may use label here or just extract it as a "Text" struct
+        private Font _font;
+        private float _fontSize;
+        private Color _textColor;
+        private float _textSpacing;
+
         // the textures setting may have to be moved to Awake method also, they should be cached 
-        public Button(string text, Texture2D texture, Texture2D? texturePressed, Texture2D? textureHighlight, 
-            Transform transform, bool isActive, string name, int id) 
-            : base(transform, true, isActive, name, id)
+        public Button(string text, Texture2D texture, Texture2D? texturePressed, Texture2D? textureHighlight,
+            Font font, float fontSize, Color textColor, float textSpacing,
+            float rotation, Transform transform, bool isActive, string name, int id) 
+            : base(rotation, transform, isActive, name, id)
         {
             _text = text;
             _texture = texture;
@@ -28,6 +38,10 @@ namespace LF2Clone.UI
             _textureHighlight = textureHighlight;
             _btnBounds = new Rectangle(transform.Translation.X, transform.Translation.Y, _texture.Width, _texture.Height);
             _position = new Vector2(transform.Translation.X, transform.Translation.Y);
+            _font = font;
+            _fontSize = fontSize;
+            _textColor = textColor;
+            _textSpacing = textSpacing;
             _currentTexture = _texture;
         }
 
@@ -36,6 +50,7 @@ namespace LF2Clone.UI
             base.Awake();
             _isActive = true;
             _isDrawable = true;
+            _btnCenter = PositioningHelper.GetCenterOfRectangle(_btnBounds);
         }
 
         public override void Update()
@@ -72,8 +87,8 @@ namespace LF2Clone.UI
         public override void Draw()
         {
             base.Draw();
-            Raylib.DrawTexture(_currentTexture, (int)_position.X, (int)_position.Y, Color.White);
-            Raylib.DrawText(_text, (int)_position.X, (int)_position.Y, 100, Color.White);
+            Raylib.DrawTexturePro(_currentTexture, _btnBounds, _btnBounds, Vector2.Zero, _rotation, Color.White);
+            Raylib.DrawTextPro(_font, _text, _position, Vector2.Zero, _rotation, _fontSize, _textSpacing, _textColor);
         }
 
         public override void Destroy()
