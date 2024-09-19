@@ -6,6 +6,7 @@ namespace LF2Clone.UI
 {
     public class Button : Component
     {
+        // update this so rotation is added, check if highlighting works
         private Rectangle _btnBounds;
         private string _text;
         ButtonState _btnState;
