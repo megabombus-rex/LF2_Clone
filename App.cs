@@ -1,5 +1,7 @@
-﻿using LF2Clone.Misc.Configuration;
+﻿using LF2Clone.Components;
+using LF2Clone.Misc.Configuration;
 using LF2Clone.Misc.Logger;
+using LF2Clone.Resources;
 using LF2Clone.Systems;
 using LF2Clone.UI;
 using Newtonsoft.Json;
@@ -15,6 +17,7 @@ namespace LF2Clone
         private string _assetsBaseRoot;
         private int _currentSceneIdIndex;
         private SceneManager _sceneManager; // only one SceneManager instance will exist
+        private SoundManager _soundManager; // only one SoundManager instance will exist
         private Configuration _configuration;
         private string _appVersion;
         private int _screenWidth;
@@ -145,15 +148,40 @@ namespace LF2Clone
 
             _logger = new Logger<Application>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
             var SMlogger = new Logger<SceneManager>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
+            var SoMlogger = new Logger<SoundManager>(logPath, _configuration.LoggerConfigs.ContainsKey("SoundManager") ? _configuration.LoggerConfigs["SoundManager"].LogLevel : defaultLoggingLevel);
 
             DeleteOldLogFiles();
 
             // initialize systems
             _sceneManager = new SceneManager(SMlogger);
+            _soundManager = new SoundManager(SoMlogger);
 
             // setup systems
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets");
             await _sceneManager.SetupAsync(string.Format("{0}\\Scenes", _assetsBaseRoot));
+
+            // Audio device is ok, have to add it so every SFX is played if needed
+
+            Raylib.InitAudioDevice();
+
+            var music = Raylib.LoadMusicStream(_assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3");
+            var resId = Guid.NewGuid();
+
+            var res = new SFX()
+            {
+                _id = resId,
+                _path = _assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3",
+                _name = "kerosene",
+                _type = SFX.SoundType.Music,
+                _durationInSeconds = music.Stream.SampleRate * music.Stream.SampleSize,
+                _value = music
+            };
+            _soundManager.AddSFX(resId, res);
+            var sfx = new SFXSoundPlayer(5, "SFX1", resId);
+
+            sfx.Play += _soundManager.Play;
+
+            sfx.PlayCurrentSound(); // also stop playing event should be created
 
             // setup application
             _currentSceneIdIndex = 0;
@@ -171,6 +199,7 @@ namespace LF2Clone
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
+
 
             Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
             var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);

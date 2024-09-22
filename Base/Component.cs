@@ -8,7 +8,9 @@ namespace LF2Clone.Base
         public Transform transform;
 
         public bool _isDrawable;
-        
+        public string _name;
+        public int _id;
+
         public Component()
         {
         }
