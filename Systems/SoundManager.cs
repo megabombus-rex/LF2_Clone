@@ -14,23 +14,39 @@ namespace LF2Clone.Systems
         IEnumerable<SFX> _musicValues;
 
         // music overlay, may discard later
-        private Music _musicPlaying;
+        private Music? _musicPlayed;
+        private bool _isLooped;
         private bool _isMusicPlaying;
 
         public SoundManager(ILogger logger) : base(logger)
         {
             _soundsDict = new Dictionary<Guid, SFX>();
+            _musicValues = Enumerable.Empty<SFX>();
+            _isMusicPlaying = false;
         }
 
-        public void SetMusicPlaying()
+        public void SetMusicPlayed(Music music)
         {
-
+            _musicPlayed = music;
         }
 
-        public void AddSFX(Guid sfxId, SFX res)
+        public void AddSFX(SFX res)
         {
-            _soundsDict.TryAdd(sfxId, res);
+            _soundsDict.TryAdd(res._id, res);
             if (res._type == SFX.SoundType.Music)
+            {
+                _musicValues = _soundsDict.Values.Where(x => x._type == SFX.SoundType.Music);
+            }
+        }
+
+        public void AddSFXBundle(IEnumerable<SFX> resources)
+        {
+            foreach (var res in resources)
+            {
+                _soundsDict.TryAdd(res._id, res);
+            }
+
+            if (resources.Any(x => x._type == SFX.SoundType.Music))
             {
                 _musicValues = _soundsDict.Values.Where(x => x._type == SFX.SoundType.Music);
             }
@@ -56,7 +72,7 @@ namespace LF2Clone.Systems
         {
             base.Update();
             // maybe for few seconds?
-            foreach (var sound in _soundsDict.Values.Where(x => x._type == SFX.SoundType.Music))
+            foreach (var sound in _musicValues)
             {
                 Raylib.UpdateMusicStream((Music)sound._value);
             }
@@ -64,11 +80,16 @@ namespace LF2Clone.Systems
 
         public override void Destroy()
         {
-            if(_musicValues.Count() > 0)
+            if(_soundsDict.Values.Any())
             {
-                foreach (var sound in _musicValues)
+                foreach (var sound in _soundsDict.Values)
                 {
-                    Raylib.UnloadAudioStream(((Music)sound._value).Stream);
+                    switch (sound._type)
+                    {
+                        case SFX.SoundType.Music: Raylib.UnloadAudioStream(((Music)sound._value).Stream); break;
+                        case SFX.SoundType.Sound: Raylib.UnloadSound(((Sound)sound._value)); break;
+                    }
+                    _logger.LogInfo($"Sound: {sound._type} removed.");
                 }
             }
 
