@@ -52,7 +52,7 @@ namespace LF2Clone.Systems
             }
         }
 
-        public void Play(object sender, PlaySoundEventArgs e)
+        public void Play(object sender, SFXEventArgs e)
         {
             var sfxPlayer = sender as SFXSoundPlayer;
             _logger.LogInfo(string.Format("SFXPlayer calling is {0}. \n Sound id: {1}", sfxPlayer?._id, e._soundResourceId));
@@ -63,6 +63,39 @@ namespace LF2Clone.Systems
             {
                 case SFX.SoundType.Sound:
                     Raylib.PlaySound((Sound)sound._value);       break;
+                case SFX.SoundType.Music:
+                    Raylib.PlayMusicStream((Music)sound._value); break;
+            }
+        }
+
+        public void Stop(object sender, SFXEventArgs e)
+        {
+            var sfxPlayer = sender as SFXSoundPlayer;
+            _logger.LogInfo(string.Format("SFXPlayer calling is {0}. \n Sound id: {1}", sfxPlayer?._id, e._soundResourceId));
+
+            var sound = _soundsDict[e._soundResourceId];
+
+            switch (sound._type)
+            {
+                case SFX.SoundType.Sound:
+                    Raylib.PlaySound((Sound)sound._value); break;
+                case SFX.SoundType.Music:
+                    Raylib.PlayMusicStream((Music)sound._value); break;
+            }
+        }
+
+        // make one event, SFXEventArgs + operationType (Play/Pause/Resume/Stop)
+        public void ChangeStatus(object sender, SFXEventArgs e)
+        {
+            var sfxPlayer = sender as SFXSoundPlayer;
+            _logger.LogInfo(string.Format("SFXPlayer calling is {0}. \n Sound id: {1}", sfxPlayer?._id, e._soundResourceId));
+
+            var sound = _soundsDict[e._soundResourceId];
+
+            switch (sound._type)
+            {
+                case SFX.SoundType.Sound:
+                    Raylib.PlaySound((Sound)sound._value); break;
                 case SFX.SoundType.Music:
                     Raylib.PlayMusicStream((Music)sound._value); break;
             }

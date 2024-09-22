@@ -6,12 +6,16 @@ namespace LF2Clone.Components
 {
     public class SFXSoundPlayer : Component
     {
+        Guid? _resourceId;
+        bool _isPlaying;
+
         // update with the rest of components
         public SFXSoundPlayer(int id, string name, Guid? soundId)
         {
             _id = id;
             _name = name;
             _resourceId = soundId;
+            _isPlaying = false;
         }
 
         /// <summary>
@@ -23,18 +27,44 @@ namespace LF2Clone.Components
             _resourceId = soundId;
         }
 
-        Guid? _resourceId;
 
         public void PlayCurrentSound()
         {
-            if(_resourceId == null)
+            if(!_resourceId.HasValue)
             {
                 return;
             }
-            Play.Invoke(this, new PlaySoundEventArgs() { _soundResourceId = _resourceId.Value });
+            Play.Invoke(this, new SFXEventArgs() { _soundResourceId = _resourceId.Value });
+            _isPlaying = true;
         }
 
-        public delegate void PlaySound(object sender, PlaySoundEventArgs e);
+        public void ChangeCurrentSoundStatus()
+        {
+            if (!_resourceId.HasValue) 
+            {
+                return;
+            }
+            PauseResume.Invoke(this, new SFXEventArgs() { _soundResourceId = _resourceId.Value });
+            _isPlaying = !_isPlaying;
+        }
+
+        public void StopCurrentSound()
+        {
+            if (!_resourceId.HasValue)
+            {
+                return;
+            }
+            Stop.Invoke(this, new SFXEventArgs() { _soundResourceId = _resourceId.Value });
+            _isPlaying = false;
+        }
+
+        public delegate void PlaySound(object sender, SFXEventArgs e);
         public event PlaySound Play;
+
+        public delegate void StopSound(object sender, SFXEventArgs e);
+        public event StopSound Stop;
+
+        public delegate void ChangeStatusSound(object sender, SFXEventArgs e);
+        public event ChangeStatusSound PauseResume;
     }
 }
