@@ -11,14 +11,29 @@ namespace LF2Clone.Systems
     {
         // dictionary of sounds loaded by resource manager (not implemented yet)
         Dictionary<Guid, SFX> _soundsDict;
+        IEnumerable<SFX> _musicValues;
+
+        // music overlay, may discard later
+        private Music _musicPlaying;
+        private bool _isMusicPlaying;
+
         public SoundManager(ILogger logger) : base(logger)
         {
             _soundsDict = new Dictionary<Guid, SFX>();
         }
 
+        public void SetMusicPlaying()
+        {
+
+        }
+
         public void AddSFX(Guid sfxId, SFX res)
         {
             _soundsDict.TryAdd(sfxId, res);
+            if (res._type == SFX.SoundType.Music)
+            {
+                _musicValues = _soundsDict.Values.Where(x => x._type == SFX.SoundType.Music);
+            }
         }
 
         public void Play(object sender, PlaySoundEventArgs e)
@@ -37,8 +52,27 @@ namespace LF2Clone.Systems
             }
         }
 
-        // music overlay, may discard later
-        private Music _musicPlaying;
-        private bool _isMusicPlaying;
+        public override void Update()
+        {
+            base.Update();
+            // maybe for few seconds?
+            foreach (var sound in _soundsDict.Values.Where(x => x._type == SFX.SoundType.Music))
+            {
+                Raylib.UpdateMusicStream((Music)sound._value);
+            }
+        }
+
+        public override void Destroy()
+        {
+            if(_musicValues.Count() > 0)
+            {
+                foreach (var sound in _musicValues)
+                {
+                    Raylib.UnloadAudioStream(((Music)sound._value).Stream);
+                }
+            }
+
+            base.Destroy();
+        }
     }
 }

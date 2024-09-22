@@ -164,15 +164,25 @@ namespace LF2Clone
 
             Raylib.InitAudioDevice();
 
-            var music = Raylib.LoadMusicStream(_assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3");
+            //var music = Raylib.LoadMusicStream(_assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3");
+            var music = Raylib.LoadSound(_assetsBaseRoot + "\\Sounds\\SODA.mp3");
             var resId = Guid.NewGuid();
 
+            //var res = new SFX()
+            //{
+            //    _id = resId,
+            //    _path = _assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3",
+            //    _name = "kerosene",
+            //    _type = SFX.SoundType.Music,
+            //    _durationInSeconds = music.Stream.SampleRate * music.Stream.SampleSize,
+            //    _value = music
+            //};
             var res = new SFX()
             {
                 _id = resId,
-                _path = _assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3",
-                _name = "kerosene",
-                _type = SFX.SoundType.Music,
+                _path = _assetsBaseRoot + "\\Sounds\\SODA.mp3",
+                _name = "SODA",
+                _type = SFX.SoundType.Sound,
                 _durationInSeconds = music.Stream.SampleRate * music.Stream.SampleSize,
                 _value = music
             };
@@ -214,6 +224,7 @@ namespace LF2Clone
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
                 but.Run();
+                _soundManager.Update();
                 _sceneManager.CurrentScene.Update();
                 
                 Raylib.DrawFPS(10, 10);
@@ -222,6 +233,7 @@ namespace LF2Clone
 
             _logger.Dispose();
             _sceneManager.Destroy();
+            _soundManager.Destroy();
 
             Raylib.CloseWindow();
         }
