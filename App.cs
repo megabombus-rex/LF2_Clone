@@ -164,44 +164,6 @@ namespace LF2Clone
 
             Raylib.InitAudioDevice();
 
-            var music = Raylib.LoadMusicStream(_assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3");
-            var sound = Raylib.LoadSound(_assetsBaseRoot + "\\Sounds\\SODA.mp3");
-            var resId = Guid.NewGuid();
-            var resId2 = Guid.NewGuid();
-
-            var res = new SFX()
-            {
-                _id = resId,
-                _path = _assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3",
-                _name = "kerosene",
-                _type = SFX.SoundType.Music,
-                _durationInSeconds = Raylib.GetMusicTimeLength(music),
-                _value = music
-            };
-            var res2 = new SFX()
-            {
-                _id = resId2,
-                _path = _assetsBaseRoot + "\\Sounds\\SODA.mp3",
-                _name = "SODA",
-                _type = SFX.SoundType.Sound,
-                _durationInSeconds = 0.0f,
-                _value = sound
-            };
-            _soundManager.AddSFX(res);
-            _soundManager.AddSFX(res2);
-            var sfx = new SFXSoundPlayer(5, "SFX1", resId);
-            var sfx2 = new SFXSoundPlayer(4, "SFX2", resId2);
-
-            sfx.Play += _soundManager.Play;
-            sfx2.Play += _soundManager.Play;
-            sfx.Stop += _soundManager.Stop;
-            sfx2.Stop += _soundManager.Stop;
-            sfx.PauseResume += _soundManager.ChangeStatus;
-            sfx2.PauseResume += _soundManager.ChangeStatus;
-
-            sfx.PlayCurrentSound();
-            sfx2.PlayCurrentSound();
-
             // setup application
             _currentSceneIdIndex = 0;
             _currentResolution = 0;
@@ -215,6 +177,46 @@ namespace LF2Clone
             _sceneManager.ShowLoadedScenes();
 
             InitWindow();
+            // test
+
+            //var music = Raylib.LoadMusicStream(_assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3");
+            var sound = Raylib.LoadSound(_assetsBaseRoot + "\\Sounds\\SODA.mp3");
+            //var resId = Guid.NewGuid();
+            var resId2 = Guid.NewGuid();
+
+            //var res = new SFX()
+            //{
+            //    _id = resId,
+            //    _path = _assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3",
+            //    _name = "kerosene",
+            //    _type = SFX.SoundType.Music,
+            //    _durationInSeconds = Raylib.GetMusicTimeLength(music),
+            //    _value = music
+            //};
+            var res2 = new SFX()
+            {
+                _id = resId2,
+                _path = _assetsBaseRoot + "\\Sounds\\SODA.mp3",
+                _name = "SODA",
+                _type = SFX.SoundType.Sound,
+                _durationInSeconds = 0.0f,
+                _value = sound
+            };
+            //_soundManager.AddSFX(res);
+            _soundManager.AddSFX(res2);
+            //var sfx = new SFXSoundPlayer(5, "SFX1", resId);
+            var sfx2 = new SFXSoundPlayer(4, "SFX2", resId2);
+
+            //sfx.Play += _soundManager.Play;
+            sfx2.Play += _soundManager.Play;
+            //sfx.Stop += _soundManager.Stop;
+            sfx2.Stop += _soundManager.Stop;
+            //sfx.PauseResume += _soundManager.ChangeStatus;
+            sfx2.PauseResume += _soundManager.ChangeStatus;
+
+            //sfx.PlayCurrentSound();
+            sfx2.PlayCurrentSound();
+
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
