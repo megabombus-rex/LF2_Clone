@@ -120,7 +120,6 @@ namespace LF2Clone.Systems
             foreach (var sound in _musicValues)
             {
                 Raylib.UpdateMusicStream((Music)sound._value);
-                //((Music)sound).Stream.
             }
         }
 
@@ -139,6 +138,7 @@ namespace LF2Clone.Systems
                 }
             }
 
+            Raylib.CloseAudioDevice();
             base.Destroy();
         }
     }
