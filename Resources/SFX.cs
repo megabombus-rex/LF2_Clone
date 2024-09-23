@@ -5,6 +5,7 @@
         public SoundType _type;
         public float _durationInSeconds;
         public object _value; // sound or music
+        public float _volumeNormalized;
         
         public enum SoundType
         {

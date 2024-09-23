@@ -208,11 +208,11 @@ namespace LF2Clone
             var sfx2 = new SFXSoundPlayer(4, "SFX2", resId2);
 
             //sfx.Play += _soundManager.Play;
-            sfx2.Play += _soundManager.Play;
+            sfx2.SoundPlayed += _soundManager.Play;
             //sfx.Stop += _soundManager.Stop;
-            sfx2.Stop += _soundManager.Stop;
+            sfx2.SoundStopped += _soundManager.Stop;
             //sfx.PauseResume += _soundManager.ChangeStatus;
-            sfx2.PauseResume += _soundManager.ChangeStatus;
+            sfx2.SoundPausedOrResumed += _soundManager.ChangeStatus;
 
             //sfx.PlayCurrentSound();
             sfx2.PlayCurrentSound();
