@@ -78,9 +78,9 @@ namespace LF2Clone.Systems
             switch (sound._type)
             {
                 case SFX.SoundType.Sound:
-                    Raylib.PlaySound((Sound)sound._value); break;
+                    Raylib.StopSound((Sound)sound._value); break;
                 case SFX.SoundType.Music:
-                    Raylib.PlayMusicStream((Music)sound._value); break;
+                    Raylib.StopMusicStream((Music)sound._value); break;
             }
         }
 
@@ -108,6 +108,7 @@ namespace LF2Clone.Systems
             foreach (var sound in _musicValues)
             {
                 Raylib.UpdateMusicStream((Music)sound._value);
+                //((Music)sound).Stream.
             }
         }
 
