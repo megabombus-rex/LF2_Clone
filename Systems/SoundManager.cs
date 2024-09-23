@@ -100,6 +100,7 @@ namespace LF2Clone.Systems
                         Raylib.PauseSound((Sound)sound._value);
                         break;
                     }
+                    //Raylib.SetAudioStreamVolume(((Sound)sound._value).Stream, sound._volumeNormalized);
                     Raylib.ResumeSound((Sound)sound._value);
                     break;
                 case SFX.SoundType.Music:
@@ -111,6 +112,27 @@ namespace LF2Clone.Systems
                     Raylib.ResumeMusicStream((Music)sound._value);
                     break;
             }
+        }
+
+        public void ChangeVolume(object sender, SFXVolumeEventArgs e)
+        {
+            var sfxPlayer = sender as SFXSoundPlayer;
+            _logger.LogInfo(string.Format("SFXPlayer calling is {0}. \n Sound id: {1}", sfxPlayer?._id, e._soundResourceId));
+
+            var sound = _soundsDict[e._soundResourceId];
+
+            var volume = e._volumeNormalized > 1.0f ? 1.0f : e._volumeNormalized;
+
+            switch (sound._type)
+            {
+                case SFX.SoundType.Sound:
+                    Raylib.SetAudioStreamVolume(((Sound)sound._value).Stream, volume);
+                    break;
+                case SFX.SoundType.Music:
+                    Raylib.SetAudioStreamVolume(((Music)sound._value).Stream, volume);
+                    break;
+            }
+
         }
 
         public override void Update()

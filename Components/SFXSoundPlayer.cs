@@ -66,7 +66,7 @@ namespace LF2Clone.Components
             {
                 return;
             }
-            VolumeChanged.Invoke(this, new SFXVolumeEventArgs() { _soundResourceId = _resourceId.Value, _volume = volume });
+            VolumeChanged.Invoke(this, new SFXVolumeEventArgs() { _soundResourceId = _resourceId.Value, _volumeNormalized = volume });
         }
 
         public delegate void PlaySound(object sender, SFXEventArgs e);
