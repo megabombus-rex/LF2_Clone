@@ -95,9 +95,21 @@ namespace LF2Clone.Systems
             switch (sound._type)
             {
                 case SFX.SoundType.Sound:
-                    Raylib.PlaySound((Sound)sound._value); break;
+                    if (sfxPlayer!.IsPlaying)
+                    {
+                        Raylib.PauseSound((Sound)sound._value);
+                        break;
+                    }
+                    Raylib.ResumeSound((Sound)sound._value);
+                    break;
                 case SFX.SoundType.Music:
-                    Raylib.PlayMusicStream((Music)sound._value); break;
+                    if (sfxPlayer!.IsPlaying)
+                    {
+                        Raylib.PauseMusicStream((Music)sound._value);
+                        break;
+                    }
+                    Raylib.ResumeMusicStream((Music)sound._value);
+                    break;
             }
         }
 

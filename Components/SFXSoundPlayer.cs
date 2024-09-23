@@ -9,6 +9,8 @@ namespace LF2Clone.Components
         Guid? _resourceId;
         bool _isPlaying;
 
+        public bool IsPlaying { get { return _isPlaying; } }
+
         // update with the rest of components
         public SFXSoundPlayer(int id, string name, Guid? soundId)
         {

@@ -196,8 +196,10 @@ namespace LF2Clone
             sfx2.Play += _soundManager.Play;
             sfx.Stop += _soundManager.Stop;
             sfx2.Stop += _soundManager.Stop;
+            sfx.PauseResume += _soundManager.ChangeStatus;
+            sfx2.PauseResume += _soundManager.ChangeStatus;
 
-            sfx.PlayCurrentSound(); // also stop playing event should be created
+            sfx.PlayCurrentSound();
             sfx2.PlayCurrentSound();
 
             // setup application
