@@ -1,5 +1,7 @@
-﻿using LF2Clone.Misc.Configuration;
+﻿using LF2Clone.Components;
+using LF2Clone.Misc.Configuration;
 using LF2Clone.Misc.Logger;
+using LF2Clone.Resources;
 using LF2Clone.Systems;
 using LF2Clone.UI;
 using Newtonsoft.Json;
@@ -15,6 +17,7 @@ namespace LF2Clone
         private string _assetsBaseRoot;
         private int _currentSceneIdIndex;
         private SceneManager _sceneManager; // only one SceneManager instance will exist
+        private SoundManager _soundManager; // only one SoundManager instance will exist
         private Configuration _configuration;
         private string _appVersion;
         private int _screenWidth;
@@ -145,15 +148,21 @@ namespace LF2Clone
 
             _logger = new Logger<Application>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
             var SMlogger = new Logger<SceneManager>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
+            var SoMlogger = new Logger<SoundManager>(logPath, _configuration.LoggerConfigs.ContainsKey("SoundManager") ? _configuration.LoggerConfigs["SoundManager"].LogLevel : defaultLoggingLevel);
 
             DeleteOldLogFiles();
 
             // initialize systems
             _sceneManager = new SceneManager(SMlogger);
+            _soundManager = new SoundManager(SoMlogger);
 
             // setup systems
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets");
             await _sceneManager.SetupAsync(string.Format("{0}\\Scenes", _assetsBaseRoot));
+
+            // Audio device is ok, have to add it so every SFX is played if needed
+
+            Raylib.InitAudioDevice();
 
             // setup application
             _currentSceneIdIndex = 0;
@@ -168,9 +177,53 @@ namespace LF2Clone
             _sceneManager.ShowLoadedScenes();
 
             InitWindow();
+            // test
+
+            var music = Raylib.LoadMusicStream(_assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3");
+            var sound = Raylib.LoadSound(_assetsBaseRoot + "\\Sounds\\SODA.mp3");
+            var resId = Guid.NewGuid();
+            var resId2 = Guid.NewGuid();
+
+            var res = new SFX()
+            {
+                _id = resId,
+                _path = _assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3",
+                _name = "kerosene",
+                _type = SFX.SoundType.Music,
+                _durationInSeconds = Raylib.GetMusicTimeLength(music),
+                _value = music,
+                _volumeNormalized = 1.0f
+            };
+            var res2 = new SFX()
+            {
+                _id = resId2,
+                _path = _assetsBaseRoot + "\\Sounds\\SODA.mp3",
+                _name = "SODA",
+                _type = SFX.SoundType.Sound,
+                _durationInSeconds = 0.0f,
+                _value = sound,
+                _volumeNormalized = 1.0f,
+            };
+            _soundManager.AddSFX(res);
+            _soundManager.AddSFX(res2);
+            var sfx = new SFXSoundPlayer(5, "SFX1", resId);
+            var sfx2 = new SFXSoundPlayer(4, "SFX2", resId);
+
+
+            //example
+            sfx.SoundPlayed += _soundManager.Play;
+            sfx2.SoundPlayed += _soundManager.Play;
+            sfx.SoundStopped += _soundManager.Stop;
+            sfx2.SoundStopped += _soundManager.Stop;
+            sfx.SoundPausedOrResumed += _soundManager.ChangeStatus;
+            sfx2.SoundPausedOrResumed += _soundManager.ChangeStatus;
+            sfx2.VolumeChanged += _soundManager.ChangeVolume;
+
+
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
+
 
             Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
             var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);
@@ -185,14 +238,16 @@ namespace LF2Clone
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
                 but.Run();
+                _soundManager.Update();
                 _sceneManager.CurrentScene.Update();
-                
+
                 Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
             }
 
             _logger.Dispose();
             _sceneManager.Destroy();
+            _soundManager.Destroy();
 
             Raylib.CloseWindow();
         }

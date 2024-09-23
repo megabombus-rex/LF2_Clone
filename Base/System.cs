@@ -19,6 +19,11 @@ namespace LF2Clone.Base
         {
         }
 
+        public virtual void Update()
+        {
+
+        }
+
         public virtual void Destroy()
         {
             _logger.Dispose();
