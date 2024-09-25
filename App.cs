@@ -162,7 +162,7 @@ namespace LF2Clone
             // setup systems
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets");
             await _sceneManager.SetupAsync(string.Format("{0}\\Scenes", _assetsBaseRoot));
-
+            _resourceManager.Setup();
             // Audio device is ok, have to add it so every SFX is played if needed
 
             Raylib.InitAudioDevice();
@@ -185,9 +185,11 @@ namespace LF2Clone
             var rpat = _assetsBaseRoot + "\\Sounds\\SLIM HUSTLA - Objects of Desire.mp3";
             var sound = _assetsBaseRoot + "\\Sounds\\SODA.mp3";
             var music = _assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3";
+            var shader = _assetsBaseRoot + "\\Shaders\\test_shader.fs";
             _resourceManager.LoadResource(rpat);
             _resourceManager.LoadResource(sound);
             _resourceManager.LoadResource(music);
+            _resourceManager.LoadResource(shader);
 
             var res = _resourceManager._loadedSoundsDict[sound];
             var res2 = _resourceManager._loadedSoundsDict[music];
@@ -196,7 +198,6 @@ namespace LF2Clone
             _soundManager.AddSFX(res2);
             var sfx = new SFXSoundPlayer(5, "SFX1", res._id);
             var sfx2 = new SFXSoundPlayer(4, "SFX2", res2._id);
-
 
             //example
             sfx.SoundPlayed += _soundManager.Play;

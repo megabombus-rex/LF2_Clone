@@ -26,13 +26,14 @@ namespace LF2Clone.Systems
         };
 
         private const int MAX_SOUND_SIZE = 150000;
+        private string _defVertShaderPath;
 
         public Dictionary<string, SFX> _loadedSoundsDict = new();
         public Dictionary<string, Texture> _loadedTexturesDict = new();
         public Dictionary<string, Font> _loadedFontsDict = new();
         public Dictionary<string, Shader> _loadedShadersDict = new();
         public List<string> _resourcePaths = new List<string>();
-
+        
 
         public ResourceManager(ILogger logger) : base(logger)
         {
@@ -42,6 +43,17 @@ namespace LF2Clone.Systems
             _loadedShadersDict = new Dictionary<string, Shader>();
 
             _resourcePaths = new List<string>();
+            _defVertShaderPath = string.Empty;
+        }
+
+        public override void Setup()
+        {
+            base.Setup();
+            var defVertShaderPath = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets\\Shaders\\def_vert.vs");
+            if (File.Exists(defVertShaderPath))
+            {
+                _defVertShaderPath = defVertShaderPath;
+            }
         }
 
         public void LoadResource(string resourcePath)
@@ -166,17 +178,22 @@ namespace LF2Clone.Systems
 
         void LoadShader(string resourcePath)
         {
+            if (string.IsNullOrEmpty(_defVertShaderPath))
+            {
+                throw new Exception("Lack of default shader. \n Full shader loading not supported yet.");
+            }
+
             var name = Path.GetFileNameWithoutExtension(resourcePath);
-            //var loadedShader = Raylib_cs.Raylib.LoadShader(0, resourcePath);
-            //var shader = new Shader()
-            //{
-            //    _id = Guid.NewGuid(),
-            //    _path = resourcePath,
-            //    _name = name,
-            //    _shader = loadedShader,
-            //};
-            //_loadedShadersDict.TryAdd(resourcePath, shader);
-            //_resourcePaths.Add(resourcePath);
+            var loadedShader = Raylib_cs.Raylib.LoadShader(_defVertShaderPath, resourcePath);
+            var shader = new Shader()
+            {
+                _id = Guid.NewGuid(),
+                _path = resourcePath,
+                _name = name,
+                _shader = loadedShader,
+            };
+            _loadedShadersDict.TryAdd(resourcePath, shader);
+            _resourcePaths.Add(resourcePath);
             _logger.LogInfo(string.Format("Loaded shader. File added as: {0}.", name));
         }
 
