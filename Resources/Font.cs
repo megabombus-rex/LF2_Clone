@@ -1,6 +1,4 @@
-﻿using Raylib_cs;
-
-namespace LF2Clone.Resources
+﻿namespace LF2Clone.Resources
 {
     public class Font : Resource
     {
