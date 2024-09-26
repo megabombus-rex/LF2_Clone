@@ -152,12 +152,16 @@ namespace LF2Clone
             var SoMlogger = new Logger<SoundManager>(logPath, _configuration.LoggerConfigs.ContainsKey("SoundManager") ? _configuration.LoggerConfigs["SoundManager"].LogLevel : defaultLoggingLevel);
             var RMlogger = new Logger<ResourceManager>(logPath, _configuration.LoggerConfigs.ContainsKey("ResourceManager") ? _configuration.LoggerConfigs["ResourceManager"].LogLevel : defaultLoggingLevel);
 
+            var logRaylib = new Logger(logPath, _configuration.LoggerConfigs.ContainsKey("BaseLog") ? _configuration.LoggerConfigs["BaseLog"].LogLevel : defaultLoggingLevel);
+            RaylibLoggerWrapper wrapper = new RaylibLoggerWrapper(logRaylib);
+            wrapper.Initialize(); // experimental
             DeleteOldLogFiles();
 
             // initialize systems
             _sceneManager = new SceneManager(SMlogger);
             _soundManager = new SoundManager(SoMlogger);
             _resourceManager = new ResourceManager(RMlogger);
+
 
             // setup systems
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets");
@@ -219,7 +223,6 @@ namespace LF2Clone
             Raylib.SetTargetFPS(60);
 
             _sceneManager.CurrentScene.Awake();
-
             // game loop in here
             while (!Raylib.WindowShouldClose())
             {
