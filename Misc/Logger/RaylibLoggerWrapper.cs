@@ -12,7 +12,7 @@ namespace LF2Clone.Misc.Logger
         }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void TraceLogCallback(int logLevel, string message, string args);
+        private delegate void TraceLogCallback(int logLevel, IntPtr message, IntPtr args);
 
         private static TraceLogCallback _traceLogCallbackDelegate;
 
@@ -25,7 +25,7 @@ namespace LF2Clone.Misc.Logger
             SetTraceLogCallback(functionPointer);
         }
 
-        private void TraceLogCallbackHandler(int logType, string message, string args)
+        private void TraceLogCallbackHandler(int logType, IntPtr message, IntPtr args)
         {
             var logLevel = logType switch
             {
@@ -37,7 +37,7 @@ namespace LF2Clone.Misc.Logger
                 _ => ILogger.LogLevel.Info,
             };
 
-            var newMessage = (message + args).Trim();
+            var newMessage = Raylib_cs.Logging.GetLogMessage(message, args);
 
 
             switch (logLevel)
@@ -56,6 +56,9 @@ namespace LF2Clone.Misc.Logger
                     break;
                 case ILogger.LogLevel.Error:
                     _logger.LogError(newMessage);
+                    break;
+                default:
+                    _logger.LogInfo(newMessage);
                     break;
             }
         }
