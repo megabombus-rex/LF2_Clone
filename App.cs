@@ -159,8 +159,8 @@ namespace LF2Clone
 
             // initialize systems
             _resourceManager = new ResourceManager(RMlogger);
-            _sceneManager = new SceneManager(SMlogger, _resourceManager);
             _soundManager = new SoundManager(SoMlogger, _resourceManager);
+            _sceneManager = new SceneManager(SMlogger, _resourceManager, _soundManager);
 
 
             // setup systems

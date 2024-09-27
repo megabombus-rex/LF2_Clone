@@ -12,14 +12,16 @@ namespace LF2Clone.Systems
         private string _scenesFolderPath;
 
         private ResourceManager _resourceManager;
+        private SoundManager _soundManager;
 
-        public SceneManager(ILogger logger, ResourceManager resourceManager) : base(logger)
+        public SceneManager(ILogger logger, ResourceManager resourceManager, SoundManager soundManager) : base(logger)
         {
             _id = 0;
             _name = "SceneManager";
             _serializedScenesNamesDict = new();
             _scenesFolderPath = string.Empty;
             _resourceManager = resourceManager;
+            _soundManager = soundManager;
         }
 
         public string ScenesFolderPath 
