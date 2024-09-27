@@ -18,6 +18,7 @@ namespace LF2Clone
         private int _currentSceneIdIndex;
         private SceneManager _sceneManager; // only one SceneManager instance will exist
         private SoundManager _soundManager; // only one SoundManager instance will exist
+        private ResourceManager _resourceManager; // only one SoundManager instance will exist
         private Configuration _configuration;
         private string _appVersion;
         private int _screenWidth;
@@ -147,22 +148,25 @@ namespace LF2Clone
             var defaultLoggingLevel = "Info";
 
             _logger = new Logger<Application>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
+            var RMlogger = new Logger<ResourceManager>(logPath, _configuration.LoggerConfigs.ContainsKey("ResourceManager") ? _configuration.LoggerConfigs["ResourceManager"].LogLevel : defaultLoggingLevel);
             var SMlogger = new Logger<SceneManager>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
             var SoMlogger = new Logger<SoundManager>(logPath, _configuration.LoggerConfigs.ContainsKey("SoundManager") ? _configuration.LoggerConfigs["SoundManager"].LogLevel : defaultLoggingLevel);
+
             var logRaylib = new Logger(logPath, _configuration.LoggerConfigs.ContainsKey("BaseLog") ? _configuration.LoggerConfigs["BaseLog"].LogLevel : defaultLoggingLevel);
             RaylibLoggerWrapper wrapper = new RaylibLoggerWrapper(logRaylib);
             wrapper.Initialize(); // experimental
             DeleteOldLogFiles();
 
             // initialize systems
-            _sceneManager = new SceneManager(SMlogger);
-            _soundManager = new SoundManager(SoMlogger);
+            _resourceManager = new ResourceManager(RMlogger);
+            _soundManager = new SoundManager(SoMlogger, _resourceManager);
+            _sceneManager = new SceneManager(SMlogger, _resourceManager, _soundManager);
 
 
             // setup systems
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets");
             await _sceneManager.SetupAsync(string.Format("{0}\\Scenes", _assetsBaseRoot));
-
+            _resourceManager.Setup();
             // Audio device is ok, have to add it so every SFX is played if needed
 
             Raylib.InitAudioDevice();
@@ -182,36 +186,22 @@ namespace LF2Clone
             InitWindow();
             // test
 
-            var music = Raylib.LoadMusicStream(_assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3");
-            var sound = Raylib.LoadSound(_assetsBaseRoot + "\\Sounds\\SODA.mp3");
-            var resId = Guid.NewGuid();
-            var resId2 = Guid.NewGuid();
+            var rpat = _assetsBaseRoot + "\\Sounds\\SLIM HUSTLA - Objects of Desire.mp3";
+            var sound = _assetsBaseRoot + "\\Sounds\\SODA.mp3";
+            var music = _assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3";
+            var shader = _assetsBaseRoot + "\\Shaders\\test_shader.fs";
+            _resourceManager.LoadResource(rpat);
+            _resourceManager.LoadResource(sound);
+            _resourceManager.LoadResource(music);
+            _resourceManager.LoadResource(shader);
 
-            var res = new SFX()
-            {
-                _id = resId,
-                _path = _assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3",
-                _name = "kerosene",
-                _type = SFX.SoundType.Music,
-                _durationInSeconds = Raylib.GetMusicTimeLength(music),
-                _value = music,
-                _volumeNormalized = 1.0f
-            };
-            var res2 = new SFX()
-            {
-                _id = resId2,
-                _path = _assetsBaseRoot + "\\Sounds\\SODA.mp3",
-                _name = "SODA",
-                _type = SFX.SoundType.Sound,
-                _durationInSeconds = 0.0f,
-                _value = sound,
-                _volumeNormalized = 1.0f,
-            };
+            var res = _resourceManager._loadedSoundsDict[sound];
+            var res2 = _resourceManager._loadedSoundsDict[music];
+
             _soundManager.AddSFX(res);
             _soundManager.AddSFX(res2);
-            var sfx = new SFXSoundPlayer(5, "SFX1", resId);
-            var sfx2 = new SFXSoundPlayer(4, "SFX2", resId);
-
+            var sfx = new SFXSoundPlayer(5, "SFX1", res._id);
+            var sfx2 = new SFXSoundPlayer(4, "SFX2", res2._id);
 
             //example
             sfx.SoundPlayed += _soundManager.Play;

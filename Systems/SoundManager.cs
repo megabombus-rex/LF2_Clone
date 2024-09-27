@@ -13,16 +13,24 @@ namespace LF2Clone.Systems
         Dictionary<Guid, SFX> _soundsDict;
         IEnumerable<SFX> _musicValues;
 
+        ResourceManager _resourceManager;
+
         // music overlay, may discard later
         private Music? _musicPlayed;
         private bool _isLooped;
         private bool _isMusicPlaying;
 
-        public SoundManager(ILogger logger) : base(logger)
+        public SoundManager(ILogger logger, ResourceManager resourceManager) : base(logger)
         {
             _soundsDict = new Dictionary<Guid, SFX>();
             _musicValues = Enumerable.Empty<SFX>();
             _isMusicPlaying = false;
+            _resourceManager = resourceManager;
+        }
+
+        public void LoadSFXFromRM()
+        {
+            AddSFXBundle(_resourceManager._loadedSoundsDict.Values);
         }
 
         public void SetMusicPlayed(Music music)
