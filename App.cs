@@ -148,9 +148,9 @@ namespace LF2Clone
             var defaultLoggingLevel = "Info";
 
             _logger = new Logger<Application>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
+            var RMlogger = new Logger<ResourceManager>(logPath, _configuration.LoggerConfigs.ContainsKey("ResourceManager") ? _configuration.LoggerConfigs["ResourceManager"].LogLevel : defaultLoggingLevel);
             var SMlogger = new Logger<SceneManager>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
             var SoMlogger = new Logger<SoundManager>(logPath, _configuration.LoggerConfigs.ContainsKey("SoundManager") ? _configuration.LoggerConfigs["SoundManager"].LogLevel : defaultLoggingLevel);
-            var RMlogger = new Logger<ResourceManager>(logPath, _configuration.LoggerConfigs.ContainsKey("ResourceManager") ? _configuration.LoggerConfigs["ResourceManager"].LogLevel : defaultLoggingLevel);
 
             var logRaylib = new Logger(logPath, _configuration.LoggerConfigs.ContainsKey("BaseLog") ? _configuration.LoggerConfigs["BaseLog"].LogLevel : defaultLoggingLevel);
             RaylibLoggerWrapper wrapper = new RaylibLoggerWrapper(logRaylib);
@@ -158,9 +158,9 @@ namespace LF2Clone
             DeleteOldLogFiles();
 
             // initialize systems
-            _sceneManager = new SceneManager(SMlogger);
-            _soundManager = new SoundManager(SoMlogger);
             _resourceManager = new ResourceManager(RMlogger);
+            _sceneManager = new SceneManager(SMlogger, _resourceManager);
+            _soundManager = new SoundManager(SoMlogger, _resourceManager);
 
 
             // setup systems

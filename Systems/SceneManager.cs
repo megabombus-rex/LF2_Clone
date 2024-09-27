@@ -11,12 +11,15 @@ namespace LF2Clone.Systems
         private Dictionary<int, string> _serializedScenesNamesDict = new();
         private string _scenesFolderPath;
 
-        public SceneManager(ILogger logger) : base(logger)
+        private ResourceManager _resourceManager;
+
+        public SceneManager(ILogger logger, ResourceManager resourceManager) : base(logger)
         {
             _id = 0;
             _name = "SceneManager";
             _serializedScenesNamesDict = new();
             _scenesFolderPath = string.Empty;
+            _resourceManager = resourceManager;
         }
 
         public string ScenesFolderPath 
@@ -65,7 +68,7 @@ namespace LF2Clone.Systems
 
         public override void Destroy()
         {
-            TryUnloadScene(CurrentScene._name);
+            TryUnloadScene(_currentScene._name);
             base.Destroy();
         }
 
