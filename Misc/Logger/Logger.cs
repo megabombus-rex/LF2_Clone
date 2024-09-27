@@ -1,22 +1,23 @@
 ﻿namespace LF2Clone.Misc.Logger
 {
-    public sealed class Logger<T> : ILogger
+    public class Logger : ILogger
     {
-        private ConsoleColor _errorForegroundColor = ConsoleColor.Red;
-        private ConsoleColor _errorBackgroundColor = ConsoleColor.Black;
-        private ConsoleColor _infoForegroundColor = ConsoleColor.Cyan;
-        private ConsoleColor _infoBackgroundColor = ConsoleColor.Black;
-        private ConsoleColor _debugForegroundColor = ConsoleColor.Green;
-        private ConsoleColor _debugBackgroundColor = ConsoleColor.Black;
-        private ConsoleColor _warningForegroundColor = ConsoleColor.Yellow;
-        private ConsoleColor _warningBackgroundColor = ConsoleColor.Black;
-        private ConsoleColor _traceForegroundColor = ConsoleColor.DarkYellow;
-        private ConsoleColor _traceBackgroundColor = ConsoleColor.Black;
-        private ConsoleColor _defaultForegroundColor = ConsoleColor.White;
-        private ConsoleColor _defaultBackgroundColor = ConsoleColor.Black;
 
-        private ILogger.LogLevel _loggingLevel = ILogger.LogLevel.Info;
-        private StreamWriter _writer;
+        protected ConsoleColor _errorForegroundColor = ConsoleColor.Red;
+        protected ConsoleColor _errorBackgroundColor = ConsoleColor.Black;
+        protected ConsoleColor _infoForegroundColor = ConsoleColor.Cyan;
+        protected ConsoleColor _infoBackgroundColor = ConsoleColor.Black;
+        protected ConsoleColor _debugForegroundColor = ConsoleColor.Green;
+        protected ConsoleColor _debugBackgroundColor = ConsoleColor.Black;
+        protected ConsoleColor _warningForegroundColor = ConsoleColor.Yellow;
+        protected ConsoleColor _warningBackgroundColor = ConsoleColor.Black;
+        protected ConsoleColor _traceForegroundColor = ConsoleColor.DarkYellow;
+        protected ConsoleColor _traceBackgroundColor = ConsoleColor.Black;
+        protected ConsoleColor _defaultForegroundColor = ConsoleColor.White;
+        protected ConsoleColor _defaultBackgroundColor = ConsoleColor.Black;
+
+        protected ILogger.LogLevel _loggingLevel = ILogger.LogLevel.Info;
+        protected StreamWriter _writer;
 
         public void Dispose()
         {
@@ -39,17 +40,17 @@
             });
         }
 
-        private void Log(ConsoleColor foreground, ConsoleColor background, ILogger.LogLevel logLevel, string message)
+        protected virtual void Log(ConsoleColor foreground, ConsoleColor background, ILogger.LogLevel logLevel, string message)
         {
             Console.ForegroundColor = foreground;
             Console.BackgroundColor = background;
 
-            var finalMessage = string.Format("[{0}] System: {1}. {2}: {3}", DateTime.UtcNow.ToString("G"), typeof(T).Name, logLevel.ToString(), message);
+            var finalMessage = string.Format("[{0}] {1}: {2}", DateTime.UtcNow.ToString("G"), logLevel.ToString(), message);
             Console.WriteLine(finalMessage);
             _writer.WriteLine(finalMessage);
             _writer.Flush();
 
-            Console.ForegroundColor = _defaultForegroundColor; 
+            Console.ForegroundColor = _defaultForegroundColor;
             Console.BackgroundColor = _defaultBackgroundColor;
         }
 
@@ -87,7 +88,7 @@
 
         public void LogTrace(string message)
         {
-            if (CheckIfShouldLog(ILogger.LogLevel.Trace)) {  return; }
+            if (CheckIfShouldLog(ILogger.LogLevel.Trace)) { return; }
 
             Log(_traceForegroundColor, _traceBackgroundColor, ILogger.LogLevel.Trace, message);
         }
@@ -103,6 +104,28 @@
                 "Error" => ILogger.LogLevel.Error,
                 _ => ILogger.LogLevel.Info,
             };
+        }
+    }
+
+    public sealed class Logger<T> : Logger
+    {
+        public Logger(string loggingFilePath, string logLevel) : base(loggingFilePath, logLevel)
+        {
+        }
+
+        protected override void Log(ConsoleColor foreground, ConsoleColor background, ILogger.LogLevel logLevel, string message)
+        {
+            Console.ForegroundColor = foreground;
+            Console.BackgroundColor = background;
+
+            var finalMessage = string.Format("[{0}] System: {1}. {2}: {3}", DateTime.UtcNow.ToString("G"), typeof(T).Name, logLevel.ToString(), message);
+
+            Console.WriteLine(finalMessage);
+            _writer.WriteLine(finalMessage);
+            _writer.Flush();
+
+            Console.ForegroundColor = _defaultForegroundColor;
+            Console.BackgroundColor = _defaultBackgroundColor;
         }
     }
 }

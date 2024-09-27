@@ -1,5 +1,7 @@
-﻿using LF2Clone.Misc.Configuration;
+﻿using LF2Clone.Components;
+using LF2Clone.Misc.Configuration;
 using LF2Clone.Misc.Logger;
+using LF2Clone.Resources;
 using LF2Clone.Systems;
 using LF2Clone.UI;
 using Newtonsoft.Json;
@@ -15,6 +17,8 @@ namespace LF2Clone
         private string _assetsBaseRoot;
         private int _currentSceneIdIndex;
         private SceneManager _sceneManager; // only one SceneManager instance will exist
+        private SoundManager _soundManager; // only one SoundManager instance will exist
+        private ResourceManager _resourceManager; // only one SoundManager instance will exist
         private Configuration _configuration;
         private string _appVersion;
         private int _screenWidth;
@@ -144,16 +148,28 @@ namespace LF2Clone
             var defaultLoggingLevel = "Info";
 
             _logger = new Logger<Application>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
+            var RMlogger = new Logger<ResourceManager>(logPath, _configuration.LoggerConfigs.ContainsKey("ResourceManager") ? _configuration.LoggerConfigs["ResourceManager"].LogLevel : defaultLoggingLevel);
             var SMlogger = new Logger<SceneManager>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
+            var SoMlogger = new Logger<SoundManager>(logPath, _configuration.LoggerConfigs.ContainsKey("SoundManager") ? _configuration.LoggerConfigs["SoundManager"].LogLevel : defaultLoggingLevel);
 
+            var logRaylib = new Logger(logPath, _configuration.LoggerConfigs.ContainsKey("BaseLog") ? _configuration.LoggerConfigs["BaseLog"].LogLevel : defaultLoggingLevel);
+            RaylibLoggerWrapper wrapper = new RaylibLoggerWrapper(logRaylib);
+            wrapper.Initialize(); // experimental
             DeleteOldLogFiles();
 
             // initialize systems
-            _sceneManager = new SceneManager(SMlogger);
+            _resourceManager = new ResourceManager(RMlogger);
+            _soundManager = new SoundManager(SoMlogger, _resourceManager);
+            _sceneManager = new SceneManager(SMlogger, _resourceManager, _soundManager);
+
 
             // setup systems
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets");
             await _sceneManager.SetupAsync(string.Format("{0}\\Scenes", _assetsBaseRoot));
+            _resourceManager.Setup();
+            // Audio device is ok, have to add it so every SFX is played if needed
+
+            Raylib.InitAudioDevice();
 
             // setup application
             _currentSceneIdIndex = 0;
@@ -168,8 +184,6 @@ namespace LF2Clone
             _sceneManager.ShowLoadedScenes();
 
             InitWindow();
-
-            // temp button tests
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
@@ -185,25 +199,29 @@ namespace LF2Clone
             var lab = new Label("LABEL TEXT", 40, 0.3f, 20, 20, buttonTex, font, 0.0f, glob,true, "Label_one", 2);
             _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(lab);
 
-            // end
 
+            Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
+            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);
             Raylib.SetTargetFPS(60);
 
+            _sceneManager.CurrentScene.Awake();
             // game loop in here
             while (!Raylib.WindowShouldClose())
             {
                 ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
+                but.Run();
+                _soundManager.Update();
                 _sceneManager.CurrentScene.Update();
-                _sceneManager.CurrentScene.Draw();
-                
+
                 Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
             }
 
             _logger.Dispose();
             _sceneManager.Destroy();
+            _soundManager.Destroy();
 
             Raylib.CloseWindow();
         }
