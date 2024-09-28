@@ -56,6 +56,11 @@ namespace LF2Clone.Systems
             }
         }
 
+        public override void Awake()
+        {
+            // load resource paths here
+        }
+
         public void LoadResource(string resourcePath)
         {
             if (string.IsNullOrEmpty(resourcePath))

@@ -165,8 +165,9 @@ namespace LF2Clone
 
             // setup systems
             _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets");
-            await _sceneManager.SetupAsync(string.Format("{0}\\Scenes", _assetsBaseRoot));
             _resourceManager.Setup();
+            await _sceneManager.SetupAsync(string.Format("{0}\\Scenes", _assetsBaseRoot));
+            _soundManager.Setup();
             // Audio device is ok, have to add it so every SFX is played if needed
 
             Raylib.InitAudioDevice();
@@ -189,21 +190,15 @@ namespace LF2Clone
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
             var font = Raylib.LoadFont(_assetsBaseRoot + "\\UI\\Fonts\\Atop-R99O3.ttf");
 
-            _sceneManager.CurrentScene?.Awake();
-            var glob = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)._globalTransform;
-            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, font, 15.0f, Color.Gold, 0.3f, 0.0f, glob, true, "Button_ONE", 1);
-            //but.Awake();
-            //but.CallbackFinished += ChangeScene;
-            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(but);
-            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.RemoveComponent(but);
-            //var lab = new Label("LABEL TEXT", 40, 0.3f, 20, 20, buttonTex, font, 0.0f, glob,true, "Label_one", 2);
-            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(lab);
+            //var glob = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)._globalTransform;
+            //var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, font, 15.0f, Color.Gold, 0.3f, 0.0f, glob, true, "Button_ONE", 1);
 
-
-            Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
+            _resourceManager.Awake();
+            _soundManager.Awake();
+            _sceneManager.Awake();
+           
             Raylib.SetTargetFPS(60);
 
-            _sceneManager.CurrentScene.Awake();
             // game loop in here
             while (!Raylib.WindowShouldClose())
             {

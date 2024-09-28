@@ -28,6 +28,10 @@ namespace LF2Clone.Systems
             _resourceManager = resourceManager;
         }
 
+        public override void Awake()
+        {
+        }
+
         public void LoadSFXFromRM()
         {
             AddSFXBundle(_resourceManager._loadedSoundsDict.Values);
