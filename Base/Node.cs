@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using LF2Clone.Base.Helpers;
+using LF2Clone.Base.Interfaces;
+using Newtonsoft.Json;
 using Raylib_cs;
 using System.Numerics;
 
@@ -30,8 +32,10 @@ namespace LF2Clone.Base
         // List of current's Node children, the children are unique for a list.
         private List<Node> _children;
 
-        // Only one component of each type is permitted, except different CustomScripts.
-        private List<Component> _components;
+        // Only one component of each type is permitted, except different CustomScripts (different derived classes are needed though).
+        private List<Component> _components = new();
+        private IEnumerable<Component> _activeComponents = Enumerable.Empty<Component>();
+        private IEnumerable<IDrawable> _drawableComponents = Enumerable.Empty<IDrawable>();
 
         #region Constructors
 
@@ -225,6 +229,134 @@ namespace LF2Clone.Base
 
         #endregion
 
+        #region Components
+
+        // there will be issues with serialization, todo
+        /// <summary>
+        /// Add a component to current Node.
+        /// </summary>
+        /// <param name="component"> Component to be added. </param>
+        /// <exception cref="InvalidOperationException"> Thrown when a component of given type exists. </exception>
+        public void AddComponent(Component component)
+        {
+            var type = component.GetType();
+
+            if (_components.Count > 0 && _components.Any(x => x.GetType().FullName == type.FullName))
+            {
+                throw new InvalidOperationException(string.Format("Commponent with the same type ({0}) already exists. Component name: {1}", type.ToString(), component._name));
+            }
+
+            if (_components.Count > 0 && _components.Any(x => x._id == component._id))
+            {
+                component._id = Helpers.NamingHelper.GetNextAvailableId(_components.Select(x => x._id));
+            }
+
+            if (_components.Count > 0 && _components.Any(x => x._name == component._name))
+            {
+                component._name = Helpers.NamingHelper.GetNextValidName(_components.Select(x => x._name), component._name);
+            }
+
+            _components.Add(component);
+
+            if (!component._isActive)
+            {
+                component.Awake();
+            }
+            _activeComponents = _components.Where(x => x._isActive);
+
+            if (component._isDrawable)
+            {
+                _drawableComponents = _activeComponents.Where(x => x._isDrawable);
+            }
+        }
+
+        /// <summary>
+        /// Removes a component from current Node.
+        /// </summary>
+        /// <param name="component"> Component to be removed. </param>
+        /// <exception cref="InvalidOperationException"> Thrown when the component cannot be removed. </exception>
+        public void RemoveComponent(Component component)
+        {
+            if (!_components.Remove(component))
+            {
+                throw new InvalidOperationException(string.Format("Could not remove component {0}.", component._name));
+            }
+
+            if (component._isActive)
+            {
+                _activeComponents = _components.Where(x => x._isActive);
+            }
+
+            if (component._isDrawable)
+            {
+                _drawableComponents = _activeComponents.Where(x => x._isDrawable);
+            }
+            component.Destroy();
+        }
+
+        /// <summary>
+        /// Activate component by its id.
+        /// </summary>
+        /// <param name="id"> Id of a given component. </param>
+        /// <exception cref="InvalidOperationException"> Thrown when the component is already active.</exception>
+        /// <exception cref="KeyNotFoundException"> Thrown when the component was not found. </exception>
+        public void ActivateComponent(int id)
+        {
+            if (_activeComponents.Any(x => x._id == id))
+            {
+                throw new InvalidOperationException(string.Format("Component with id {0} does is already active!", id));
+            }
+
+            var component = _components.FirstOrDefault();
+
+            if (component == null)
+            {
+                throw new KeyNotFoundException(string.Format("Component with id {0} not found.", id));
+            }
+
+            component.Activate();
+            _activeComponents = _components.Where(x => x._isActive);
+            _drawableComponents = _activeComponents.Where(x => x._isDrawable);
+        }
+
+        /// <summary>
+        /// Deactivate a component with id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <exception cref="KeyNotFoundException"> Thrown when the component was not found. </exception>
+        public void DeactivateComponent(int id)
+        {
+            var component = _activeComponents.FirstOrDefault(x => x._id == id);
+
+            if (component == null)
+            {
+                throw new KeyNotFoundException(string.Format("Component with id {0} not found.", id));
+            }
+
+            component.Deactivate();
+            _activeComponents = _components.Where(x => x._isActive);
+
+            if (component._isDrawable)
+            {
+                _drawableComponents = _activeComponents.Where(x => x._isDrawable);
+            }
+        }
+
+        /// <summary>
+        /// Gets component by id.
+        /// </summary>
+        /// <param name="id"> Component id. </param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"> Thrown when the component was not found. </exception>
+        public Component GetComponentById(int id)
+        {
+            return _components.FirstOrDefault(x => x._id == id) ?? throw new KeyNotFoundException(string.Format("Component with id {0} not found.", id));
+        }
+
+        public List<Component> GetAllComponents() { return _components; }
+
+        #endregion
+
         #region Node transformations
 
         /// <summary>
@@ -285,6 +417,11 @@ namespace LF2Clone.Base
 #endif
                 _globalTransform.Translation += vec;
                 _relativeTransform.Translation += vec;
+
+                foreach(var comp in _components)
+                {
+                    comp.Transform(_globalTransform);
+                }
             }
 
             foreach (var child in _children)
@@ -307,6 +444,10 @@ namespace LF2Clone.Base
             _bounds.X += vec.X;
             _bounds.Y += vec.Y;
 #endif
+            foreach (var comp in _components)
+            {
+                comp.Transform(_globalTransform);
+            }
 
             foreach (var child in _children)
             {
@@ -365,9 +506,13 @@ namespace LF2Clone.Base
             _bounds.Y = _globalTransform.Translation.Y;
             _rotation = 0.0f;
 
-            foreach (var child in _children) { 
-                child.Awake();
+            foreach (var comp in _components)
+            {
+                comp.Awake();
             }
+
+            _activeComponents = _components.Where(x => x._isActive);
+            _drawableComponents = _activeComponents.Where(x => x._isDrawable);
         }
 
 
@@ -380,11 +525,10 @@ namespace LF2Clone.Base
             {
                 // do stuff, not for root
             }
-            
 
-            foreach (var child in _children)
+            foreach (var comp in _activeComponents)
             {
-                child.Update();
+                comp.Update();
             }
 
         }
@@ -394,17 +538,13 @@ namespace LF2Clone.Base
         /// </summary>
         public void Draw()
         {
-            var center = GetCenterOfBounds();
-            Raylib.DrawRectanglePro(_bounds, new Vector2(center.X, center.Z), _rotation, _boundsColor);
-        }
+            var center = PositioningHelper.GetCenterOfRectangle(_bounds);
+            Raylib.DrawRectanglePro(_bounds, new Vector2(center.X, center.Y), _rotation, _boundsColor);
 
-        /// <summary>
-        /// Returns center of bounds rectangle.
-        /// </summary>
-        /// <returns></returns>
-        private Vector3 GetCenterOfBounds()
-        {
-            return new Vector3(_globalTransform.Translation.X + (_bounds.Width / 2), _globalTransform.Translation.Y + (_bounds.Height / 2), 0.0f); // 0.0f for Z currently
+            foreach (var comp in _drawableComponents)
+            {
+                comp.Draw();
+            }
         }
 
         #endregion

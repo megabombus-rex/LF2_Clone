@@ -184,42 +184,23 @@ namespace LF2Clone
             _sceneManager.ShowLoadedScenes();
 
             InitWindow();
-            // test
-
-            var rpat = _assetsBaseRoot + "\\Sounds\\SLIM HUSTLA - Objects of Desire.mp3";
-            var sound = _assetsBaseRoot + "\\Sounds\\SODA.mp3";
-            var music = _assetsBaseRoot + "\\Sounds\\kerosene x pluh.mp3";
-            var shader = _assetsBaseRoot + "\\Shaders\\test_shader.fs";
-            _resourceManager.LoadResource(rpat);
-            _resourceManager.LoadResource(sound);
-            _resourceManager.LoadResource(music);
-            _resourceManager.LoadResource(shader);
-
-            var res = _resourceManager._loadedSoundsDict[sound];
-            var res2 = _resourceManager._loadedSoundsDict[music];
-
-            _soundManager.AddSFX(res);
-            _soundManager.AddSFX(res2);
-            var sfx = new SFXSoundPlayer(5, "SFX1", res._id);
-            var sfx2 = new SFXSoundPlayer(4, "SFX2", res2._id);
-
-            //example
-            sfx.SoundPlayed += _soundManager.Play;
-            sfx2.SoundPlayed += _soundManager.Play;
-            sfx.SoundStopped += _soundManager.Stop;
-            sfx2.SoundStopped += _soundManager.Stop;
-            sfx.SoundPausedOrResumed += _soundManager.ChangeStatus;
-            sfx2.SoundPausedOrResumed += _soundManager.ChangeStatus;
-            sfx2.VolumeChanged += _soundManager.ChangeVolume;
-
-
             var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
             var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
+            var font = Raylib.LoadFont(_assetsBaseRoot + "\\UI\\Fonts\\Atop-R99O3.ttf");
+
+            _sceneManager.CurrentScene?.Awake();
+            var glob = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)._globalTransform;
+            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, font, 15.0f, Color.Gold, 0.3f, 0.0f, glob, true, "Button_ONE", 1);
+            //but.Awake();
+            //but.CallbackFinished += ChangeScene;
+            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(but);
+            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.RemoveComponent(but);
+            //var lab = new Label("LABEL TEXT", 40, 0.3f, 20, 20, buttonTex, font, 0.0f, glob,true, "Label_one", 2);
+            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(lab);
 
 
             Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
-            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);
             Raylib.SetTargetFPS(60);
 
             _sceneManager.CurrentScene.Awake();
@@ -229,7 +210,6 @@ namespace LF2Clone
                 ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
-                but.Run();
                 _soundManager.Update();
                 _sceneManager.CurrentScene.Update();
 
@@ -244,7 +224,7 @@ namespace LF2Clone
             Raylib.CloseWindow();
         }
 
-        void ChangeScene()
+        void ChangeScene(object sender, EventArgs e)
         {
             _sceneManager.TrySetCurrentScene(_sceneManager.SceneIds[_currentSceneIdIndex]);
             _sceneManager.CurrentScene.Awake();
@@ -277,7 +257,7 @@ namespace LF2Clone
                 return;
             }
 
-            var files = Directory.GetFiles(_configuration.LoggingFilePath).Where(x => !x.StartsWith(".git")).ToArray();
+            var files = Directory.GetFiles(_configuration.LoggingFilePath).Where(x => !x.EndsWith(".gitkeep")).ToArray();
 
             if (files.Length < 1)
             {
