@@ -1,5 +1,5 @@
-﻿using LF2Clone.Base.Helpers;
-using LF2Clone.Base.Interfaces;
+﻿using LF2Clone.Base.Interfaces;
+using LF2Clone.Misc.Helpers;
 using Newtonsoft.Json;
 using Raylib_cs;
 using System.Numerics;
@@ -248,12 +248,12 @@ namespace LF2Clone.Base
 
             if (_components.Count > 0 && _components.Any(x => x._id == component._id))
             {
-                component._id = Helpers.NamingHelper.GetNextAvailableId(_components.Select(x => x._id));
+                component._id = NamingHelper.GetNextAvailableId(_components.Select(x => x._id));
             }
 
             if (_components.Count > 0 && _components.Any(x => x._name == component._name))
             {
-                component._name = Helpers.NamingHelper.GetNextValidName(_components.Select(x => x._name), component._name);
+                component._name = NamingHelper.GetNextValidName(_components.Select(x => x._name), component._name);
             }
 
             _components.Add(component);

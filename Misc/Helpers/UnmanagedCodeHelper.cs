@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace LF2Clone.Helpers
+namespace LF2Clone.Misc.Helpers
 {
     public static class UnmanagedCodeHelper
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LF2Clone.Base.Helpers
+namespace LF2Clone.Misc.Helpers
 {
     public static class NamingHelper
     {
