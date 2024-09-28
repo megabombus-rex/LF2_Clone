@@ -192,16 +192,15 @@ namespace LF2Clone
             _sceneManager.CurrentScene?.Awake();
             var glob = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)._globalTransform;
             var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, font, 15.0f, Color.Gold, 0.3f, 0.0f, glob, true, "Button_ONE", 1);
-            but.Awake();
-            but.CallbackFinished += ChangeScene;
-            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(but);
+            //but.Awake();
+            //but.CallbackFinished += ChangeScene;
+            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(but);
             //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.RemoveComponent(but);
-            var lab = new Label("LABEL TEXT", 40, 0.3f, 20, 20, buttonTex, font, 0.0f, glob,true, "Label_one", 2);
-            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(lab);
+            //var lab = new Label("LABEL TEXT", 40, 0.3f, 20, 20, buttonTex, font, 0.0f, glob,true, "Label_one", 2);
+            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(lab);
 
 
             Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
-            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, ChangeScene, pos);
             Raylib.SetTargetFPS(60);
 
             _sceneManager.CurrentScene.Awake();
@@ -211,7 +210,6 @@ namespace LF2Clone
                 ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
-                but.Run();
                 _soundManager.Update();
                 _sceneManager.CurrentScene.Update();
 
