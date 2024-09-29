@@ -7,7 +7,7 @@ namespace LF2Clone.Systems
     public sealed class ResourceManager : System<ResourceManager>
     {
         // Windows specific
-        private static Dictionary<string, ResourceType> _resourceTypeExtensions = new Dictionary<string, ResourceType>() 
+        private readonly static Dictionary<string, ResourceType> _resourceTypeExtensionsDict = new Dictionary<string, ResourceType>() 
         {
             [".png"] = ResourceType.Texture,
             [".jpeg"] = ResourceType.Texture,
@@ -33,7 +33,7 @@ namespace LF2Clone.Systems
         public Dictionary<string, Font> _loadedFontsDict = new();
         public Dictionary<string, Shader> _loadedShadersDict = new();
         public List<string> _resourcePaths = new List<string>();
-        
+        private readonly FileSystemWatcher _watcher;
 
         public ResourceManager(ILogger logger) : base(logger)
         {
@@ -44,6 +44,78 @@ namespace LF2Clone.Systems
 
             _resourcePaths = new List<string>();
             _defVertShaderPath = string.Empty;
+
+            _watcher = new FileSystemWatcher(string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\.."));
+            _watcher.Filter = "*.*";
+            _watcher.IncludeSubdirectories = true;
+            _watcher.EnableRaisingEvents = true;
+            _watcher.Changed += ResourceAddedEvent;
+        }
+
+        void ResourceAddedEvent(object sender, FileSystemEventArgs e)
+        {
+            switch (e.ChangeType) {
+                case WatcherChangeTypes.Created:
+                    try
+                    {
+                        var type = File.GetAttributes(e.FullPath);
+                        if (type == FileAttributes.Directory)
+                        {
+                            return;
+                        }
+
+                        var ext = Path.GetExtension(e.FullPath);
+
+                        if (_resourceTypeExtensionsDict.ContainsKey(ext))
+                        {
+                            _resourcePaths.Add(e.FullPath);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(string.Format("Error getting path for added file. Exception: {0}", ex.ToString()));
+                    }
+                break;
+                case WatcherChangeTypes.Deleted:
+                    
+                    break;
+                case WatcherChangeTypes.Renamed:
+                    var type = File.GetAttributes(e.FullPath);
+                    if (type == FileAttributes.Directory)
+                    {
+                        return;
+                    }
+
+                    if (!_resourcePaths.Contains(e.FullPath))
+                    {
+                        _resourcePaths.Add(e.FullPath);
+                    }
+
+                    var ext = Path.GetExtension(e.FullPath);
+
+                    if (_resourceTypeExtensionsDict.ContainsKey(ext))
+                    {
+
+                    }
+
+                    break;
+                case WatcherChangeTypes.Changed:
+                    break;
+
+            }
+        }
+
+        public void SearchForResources(string basePath)
+        {
+            var dirs = Directory.GetFiles(basePath, "*.*", SearchOption.AllDirectories);
+
+            foreach (var dir in dirs) 
+            {
+                if (_resourceTypeExtensionsDict.ContainsKey(Path.GetExtension(dir)))
+                {
+                    _resourcePaths.Add(dir);
+                }
+            }
         }
 
         public override void Setup()
@@ -59,6 +131,12 @@ namespace LF2Clone.Systems
         public override void Awake()
         {
             // load resource paths here
+        }
+
+        public override void Destroy()
+        {
+            _watcher.Dispose();
+            base.Destroy();
         }
 
         public void LoadResource(string resourcePath)
@@ -86,7 +164,7 @@ namespace LF2Clone.Systems
 
             try
             {
-                switch (_resourceTypeExtensions.ContainsKey(extension) ? _resourceTypeExtensions[extension] : ResourceType.Unknown)
+                switch (_resourceTypeExtensionsDict.ContainsKey(extension) ? _resourceTypeExtensionsDict[extension] : ResourceType.Unknown)
                 {
                     case ResourceType.Texture:
                         LoadTexture(resourcePath);
@@ -222,7 +300,6 @@ namespace LF2Clone.Systems
             _resourcePaths.Add(resourcePath);
             _logger.LogInfo(string.Format("Loaded font. File added as: {0}.", name));
         }
-
 
         private enum ResourceType
         {

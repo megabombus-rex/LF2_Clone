@@ -152,7 +152,7 @@ namespace LF2Clone
             var SMlogger = new Logger<SceneManager>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
             var SoMlogger = new Logger<SoundManager>(logPath, _configuration.LoggerConfigs.ContainsKey("SoundManager") ? _configuration.LoggerConfigs["SoundManager"].LogLevel : defaultLoggingLevel);
 
-            var logRaylib = new Logger(logPath, _configuration.LoggerConfigs.ContainsKey("BaseLog") ? _configuration.LoggerConfigs["BaseLog"].LogLevel : defaultLoggingLevel);
+            var logRaylib = new Logger<RaylibLoggerWrapper>(logPath, _configuration.LoggerConfigs.ContainsKey("BaseLog") ? _configuration.LoggerConfigs["BaseLog"].LogLevel : defaultLoggingLevel);
             RaylibLoggerWrapper wrapper = new RaylibLoggerWrapper(logRaylib);
             wrapper.Initialize(); // experimental
             DeleteOldLogFiles();
