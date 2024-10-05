@@ -1,4 +1,5 @@
 ﻿using LF2Clone.Base.Interfaces;
+using LF2Clone.Exceptions;
 using Raylib_cs;
 
 namespace LF2Clone.Base
@@ -35,7 +36,7 @@ namespace LF2Clone.Base
         {
             if (!_isDrawable)
             {
-                throw new InvalidOperationException(string.Format("Component {0} is not drawable.", _name));
+                throw new NotDrawableException(string.Format("Component {0} is not drawable.", _name));
             }  
         }
 

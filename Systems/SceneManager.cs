@@ -118,7 +118,7 @@ namespace LF2Clone.Systems
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("Exception while opening the file to deserialize. Exception: {0}", ex.Message));
+                _logger.LogError(string.Format("Exception while opening the file to deserialize. Exception: {0}", ex.ToString()));
                 return false;
             }
         }
@@ -189,7 +189,7 @@ namespace LF2Clone.Systems
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("A scene with name {0}, could not be found. Exception: {1}", name, ex.Message));
+                _logger.LogError(string.Format("A scene with name {0}, could not be found. Exception: {1}", name, ex.ToString()));
                 return false;
             }
 
@@ -203,7 +203,7 @@ namespace LF2Clone.Systems
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("Could not serialize a scene. Exception: {0}", ex.Message));
+                _logger.LogError(string.Format("Could not serialize a scene. Exception: {0}", ex.ToString()));
                 return false;
             }
 
@@ -463,7 +463,7 @@ namespace LF2Clone.Systems
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("Could not serialize a scene. Exception: {0}", ex.Message));
+                _logger.LogError(string.Format("Could not serialize a scene. Exception: {0}", ex.ToString()));
                 return false;
             }
 
@@ -498,7 +498,7 @@ namespace LF2Clone.Systems
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("Exception while deleting file {0}: {1}", filename, ex.Message));
+                _logger.LogError(string.Format("Exception while deleting file {0}: {1}", filename, ex.ToString()));
                 return false;
             }
 
@@ -533,7 +533,7 @@ namespace LF2Clone.Systems
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("Exception while reparenting. Exception: {0} \n Stack Trace: {1}", ex.Message, ex.StackTrace));
+                _logger.LogError(string.Format("Exception while reparenting. Exception: {0}", ex.ToString()));
                 return false;
             }
         }
