@@ -123,6 +123,53 @@ namespace LF2Clone.Systems
             }
         }
 
+        public bool TryUnloadScene(int id)
+        {
+            if (string.IsNullOrEmpty(_scenesFolderPath))
+            {
+                _logger.LogError("Scene folder path not found.");
+                return false;
+            }
+
+            Scene scene;
+
+            try
+            {
+                scene = _loadedScenesList.First(x => x._id == id);
+                _logger.LogDebug(string.Format("Found scene with id {0}", _id));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format("A scene with name {0}, could not be found. Exception: {1}", id, ex.ToString()));
+                return false;
+            }
+
+            try
+            {
+                if (!SerializeScene(_scenesFolderPath, scene, true).Result)
+                {
+                    _logger.LogError("Could not serialize a scene. Check if the provided path is correct.");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format("Could not serialize a scene. Exception: {0}", ex.ToString()));
+                return false;
+            }
+
+            // is this should be set as null or return false?
+            if (_currentScene._id == scene._id)
+            {
+                _currentScene = null;
+            }
+
+            _loadedScenesList.Remove(scene);
+            _logger.LogInfo(string.Format("Scene {0} unloaded.", scene._name));
+            return true;
+        }
+
+
         // serialize the scene, remove it from _loadedScenesList
         // returns true if unloading was successful, false otherwise
         public bool TryUnloadScene(string name)
