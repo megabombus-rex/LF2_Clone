@@ -1,4 +1,5 @@
 ﻿using LF2Clone.Base;
+using LF2Clone.Exceptions;
 using LF2Clone.Misc.Logger;
 using Newtonsoft.Json;
 
@@ -66,6 +67,16 @@ namespace LF2Clone.Systems
             }
 
             _logger.LogDebug("Scene Manager setup finished.");
+        }
+
+        public override void Awake()
+        {
+            if (_currentScene == null)
+            {
+                throw new SceneNotLoadedException("Current scene is set not loaded.");
+            }
+
+            _currentScene.Awake();
         }
 
         public override void Destroy()
