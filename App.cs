@@ -232,7 +232,7 @@ namespace LF2Clone
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.ToString());
                 return false;
             }
             return true;

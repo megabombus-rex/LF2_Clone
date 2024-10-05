@@ -1,4 +1,6 @@
-﻿namespace LF2Clone.Base
+﻿using LF2Clone.Exceptions;
+
+namespace LF2Clone.Base
 {
     public class Scene
     {
@@ -126,12 +128,12 @@
             if (nodeId == 0)
             {
                 // It should not be possible when the engine is finished.
-                throw new ArgumentException("Cannot reparent root node.");
+                throw new NodeReparentingException("Cannot reparent root node.");
             }
 
             if (parent._id == nodeId)
             {
-                throw new ArgumentException("Cannot reparent node to itself.");
+                throw new NodeReparentingException("Cannot reparent node to itself.");
             }
 
             try
