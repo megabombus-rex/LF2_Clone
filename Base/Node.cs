@@ -465,7 +465,7 @@ namespace LF2Clone.Base
             _globalTransform.Scale = newScale;
             _relativeTransform.Scale = newScale;
 #if DEBUG
-            _bounds.Width = _baseHeight * newScale.X;
+            _bounds.Width = _baseWidth * newScale.X;
             _bounds.Height = _baseHeight * newScale.Y;
 #endif
             foreach (var child in _children)
@@ -483,7 +483,7 @@ namespace LF2Clone.Base
         {
             _globalTransform.Scale = newScale;
 #if DEBUG
-            _bounds.Width = _baseHeight * newScale.X;
+            _bounds.Width = _baseWidth * newScale.X;
             _bounds.Height = _baseHeight * newScale.Y;
 #endif
             foreach (var child in _children)
