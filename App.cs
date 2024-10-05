@@ -187,21 +187,6 @@ namespace LF2Clone
             var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
             var font = Raylib.LoadFont(_assetsBaseRoot + "\\UI\\Fonts\\Atop-R99O3.ttf");
 
-            _resourceManager.LoadResource("C:\\Users\\czech\\source\\repos\\LF2_Clone\\Assets\\Sounds\\SLIM HUSTLA - Objects of Desire.mp3");
-
-            var sfx = _resourceManager._loadedSoundsDict["C:\\Users\\czech\\source\\repos\\LF2_Clone\\Assets\\Sounds\\SLIM HUSTLA - Objects of Desire.mp3"];
-            var player = new SFXSoundPlayer(0, "test", sfx._id);
-            player.SoundPlayed += _soundManager.Play;
-            player.SoundStopped += _soundManager.Stop;
-            player.SoundPausedOrResumed += _soundManager.ChangeStatus;
-            player.VolumeChanged += _soundManager.ChangeVolume;
-
-            player.PlayCurrentSound();
-
-
-            //var glob = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)._globalTransform;
-            //var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, font, 15.0f, Color.Gold, 0.3f, 0.0f, glob, true, "Button_ONE", 1);
-
             _resourceManager.Awake();
             _soundManager.Awake();
             _sceneManager.Awake();
