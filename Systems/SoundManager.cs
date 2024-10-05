@@ -160,16 +160,17 @@ namespace LF2Clone.Systems
             {
                 foreach (var sound in _soundsDict.Values)
                 {
-                    switch (sound._type)
+                    if (!_resourceManager.UnloadResource(sound))
                     {
-                        case SFX.SoundType.Music: Raylib.UnloadAudioStream(((Music)sound._value).Stream); break;
-                        case SFX.SoundType.Sound: Raylib.UnloadSound(((Sound)sound._value)); break;
+                        continue;
                     }
-                    _logger.LogInfo($"Sound: {sound._type} removed.");
+                    _soundsDict.Remove(sound._id);
+                    _logger.LogInfo(string.Format("Sound {0} of type {1} removed.", sound._name, sound._type));
                 }
             }
 
             Raylib.CloseAudioDevice();
+            _musicValues = Enumerable.Empty<SFX>();
             base.Destroy();
         }
     }
