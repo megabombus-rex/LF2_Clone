@@ -26,6 +26,7 @@ namespace LF2Clone.Systems
             _musicValues = Enumerable.Empty<SFX>();
             _isMusicPlaying = false;
             _resourceManager = resourceManager;
+            _resourceManager.SFXLoaded += AddLoadedSFX;
         }
 
         public override void Awake()
@@ -42,10 +43,25 @@ namespace LF2Clone.Systems
             _musicPlayed = music;
         }
 
+        public void AddLoadedSFX(object sender, NewSFXEventArgs e)
+        {
+            AddSFX(e.sfx);
+        }
+
+        public void RemoveUnloadedSFX(object sender, SFXEventArgs e)
+        {
+            var soundType = _soundsDict[e._soundResourceId]._type;
+
+            _soundsDict.Remove(e._soundResourceId);
+            if (soundType == SFX.SoundType.Music)
+            {
+                _musicValues = _soundsDict.Values.Where(x => x._type == SFX.SoundType.Music);
+            }
+        }
+
         public void AddSFX(SFX res)
         {
-            _soundsDict.TryAdd(res._id, res);
-            if (res._type == SFX.SoundType.Music)
+            if (_soundsDict.TryAdd(res._id, res) && res._type == SFX.SoundType.Music)
             {
                 _musicValues = _soundsDict.Values.Where(x => x._type == SFX.SoundType.Music);
             }
@@ -160,12 +176,12 @@ namespace LF2Clone.Systems
             {
                 foreach (var sound in _soundsDict.Values)
                 {
-                    if (!_resourceManager.UnloadResource(sound))
-                    {
-                        continue;
-                    }
+                    //if (!_resourceManager.UnloadResource(sound))
+                    //{
+                    //    continue;
+                    //} // should be done in resource manager, here - just not tracked
                     _soundsDict.Remove(sound._id);
-                    _logger.LogInfo(string.Format("Sound {0} of type {1} removed.", sound._name, sound._type));
+                    _logger.LogInfo(string.Format("Sound {0} of type {1} removed from sounds dictionary.", sound._name, sound._type));
                 }
             }
 

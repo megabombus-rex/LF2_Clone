@@ -1,6 +1,8 @@
 ﻿using LF2Clone.Base;
+using LF2Clone.Events;
 using LF2Clone.Misc.Logger;
 using LF2Clone.Resources;
+using static LF2Clone.Systems.ResourceManager;
 
 namespace LF2Clone.Systems
 {
@@ -343,12 +345,12 @@ namespace LF2Clone.Systems
         {
             // find out if sound/music based of off audio length / file size
             var name = Path.GetFileNameWithoutExtension(resourcePath);
-            var fileBytes = File.ReadAllBytes(resourcePath);
+            var fileBytesLength = new FileInfo(resourcePath).Length;
 
             object placeholder = new object();
             var type = SFX.SoundType.Sound;
 
-            if (fileBytes.Length > MAX_SOUND_SIZE) // it should be considered sound until this value
+            if (fileBytesLength > MAX_SOUND_SIZE) // it should be considered sound until this value
             {
                 placeholder = Raylib_cs.Raylib.LoadMusicStream(resourcePath);
                 type = SFX.SoundType.Music;
@@ -362,7 +364,7 @@ namespace LF2Clone.Systems
 
             var duration = type switch
             {
-                SFX.SoundType.Sound => fileBytes.Length / ((Raylib_cs.Sound)placeholder).Stream.SampleRate,
+                SFX.SoundType.Sound => fileBytesLength / ((Raylib_cs.Sound)placeholder).Stream.SampleSize / 8 * ((Raylib_cs.Sound)placeholder).Stream.SampleRate,
                 SFX.SoundType.Music => Raylib_cs.Raylib.GetMusicTimeLength((Raylib_cs.Music)placeholder),
                 _ => 1.0f
             };
@@ -382,6 +384,7 @@ namespace LF2Clone.Systems
             {
                 return;
             }
+            SFXLoaded.Invoke(this, new NewSFXEventArgs() { sfx = sfx });
             _resourcePaths.Add(resourcePath);
             _logger.LogInfo(string.Format("Loaded SFX. File added as: {0}.", name));
         }
@@ -483,6 +486,7 @@ namespace LF2Clone.Systems
                 {
                     Raylib_cs.Raylib.UnloadMusicStream((Raylib_cs.Music)sfx._value);
                 }
+                SFXUnloaded.Invoke(this, new SFXEventArgs() { _soundResourceId = sfx._id });
             }
             catch
             {
@@ -516,6 +520,12 @@ namespace LF2Clone.Systems
             }
             _loadedFontsDict.Remove(font._path);
         }
+
+        public delegate void NewSFXLoaded(object sender, NewSFXEventArgs e);
+        public event NewSFXLoaded SFXLoaded;
+
+        public delegate void LoadedSFXUnloaded(object sender, SFXEventArgs e);
+        public event LoadedSFXUnloaded SFXUnloaded;
 
         private enum ResourceType
         {
