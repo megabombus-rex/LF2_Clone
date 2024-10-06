@@ -31,7 +31,7 @@ namespace LF2Clone.Systems
             private set => _currentScene = value;
         }
 
-        public async Task SetupAsync(string scenesPath)
+        public void Setup(string scenesPath)
         {
             base.Setup();
             _scenesFolderPath = scenesPath;
@@ -47,7 +47,7 @@ namespace LF2Clone.Systems
             {
                 // .LFsc.json - 10 chars
                 var sceneName = file.Substring(scenesPath.Length, file.Length - (scenesPath.Length + 10));
-                var scene = await DeserializeSceneAsync(scenesPath, sceneName);
+                var scene = DeserializeSceneAsync(scenesPath, sceneName).Result;
                 if (!_serializedScenesNamesDict.TryAdd(scene._id, scene._name))
                 {
                     _logger.LogError(string.Format("Scene with id {0} already exists. Scene {1} id not added.", scene._id, scene._name));
@@ -65,17 +65,21 @@ namespace LF2Clone.Systems
 
         public override void Awake()
         {
-            if (_currentScene == null)
-            {
-                throw new SceneNotLoadedException("Current scene is set not loaded.");
-            }
+        }
 
-            _currentScene.Awake();
+        public override void Update()
+        {
+            base.Update();
+
+            if (_currentScene != null)
+            {
+                _currentScene.Update();
+            }
         }
 
         public override void Destroy()
         {
-            TryUnloadScene(_currentScene._name);
+            TryUnloadSceneAsync(_currentScene._name);
             base.Destroy();
         }
 
@@ -140,7 +144,7 @@ namespace LF2Clone.Systems
 
             try
             {
-                if (!SerializeScene(_scenesFolderPath, scene, true).Result)
+                if (!SerializeSceneAsync(_scenesFolderPath, scene, true).Result)
                 {
                     _logger.LogError("Could not serialize a scene. Check if the provided path is correct.");
                     return false;
@@ -166,7 +170,7 @@ namespace LF2Clone.Systems
 
         // serialize the scene, remove it from _loadedScenesList
         // returns true if unloading was successful, false otherwise
-        public bool TryUnloadScene(string name)
+        public async Task<bool> TryUnloadSceneAsync(string name)
         {
             if (string.IsNullOrEmpty(_scenesFolderPath))
             {
@@ -189,7 +193,7 @@ namespace LF2Clone.Systems
 
             try
             {
-                if (!SerializeScene(_scenesFolderPath, scene, true).Result)
+                if (!await SerializeSceneAsync(_scenesFolderPath, scene, true))
                 {
                     _logger.LogError("Could not serialize a scene. Check if the provided path is correct.");
                     return false;
@@ -213,7 +217,7 @@ namespace LF2Clone.Systems
         }
 
         // returns true if the scene was serialized successfuly, otherwise false
-        private async Task<bool> SerializeScene(string path, Scene scene, bool overwrite = false)
+        private async Task<bool> SerializeSceneAsync(string path, Scene scene, bool overwrite = false)
         {
             try
             {
@@ -356,7 +360,17 @@ namespace LF2Clone.Systems
             get => _serializedScenesNamesDict.Keys.ToArray();
         }
 
-        public bool TrySetCurrentScene(int id)
+        public void AwakeCurrentScene()
+        {
+            if (_currentScene == null)
+            {
+                _logger.LogWarning("No scene is currently loaded.");
+                return;
+            }
+            _currentScene.Awake();
+        }
+
+        public async Task<bool> TrySetCurrentSceneAsync(int id)
         {
             if (!_serializedScenesNamesDict.ContainsKey(id))
             {
@@ -372,7 +386,7 @@ namespace LF2Clone.Systems
             }
 
             var scene = _loadedScenesList.FirstOrDefault(x => x._id == id);
-            if (!TryChangeScene(scene))
+            if (!await TryChangeSceneAsync(scene))
             {
                 _logger.LogError(string.Format("Scene with id {0} is not loaded.", id.ToString()));
                 return false;
@@ -380,7 +394,7 @@ namespace LF2Clone.Systems
             return true;
         }
 
-        public bool TrySetCurrentScene(string name)
+        public async Task<bool> TrySetCurrentSceneAsync(string name)
         {
             if (!_serializedScenesNamesDict.ContainsValue(name))
             {
@@ -396,7 +410,7 @@ namespace LF2Clone.Systems
             }
 
             var scene = _loadedScenesList.FirstOrDefault(x => x._name == name);
-            if (!TryChangeScene(scene))
+            if (!await TryChangeSceneAsync(scene))
             {
                 _logger.LogInfo(string.Format("Scene with name {0} is not loaded.", name));
                 return false;
@@ -404,7 +418,7 @@ namespace LF2Clone.Systems
             return false;
         }
 
-        private bool TryChangeScene(Scene? scene)
+        private async Task<bool> TryChangeSceneAsync(Scene? scene)
         {
             if (scene == null)
             {
@@ -415,7 +429,7 @@ namespace LF2Clone.Systems
             {
                 if (_currentScene._name != scene._name)
                 {
-                    TryUnloadScene(_currentScene._name);
+                    await TryUnloadSceneAsync(_currentScene._name);
                 }
             }
             _currentScene = scene;
@@ -449,7 +463,7 @@ namespace LF2Clone.Systems
 
             try
             {
-                if (!SerializeScene(_scenesFolderPath, scene, true).Result)
+                if (!SerializeSceneAsync(_scenesFolderPath, scene, true).Result)
                 {
                     _logger.LogError("Could not serialize a scene. Check if the provided path is correct.");
                     return false;
