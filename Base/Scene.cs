@@ -1,4 +1,5 @@
 ﻿using LF2Clone.Exceptions;
+using LF2Clone.Misc.Helpers;
 
 namespace LF2Clone.Base
 {
@@ -97,9 +98,9 @@ namespace LF2Clone.Base
         // Adds a new node to given parent (param).
         public void AddNewNode(Node parent)
         {
-            var nextID = _nodes.Max(x => x._id) + 1;
+            var nextID = NamingHelper.GetNextAvailableId(_nodes.Select(x => x._id));
             var name = _defaultRootName;
-            name = GetNextValidNodeName(parent, name);
+            name = NamingHelper.GetNextValidName(parent.GetChildren().Select(x => x._name), name);
             _nodes.Add(new Node(parent, nextID, name));
         }
 
@@ -114,7 +115,7 @@ namespace LF2Clone.Base
             try
             {
                 var node = _nodes.First(x => x._id == nodeId);
-                node._name = GetNextValidNodeName(node.GetParent()!, newName);
+                node._name = NamingHelper.GetNextValidName(node.GetParent()!.GetChildren().Select(x => x._name), newName);
             }
             catch
             {
@@ -139,7 +140,7 @@ namespace LF2Clone.Base
             try
             {
                 var node = _nodes.First(x => x._id == nodeId);
-                node._name = GetNextValidNodeName(parent, _name);
+                node._name = NamingHelper.GetNextValidName(parent.GetChildren().Select(x => x._name), node._name);
                 node.ReparentCurrentNode(parent);
             }
             catch
@@ -147,27 +148,5 @@ namespace LF2Clone.Base
                 throw;
             }
         }
-
-        // Returns the next valid node name based on other children names
-        private string GetNextValidNodeName(Node parent, string newNodeName)
-        {
-            int nextNameNumber = 1;
-            var childrenCount = parent.GetChildren().Count;
-            if (childrenCount > 0)
-            {
-                while (parent.GetChildren().Any(x => x._name == newNodeName))
-                {
-                    if (nextNameNumber > 1)
-                    {
-                        newNodeName = newNodeName.Substring(0, newNodeName.Length - 1);
-                    }
-                    newNodeName += nextNameNumber.ToString();
-                    nextNameNumber++;
-                }
-            }
-
-            return newNodeName;
-        }
-
     }
 }
