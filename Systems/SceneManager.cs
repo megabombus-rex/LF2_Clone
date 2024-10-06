@@ -25,12 +25,6 @@ namespace LF2Clone.Systems
             _soundManager = soundManager;
         }
 
-        public string ScenesFolderPath 
-        { 
-            get => _scenesFolderPath;
-            private set => _scenesFolderPath = value; 
-        }
-
         public Scene? CurrentScene
         {
             get => _currentScene;
@@ -314,7 +308,7 @@ namespace LF2Clone.Systems
         // Used for joining the nodes after serialization of a scene (param).
         private void JoinNodesFromScene(Scene scene)
         {
-            scene._root = scene._nodes.FirstOrDefault(x => x._id == 0); // root
+            scene._root = scene._nodes.FirstOrDefault(x => x._id == 0)!; // root
             try
             {
                 var nodeList = scene._nodes;
