@@ -119,7 +119,7 @@ namespace LF2Clone
         }
 
         // set up every system needed
-        private async Task SetupAsync()
+        public void Setup()
         {
             if (!ReadConfig())
             {
@@ -152,19 +152,23 @@ namespace LF2Clone
             var logRaylib = new Logger<RaylibLoggerWrapper>(logPath, _configuration.LoggerConfigs.ContainsKey("BaseLog") ? _configuration.LoggerConfigs["BaseLog"].LogLevel : defaultLoggingLevel);
             RaylibLoggerWrapper wrapper = new RaylibLoggerWrapper(logRaylib);
             wrapper.Initialize(); // experimental
+            _logger.LogInfo("Loggers initialized.");
+            
             DeleteOldLogFiles();
 
             // initialize systems
             _resourceManager = new ResourceManager(RMlogger);
             _soundManager = new SoundManager(SoMlogger, _resourceManager);
             _sceneManager = new SceneManager(SMlogger, _resourceManager, _soundManager);
+            _logger.LogInfo("Systems initialized.");
 
 
             // setup systems
-            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets");
+            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets"); // it needs to be changed
             _resourceManager.Setup();
-            await _sceneManager.SetupAsync(string.Format("{0}\\Scenes", _assetsBaseRoot));
+            _sceneManager.Setup(string.Format("{0}\\Scenes", _assetsBaseRoot));
             _soundManager.Setup();
+            _logger.LogInfo("Systems setup finished.");
             // Audio device is ok, have to add it so every SFX is played if needed
 
             Raylib.InitAudioDevice();
@@ -175,22 +179,19 @@ namespace LF2Clone
             _logger.LogDebug("App setup finished.");
         }
 
-        public async Task RunAsync()
+        public void Run()
         {
-            await SetupAsync();
-            _sceneManager.TrySetCurrentScene("default");
-            _sceneManager.ShowLoadedScenes();
+            Setup();
 
             InitWindow();
-            var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
-            var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
-            var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
-            var font = Raylib.LoadFont(_assetsBaseRoot + "\\UI\\Fonts\\Atop-R99O3.ttf");
 
             _resourceManager.Awake();
             _soundManager.Awake();
             _sceneManager.Awake();
-           
+
+            _sceneManager.TrySetCurrentSceneAsync("default").Wait();
+            _sceneManager.ShowLoadedScenes();
+
             Raylib.SetTargetFPS(60);
 
             // game loop in here
@@ -199,24 +200,27 @@ namespace LF2Clone
                 ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
+
+                _resourceManager.Update();
                 _soundManager.Update();
-                _sceneManager.CurrentScene.Update();
+                _sceneManager.Update(); // here all of the logic is made
 
                 Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
             }
 
-            _logger.Dispose();
             _sceneManager.Destroy();
             _soundManager.Destroy();
+            _resourceManager.Destroy();
+            _logger.Dispose();
 
             Raylib.CloseWindow();
         }
 
-        void ChangeScene(object sender, EventArgs e)
+        private void ChangeScene(object sender, EventArgs e)
         {
-            _sceneManager.TrySetCurrentScene(_sceneManager.SceneIds[_currentSceneIdIndex]);
-            _sceneManager.CurrentScene.Awake();
+            _sceneManager.TrySetCurrentSceneAsync(_sceneManager.SceneIds[_currentSceneIdIndex]).Wait(); // possible to do async, events not work well with async
+            _sceneManager.AwakeCurrentScene();
             _currentSceneIdIndex = (_currentSceneIdIndex + 1) % _sceneManager.SceneIds.Length;
         }
 
