@@ -1,10 +1,9 @@
-﻿using LF2Clone.Misc.Configuration;
+﻿using LF2Clone.Components;
+using LF2Clone.Misc.Configuration;
 using LF2Clone.Misc.Logger;
 using LF2Clone.Systems;
-using LF2Clone.UI;
 using Newtonsoft.Json;
 using Raylib_cs;
-using System.Numerics;
 
 namespace LF2Clone
 {
@@ -15,6 +14,8 @@ namespace LF2Clone
         private string _assetsBaseRoot;
         private int _currentSceneIdIndex;
         private SceneManager _sceneManager; // only one SceneManager instance will exist
+        private SoundManager _soundManager; // only one SoundManager instance will exist
+        private ResourceManager _resourceManager; // only one SoundManager instance will exist
         private Configuration _configuration;
         private string _appVersion;
         private int _screenWidth;
@@ -118,7 +119,7 @@ namespace LF2Clone
         }
 
         // set up every system needed
-        private async Task SetupAsync()
+        public void Setup()
         {
             if (!ReadConfig())
             {
@@ -144,16 +145,33 @@ namespace LF2Clone
             var defaultLoggingLevel = "Info";
 
             _logger = new Logger<Application>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
+            var RMlogger = new Logger<ResourceManager>(logPath, _configuration.LoggerConfigs.ContainsKey("ResourceManager") ? _configuration.LoggerConfigs["ResourceManager"].LogLevel : defaultLoggingLevel);
             var SMlogger = new Logger<SceneManager>(logPath, _configuration.LoggerConfigs.ContainsKey("Application") ? _configuration.LoggerConfigs["Application"].LogLevel : defaultLoggingLevel);
+            var SoMlogger = new Logger<SoundManager>(logPath, _configuration.LoggerConfigs.ContainsKey("SoundManager") ? _configuration.LoggerConfigs["SoundManager"].LogLevel : defaultLoggingLevel);
 
+            var logRaylib = new Logger<RaylibLoggerWrapper>(logPath, _configuration.LoggerConfigs.ContainsKey("BaseLog") ? _configuration.LoggerConfigs["BaseLog"].LogLevel : defaultLoggingLevel);
+            RaylibLoggerWrapper wrapper = new RaylibLoggerWrapper(logRaylib);
+            wrapper.Initialize(); // experimental
+            _logger.LogInfo("Loggers initialized.");
+            
             DeleteOldLogFiles();
 
             // initialize systems
-            _sceneManager = new SceneManager(SMlogger);
+            _resourceManager = new ResourceManager(RMlogger);
+            _soundManager = new SoundManager(SoMlogger, _resourceManager);
+            _sceneManager = new SceneManager(SMlogger, _resourceManager, _soundManager);
+            _logger.LogInfo("Systems initialized.");
+
 
             // setup systems
-            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets");
-            await _sceneManager.SetupAsync(string.Format("{0}\\Scenes", _assetsBaseRoot));
+            _assetsBaseRoot = string.Format("{0}\\{1}", Environment.CurrentDirectory, "..\\..\\..\\Assets"); // it needs to be changed
+            _resourceManager.Setup();
+            _sceneManager.Setup(string.Format("{0}\\Scenes", _assetsBaseRoot));
+            _soundManager.Setup();
+            _logger.LogInfo("Systems setup finished.");
+            // Audio device is ok, have to add it so every SFX is played if needed
+
+            Raylib.InitAudioDevice();
 
             // setup application
             _currentSceneIdIndex = 0;
@@ -161,31 +179,18 @@ namespace LF2Clone
             _logger.LogDebug("App setup finished.");
         }
 
-        public async Task RunAsync()
+        public void Run()
         {
-            await SetupAsync();
-            _sceneManager.TrySetCurrentScene("default");
-            _sceneManager.ShowLoadedScenes();
+            Setup();
 
             InitWindow();
 
-            // temp button tests
-            var buttonTex = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_normal.png");
-            var buttonTexPressed = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_pressed.png");
-            var buttonTexHighlight = Raylib.LoadTexture(_assetsBaseRoot + "\\UI\\Buttons\\Button_highlight.png");
-            var font = Raylib.LoadFont(_assetsBaseRoot + "\\UI\\Fonts\\Atop-R99O3.ttf");
+            _resourceManager.Awake();
+            _soundManager.Awake();
+            _sceneManager.Awake();
 
-            _sceneManager.CurrentScene?.Awake();
-            var glob = _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)._globalTransform;
-            var but = new Button("TEXT", buttonTex, buttonTexPressed, buttonTexHighlight, font, 15.0f, Color.Gold, 0.3f, 0.0f, glob, true, "Button_ONE", 1);
-            but.Awake();
-            but.CallbackFinished += ChangeScene;
-            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(but);
-            //_sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.RemoveComponent(but);
-            var lab = new Label("LABEL TEXT", 40, 0.3f, 20, 20, buttonTex, font, 0.0f, glob,true, "Label_one", 2);
-            _sceneManager.CurrentScene._nodes.FirstOrDefault(x => x._id == 3)?.AddComponent(lab);
-
-            // end
+            _sceneManager.TrySetCurrentSceneAsync("default").Wait();
+            _sceneManager.ShowLoadedScenes();
 
             Raylib.SetTargetFPS(60);
 
@@ -195,23 +200,27 @@ namespace LF2Clone
                 ChangeResolution(_screenWidth, _screenHeight);
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(_backgroundColor);
-                _sceneManager.CurrentScene.Update();
-                _sceneManager.CurrentScene.Draw();
-                
+
+                _resourceManager.Update();
+                _soundManager.Update();
+                _sceneManager.Update(); // here all of the logic is made
+
                 Raylib.DrawFPS(10, 10);
                 Raylib.EndDrawing();
             }
 
-            _logger.Dispose();
             _sceneManager.Destroy();
+            _soundManager.Destroy();
+            _resourceManager.Destroy();
+            _logger.Dispose();
 
             Raylib.CloseWindow();
         }
 
-        void ChangeScene(object sender, EventArgs e)
+        private void ChangeScene(object sender, EventArgs e)
         {
-            _sceneManager.TrySetCurrentScene(_sceneManager.SceneIds[_currentSceneIdIndex]);
-            _sceneManager.CurrentScene.Awake();
+            _sceneManager.TrySetCurrentSceneAsync(_sceneManager.SceneIds[_currentSceneIdIndex]).Wait(); // possible to do async, events not work well with async
+            _sceneManager.AwakeCurrentScene();
             _currentSceneIdIndex = (_currentSceneIdIndex + 1) % _sceneManager.SceneIds.Length;
         }
 
@@ -227,7 +236,7 @@ namespace LF2Clone
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.ToString());
                 return false;
             }
             return true;

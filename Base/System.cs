@@ -17,6 +17,17 @@ namespace LF2Clone.Base
 
         public virtual void Setup()
         {
+
+        }
+
+        public virtual void Awake()
+        {
+
+        }
+
+        public virtual void Update()
+        {
+
         }
 
         public virtual void Destroy()

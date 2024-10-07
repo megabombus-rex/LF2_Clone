@@ -1,5 +1,6 @@
-﻿using LF2Clone.Base.Helpers;
-using LF2Clone.Base.Interfaces;
+﻿using LF2Clone.Base.Interfaces;
+using LF2Clone.Exceptions;
+using LF2Clone.Misc.Helpers;
 using Newtonsoft.Json;
 using Raylib_cs;
 using System.Numerics;
@@ -198,13 +199,13 @@ namespace LF2Clone.Base
         /// Returns true if the reparenting was a success.
         /// </summary>
         /// <param name="newParent"> New parent of current node. </param>
-        /// <exception cref="ArgumentException"> Throws when the node is its parent. </exception>
-        /// <exception cref="InvalidOperationException"> Throws when there were problems while removing the node. </exception>
+        /// <exception cref="NodeReparentingException"> Throws when the node is its parent. </exception>
+        /// <exception cref="NodeReparentingException"> Throws when there were problems while removing the node. </exception>
         public void ReparentCurrentNode(Node newParent)
         {
             if (newParent == this)
             {
-                throw new ArgumentException("Node cannot be it's own parent, except the root node.");
+                throw new NodeReparentingException("Node cannot be it's own parent, except the root node.");
             }
 
             if (TryRemoveNodeFromParent())
@@ -213,7 +214,7 @@ namespace LF2Clone.Base
                 _children.Add(newParent);
                 return;
             }
-            throw new InvalidOperationException("Node could not be removed from it's previous parent.");
+            throw new NodeReparentingException("Node could not be removed from it's previous parent.");
         }
 
         /// <summary>
@@ -236,24 +237,24 @@ namespace LF2Clone.Base
         /// Add a component to current Node.
         /// </summary>
         /// <param name="component"> Component to be added. </param>
-        /// <exception cref="InvalidOperationException"> Thrown when a component of given type exists. </exception>
+        /// <exception cref="RepeatingComponentTypeException"> Thrown when a component of given type exists. </exception>
         public void AddComponent(Component component)
         {
             var type = component.GetType();
 
             if (_components.Count > 0 && _components.Any(x => x.GetType().FullName == type.FullName))
             {
-                throw new InvalidOperationException(string.Format("Commponent with the same type ({0}) already exists. Component name: {1}", type.ToString(), component._name));
+                throw new RepeatingComponentTypeException(string.Format("Commponent with the same type ({0}) already exists. Component name: {1}", type.ToString(), component._name));
             }
 
             if (_components.Count > 0 && _components.Any(x => x._id == component._id))
             {
-                component._id = Helpers.NamingHelper.GetNextAvailableId(_components.Select(x => x._id));
+                component._id = NamingHelper.GetNextAvailableId(_components.Select(x => x._id));
             }
 
             if (_components.Count > 0 && _components.Any(x => x._name == component._name))
             {
-                component._name = Helpers.NamingHelper.GetNextValidName(_components.Select(x => x._name), component._name);
+                component._name = NamingHelper.GetNextValidName(_components.Select(x => x._name), component._name);
             }
 
             _components.Add(component);
@@ -465,7 +466,7 @@ namespace LF2Clone.Base
             _globalTransform.Scale = newScale;
             _relativeTransform.Scale = newScale;
 #if DEBUG
-            _bounds.Width = _baseHeight * newScale.X;
+            _bounds.Width = _baseWidth * newScale.X;
             _bounds.Height = _baseHeight * newScale.Y;
 #endif
             foreach (var child in _children)
@@ -483,7 +484,7 @@ namespace LF2Clone.Base
         {
             _globalTransform.Scale = newScale;
 #if DEBUG
-            _bounds.Width = _baseHeight * newScale.X;
+            _bounds.Width = _baseWidth * newScale.X;
             _bounds.Height = _baseHeight * newScale.Y;
 #endif
             foreach (var child in _children)
