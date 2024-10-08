@@ -252,11 +252,6 @@ namespace LF2Clone.Base
                 component._id = NamingHelper.GetNextAvailableId(_components.Select(x => x._id));
             }
 
-            if (_components.Count > 0 && _components.Any(x => x._name == component._name))
-            {
-                component._name = NamingHelper.GetNextValidName(_components.Select(x => x._name), component._name);
-            }
-
             _components.Add(component);
 
             if (!component._isActive)
@@ -419,11 +414,6 @@ namespace LF2Clone.Base
 #endif
                 _globalTransform.Translation += vec;
                 _relativeTransform.Translation += vec;
-
-                foreach(var comp in _components)
-                {
-                    comp.Transform(_globalTransform);
-                }
             }
 
             foreach (var child in _children)
@@ -446,10 +436,6 @@ namespace LF2Clone.Base
             _bounds.X += vec.X;
             _bounds.Y += vec.Y;
 #endif
-            foreach (var comp in _components)
-            {
-                comp.Transform(_globalTransform);
-            }
 
             foreach (var child in _children)
             {
