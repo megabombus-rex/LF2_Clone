@@ -333,7 +333,7 @@ namespace LF2Clone.Systems
                 _texture = loadedTexture,
             };
 
-            if (!_loadedTexturesDict.TryAdd(name, texture))
+            if (!_loadedTexturesDict.TryAdd(resourcePath, texture))
             {
                 return;
             }
