@@ -1,15 +1,15 @@
-﻿using LF2Clone.Components;
-using LF2Clone.Misc.Configuration;
+﻿using LF2Clone.Misc.Configuration;
 using LF2Clone.Misc.Logger;
 using LF2Clone.Systems;
+using LF2Clone.UI;
 using Newtonsoft.Json;
-using Raylib_cs;
+using Raylib = Raylib_cs.Raylib;
 
 namespace LF2Clone
 {
     public sealed class Application // only one application instance will be present
     {
-        private Color _backgroundColor;
+        private Raylib_cs.Color _backgroundColor;
         private ILogger? _logger;
         private string _assetsBaseRoot;
         private int _currentSceneIdIndex;
@@ -28,7 +28,7 @@ namespace LF2Clone
 
         public Application()
         {
-            _backgroundColor = Color.White;
+            _backgroundColor = Raylib_cs.Color.White;
             _assetsBaseRoot = "";
             _resolutions = new();
         }
@@ -67,34 +67,34 @@ namespace LF2Clone
         private void ChangeResolution(int currentWidth, int currentHeight)
         {
             // TODO: change placement of UI in currently loaded scene -> resize -> sceneManager.resizeCurrentScene(resolution)
-            if (Raylib.IsKeyPressed(KeyboardKey.Enter))
+            if (Raylib.IsKeyPressed(Raylib_cs.KeyboardKey.Enter))
             {
                 _currentResolution = 0;
                 _screenWidth = _resolutions[_currentResolution].width;
                 _screenHeight = _resolutions[_currentResolution].height;
             }
-            if (Raylib.IsKeyPressed(KeyboardKey.One))
+            if (Raylib.IsKeyPressed(Raylib_cs.KeyboardKey.One))
             {
                 _currentResolution = 1;
                 _screenWidth = _resolutions[_currentResolution].width;
                 _screenHeight = _resolutions[_currentResolution].height;
             }
 
-            if (Raylib.IsKeyPressed(KeyboardKey.Two))
+            if (Raylib.IsKeyPressed(Raylib_cs.KeyboardKey.Two))
             {
                 _currentResolution = 2;
                 _screenWidth = _resolutions[_currentResolution].width;
                 _screenHeight = _resolutions[_currentResolution].height;
             }
 
-            if (Raylib.IsKeyPressed(KeyboardKey.Three))
+            if (Raylib.IsKeyPressed(Raylib_cs.KeyboardKey.Three))
             {
                 _currentResolution = 3;
                 _screenWidth = _resolutions[_currentResolution].width;
                 _screenHeight = _resolutions[_currentResolution].height;
             }
 
-            if (Raylib.IsKeyPressed(KeyboardKey.Four))
+            if (Raylib.IsKeyPressed(Raylib_cs.KeyboardKey.Four))
             {
                 _currentResolution = 4;
                 _screenWidth = _resolutions[_currentResolution].width;
@@ -191,6 +191,19 @@ namespace LF2Clone
 
             _sceneManager.TrySetCurrentSceneAsync("default").Wait();
             _sceneManager.ShowLoadedScenes();
+
+            var btnImgPath = Path.GetFullPath(string.Format("{0}\\{1}", _assetsBaseRoot, "UI\\Buttons\\Button_normal.png"));
+
+            _resourceManager.LoadResource(btnImgPath);
+
+            var image = _resourceManager._loadedTexturesDict[btnImgPath];
+
+            var node = _sceneManager.CurrentScene.GetNodeById(1);
+
+            node.MessageSent += _logger.LogFromExternal;
+
+            var imgComponent = new Image(image._texture.Width, image._texture.Height, 0.0f, node, true, 1);
+            node.AddComponent(imgComponent);
 
             Raylib.SetTargetFPS(60);
 

@@ -4,7 +4,7 @@ namespace LF2Clone.Base
 {
     public class UIComponent : Component
     {
-        public UIComponent(float rotation, Transform transform, bool isActive, string name, int id) : base(transform, true, isActive, name, id)
+        public UIComponent(float rotation, Node node, bool isActive, int id) : base(node, true, isActive, id)
         {
             _rotation = rotation;
         }

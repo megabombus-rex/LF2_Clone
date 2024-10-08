@@ -7,36 +7,29 @@ namespace LF2Clone.Base
     // Components should work as attributes for the nodes, so each node has its own set of components
     public class Component : IDrawable
     {
-        protected Transform _nodeGlobalTransform;
         public bool _isDrawable;
         public bool _isActive;
-        public string _name;
         public int _id;
+
+        protected Node _node;
                 
         public Component()
         {
-            _name = "comp";
         }
 
-        public Component(Transform transform, bool isDrawable, bool isActive, string name, int id)
+        public Component(Node node, bool isDrawable, bool isActive, int id)
         {
-            _nodeGlobalTransform = transform;
             _isDrawable = isDrawable;
             _isActive = isActive;
-            _name = name;
             _id = id;
-        }
-
-        public virtual void Transform(Transform newTransform)
-        {
-            _nodeGlobalTransform = newTransform;
+            _node = node;
         }
 
         public virtual void Draw()
         {
             if (!_isDrawable)
             {
-                throw new NotDrawableException(string.Format("Component {0} is not drawable.", _name));
+                throw new NotDrawableException(string.Format("Component of type {0} is not drawable.", GetType().FullName));
             }  
         }
 
@@ -63,6 +56,12 @@ namespace LF2Clone.Base
         public virtual void Destroy()
         {
             
+        }
+
+        protected virtual void LogMessage(string message)
+        {
+            var fullMessage = string.Format("Node: {0} \nComponent type: {1} \nMessage: {2}", _node._name, GetType().FullName, message);
+            _node.LogMessage(fullMessage);
         }
     }
 }

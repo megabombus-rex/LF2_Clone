@@ -244,7 +244,7 @@ namespace LF2Clone.Base
 
             if (_components.Count > 0 && _components.Any(x => x.GetType().FullName == type.FullName))
             {
-                throw new RepeatingComponentTypeException(string.Format("Commponent with the same type ({0}) already exists. Component name: {1}", type.ToString(), component._name));
+                throw new RepeatingComponentTypeException(string.Format("Commponent with the same type ({0}) already exists.", type.FullName));
             }
 
             if (_components.Count > 0 && _components.Any(x => x._id == component._id))
@@ -269,6 +269,7 @@ namespace LF2Clone.Base
             {
                 _drawableComponents = _activeComponents.Where(x => x._isDrawable);
             }
+            LogMessage(string.Format("Added component of type {0}.", type.FullName));
         }
 
         /// <summary>
@@ -280,7 +281,7 @@ namespace LF2Clone.Base
         {
             if (!_components.Remove(component))
             {
-                throw new InvalidOperationException(string.Format("Could not remove component {0}.", component._name));
+                throw new InvalidOperationException(string.Format("Could not remove component {0}.", component.GetType().FullName));
             }
 
             if (component._isActive)
@@ -547,6 +548,14 @@ namespace LF2Clone.Base
                 comp.Draw();
             }
         }
+
+        public void LogMessage(string message)
+        {
+            MessageSent.Invoke(this, message);
+        }
+
+        public delegate void SendMessage(object sender, string message);
+        public event SendMessage MessageSent;
 
         #endregion
     }
