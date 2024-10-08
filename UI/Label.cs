@@ -30,13 +30,6 @@ namespace LF2Clone.UI
             _font = font;
         }
 
-        public override void Transform(Transform newTransform)
-        {
-            base.Transform(newTransform);
-            _backgroundRec.X = newTransform.Translation.X;
-            _backgroundRec.Y = newTransform.Translation.X;
-        }
-
         public override void Draw()
         {
             base.Draw();
