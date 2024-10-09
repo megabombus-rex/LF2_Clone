@@ -17,6 +17,7 @@ namespace LF2Clone.UI
         public Image(float sizeX, float sizeY, float rotation, Node node, bool isActive, int id) 
             : base(rotation, node, isActive, id)
         {
+            _baseRec = new Raylib_cs.Rectangle(Vector2.Zero, new Vector2(_imgBounds.Width, _imgBounds.Height));
             _imgBounds = new Raylib_cs.Rectangle(new Vector2(node._globalTransform.Translation.X, node._globalTransform.Translation.Y), new Vector2(sizeX, sizeY));
             _imgCenter = PositioningHelper.GetCenterOfRectangle(_imgBounds);
         }
@@ -42,8 +43,8 @@ namespace LF2Clone.UI
                 Raylib.ImageResizeNN(&imageFromText, (int)newScale.X, (int)newScale.Y);
                 _drawnTexture = Raylib.LoadTextureFromImage(_textureImage);
             }
-            _imgBounds.Width = _textureImage.Width;
-            _imgBounds.Height = _textureImage.Height;
+            _imgBounds.Width = _drawnTexture.Width;
+            _imgBounds.Height = _drawnTexture.Height;
         }
 
         public override void Update()
@@ -53,12 +54,12 @@ namespace LF2Clone.UI
 
         public override void Draw()
         {
-            Raylib.DrawRectanglePro(_imgBounds, new Vector2(0.0f, 0.0f), 0.0f, Raylib_cs.Color.Blank);
+            Raylib.DrawRectanglePro(_imgBounds, Vector2.Zero, 0.0f, Raylib_cs.Color.Blank);
             if (_texture == null)
             {
                 return;
             }
-            Raylib.DrawTexturePro(_drawnTexture, _imgBounds, _imgBounds, new Vector2(0.0f, 0.0f), 0.0f, Raylib_cs.Color.White);
+            Raylib.DrawTexturePro(_drawnTexture, _baseRec, _imgBounds, Vector2.Zero, 0.0f, Raylib_cs.Color.White);
             //Raylib.DrawTextureEx(_drawnTexture, _imgBounds.Position, 0.0f, _nodeGlobalTransform.Scale.X, Color.White);
         }
     }
