@@ -350,6 +350,11 @@ namespace LF2Clone.Base
             return _components.FirstOrDefault(x => x._id == id) ?? throw new KeyNotFoundException(string.Format("Component with id {0} not found.", id));
         }
 
+        public T GetComponentByType<T>() where T : Component
+        {
+            return _components.FirstOrDefault(x => x.GetType() == typeof(T)) as T ?? throw new KeyNotFoundException(string.Format("Component with type {0} not found.", typeof(T).FullName));
+        }
+
         public List<Component> GetAllComponents() { return _components; }
 
         #endregion

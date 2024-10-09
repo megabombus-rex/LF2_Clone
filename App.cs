@@ -1,4 +1,5 @@
-﻿using LF2Clone.Misc.Configuration;
+﻿using LF2Clone.Components.CustomScripts;
+using LF2Clone.Misc.Configuration;
 using LF2Clone.Misc.Logger;
 using LF2Clone.Systems;
 using LF2Clone.UI;
@@ -203,7 +204,15 @@ namespace LF2Clone
             node.MessageSent += _logger.LogFromExternal;
 
             var imgComponent = new Image(image._texture.Width, image._texture.Height, 0.0f, node, true, 1);
+            imgComponent.SetImage(image);
+            var customComponent = new TestScript(node, false, true, 2);
             node.AddComponent(imgComponent);
+            node.AddComponent(customComponent);
+
+            imgComponent.Awake();
+            imgComponent.Activate();
+            customComponent.Awake();
+            customComponent.Activate();
 
             Raylib.SetTargetFPS(60);
 
