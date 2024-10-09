@@ -74,6 +74,7 @@ namespace LF2Clone.Systems
             if (_currentScene != null)
             {
                 _currentScene.Update();
+                _currentScene.Draw();
             }
         }
 
