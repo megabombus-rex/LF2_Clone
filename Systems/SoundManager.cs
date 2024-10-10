@@ -3,7 +3,7 @@ using LF2Clone.Components;
 using LF2Clone.Events;
 using LF2Clone.Misc.Logger;
 using LF2Clone.Resources;
-using Raylib_cs;
+using Raylib = Raylib_cs.Raylib;
 
 namespace LF2Clone.Systems
 {
@@ -16,7 +16,7 @@ namespace LF2Clone.Systems
         ResourceManager _resourceManager;
 
         // music overlay, may discard later
-        private Music? _musicPlayed;
+        private Raylib_cs.Music? _musicPlayed;
         private bool _isLooped;
         private bool _isMusicPlaying;
 
@@ -38,7 +38,7 @@ namespace LF2Clone.Systems
             AddSFXBundle(_resourceManager._loadedSoundsDict.Values);
         }
 
-        public void SetMusicPlayed(Music music)
+        public void SetMusicPlayed(Raylib_cs.Music music)
         {
             _musicPlayed = music;
         }
@@ -90,9 +90,9 @@ namespace LF2Clone.Systems
             switch (sound._type)
             {
                 case SFX.SoundType.Sound:
-                    Raylib.PlaySound((Sound)sound._value);       break;
+                    Raylib.PlaySound((Raylib_cs.Sound)sound._value);       break;
                 case SFX.SoundType.Music:
-                    Raylib.PlayMusicStream((Music)sound._value); break;
+                    Raylib.PlayMusicStream((Raylib_cs.Music)sound._value); break;
             }
         }
 
@@ -106,9 +106,9 @@ namespace LF2Clone.Systems
             switch (sound._type)
             {
                 case SFX.SoundType.Sound:
-                    Raylib.StopSound((Sound)sound._value); break;
+                    Raylib.StopSound((Raylib_cs.Sound)sound._value); break;
                 case SFX.SoundType.Music:
-                    Raylib.StopMusicStream((Music)sound._value); break;
+                    Raylib.StopMusicStream((Raylib_cs.Music)sound._value); break;
             }
         }
 
@@ -125,18 +125,18 @@ namespace LF2Clone.Systems
                 case SFX.SoundType.Sound:
                     if (sfxPlayer!.IsPlaying)
                     {
-                        Raylib.PauseSound((Sound)sound._value);
+                        Raylib.PauseSound((Raylib_cs.Sound)sound._value);
                         break;
                     }
-                    Raylib.ResumeSound((Sound)sound._value);
+                    Raylib.ResumeSound((Raylib_cs.Sound)sound._value);
                     break;
                 case SFX.SoundType.Music:
                     if (sfxPlayer!.IsPlaying)
                     {
-                        Raylib.PauseMusicStream((Music)sound._value);
+                        Raylib.PauseMusicStream((Raylib_cs.Music)sound._value);
                         break;
                     }
-                    Raylib.ResumeMusicStream((Music)sound._value);
+                    Raylib.ResumeMusicStream((Raylib_cs.Music)sound._value);
                     break;
             }
         }
@@ -152,10 +152,10 @@ namespace LF2Clone.Systems
             switch (sound._type)
             {
                 case SFX.SoundType.Sound:
-                    Raylib.SetAudioStreamVolume(((Sound)sound._value).Stream, volume);
+                    Raylib.SetAudioStreamVolume(((Raylib_cs.Sound)sound._value).Stream, volume);
                     break;
                 case SFX.SoundType.Music:
-                    Raylib.SetAudioStreamVolume(((Music)sound._value).Stream, volume);
+                    Raylib.SetAudioStreamVolume(((Raylib_cs.Music)sound._value).Stream, volume);
                     break;
             }
 
@@ -166,7 +166,7 @@ namespace LF2Clone.Systems
             base.Update();
             foreach (var sound in _musicValues)
             {
-                Raylib.UpdateMusicStream((Music)sound._value);
+                Raylib.UpdateMusicStream((Raylib_cs.Music)sound._value);
             }
         }
 
