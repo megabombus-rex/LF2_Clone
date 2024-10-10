@@ -77,7 +77,7 @@ namespace LF2Clone.Base
             {
                 throw new NodeNotSetException("Node is not set.");
             }
-            var fullMessage = string.Format("Node: {0} \nComponent type: {1} \nMessage: {2}", _node._name, GetType().FullName, message);
+            var fullMessage = string.Format("Node: {0}. \nComponent type: {1}. \nMessage: {2}.", _node._name, GetType().FullName, message);
             _node.LogMessage(fullMessage);
         }
     }

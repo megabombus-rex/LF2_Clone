@@ -253,6 +253,7 @@ namespace LF2Clone.Base
             }
 
             _components.Add(component);
+            component.SetNode(this);
 
             if (!component._isActive)
             {
@@ -526,6 +527,14 @@ namespace LF2Clone.Base
 
         }
 
+        public void Destroy()
+        {
+            foreach (var comp in _components)
+            {
+                comp.Destroy();
+            }
+        }
+
         /// <summary>
         /// This method should be called after updating node.
         /// </summary>
@@ -542,7 +551,20 @@ namespace LF2Clone.Base
 
         public void LogMessage(string message)
         {
+            if (MessageSent == null)
+            {
+                return;
+            }
             MessageSent.Invoke(this, message);
+        }
+
+        public int GetLoggingCount()
+        {
+            if (MessageSent == null)
+            {
+                return 0;
+            }
+            return MessageSent.GetInvocationList().Length;
         }
 
         public delegate void SendMessage(object sender, string message);
