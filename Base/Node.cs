@@ -244,7 +244,7 @@ namespace LF2Clone.Base
 
             if (_components.Count > 0 && _components.Any(x => x.GetType().FullName == type.FullName))
             {
-                throw new RepeatingComponentTypeException(string.Format("Commponent with the same type ({0}) already exists. Component name: {1}", type.ToString(), component._name));
+                throw new RepeatingComponentTypeException(string.Format("Commponent with the same type ({0}) already exists.", type.FullName));
             }
 
             if (_components.Count > 0 && _components.Any(x => x._id == component._id))
@@ -252,12 +252,8 @@ namespace LF2Clone.Base
                 component._id = NamingHelper.GetNextAvailableId(_components.Select(x => x._id));
             }
 
-            if (_components.Count > 0 && _components.Any(x => x._name == component._name))
-            {
-                component._name = NamingHelper.GetNextValidName(_components.Select(x => x._name), component._name);
-            }
-
             _components.Add(component);
+            component.SetNode(this);
 
             if (!component._isActive)
             {
@@ -269,6 +265,7 @@ namespace LF2Clone.Base
             {
                 _drawableComponents = _activeComponents.Where(x => x._isDrawable);
             }
+            LogMessage(string.Format("Added component of type {0}.", type.FullName));
         }
 
         /// <summary>
@@ -280,7 +277,7 @@ namespace LF2Clone.Base
         {
             if (!_components.Remove(component))
             {
-                throw new InvalidOperationException(string.Format("Could not remove component {0}.", component._name));
+                throw new InvalidOperationException(string.Format("Could not remove component {0}.", component.GetType().FullName));
             }
 
             if (component._isActive)
@@ -354,6 +351,11 @@ namespace LF2Clone.Base
             return _components.FirstOrDefault(x => x._id == id) ?? throw new KeyNotFoundException(string.Format("Component with id {0} not found.", id));
         }
 
+        public T GetComponentByType<T>() where T : Component
+        {
+            return _components.FirstOrDefault(x => x.GetType() == typeof(T)) as T ?? throw new KeyNotFoundException(string.Format("Component with type {0} not found.", typeof(T).FullName));
+        }
+
         public List<Component> GetAllComponents() { return _components; }
 
         #endregion
@@ -418,11 +420,6 @@ namespace LF2Clone.Base
 #endif
                 _globalTransform.Translation += vec;
                 _relativeTransform.Translation += vec;
-
-                foreach(var comp in _components)
-                {
-                    comp.Transform(_globalTransform);
-                }
             }
 
             foreach (var child in _children)
@@ -445,10 +442,6 @@ namespace LF2Clone.Base
             _bounds.X += vec.X;
             _bounds.Y += vec.Y;
 #endif
-            foreach (var comp in _components)
-            {
-                comp.Transform(_globalTransform);
-            }
 
             foreach (var child in _children)
             {
@@ -534,6 +527,14 @@ namespace LF2Clone.Base
 
         }
 
+        public void Destroy()
+        {
+            foreach (var comp in _components)
+            {
+                comp.Destroy();
+            }
+        }
+
         /// <summary>
         /// This method should be called after updating node.
         /// </summary>
@@ -547,6 +548,27 @@ namespace LF2Clone.Base
                 comp.Draw();
             }
         }
+
+        public void LogMessage(string message)
+        {
+            if (MessageSent == null)
+            {
+                return;
+            }
+            MessageSent.Invoke(this, message);
+        }
+
+        public int GetLoggingCount()
+        {
+            if (MessageSent == null)
+            {
+                return 0;
+            }
+            return MessageSent.GetInvocationList().Length;
+        }
+
+        public delegate void SendMessage(object sender, string message);
+        public event SendMessage MessageSent;
 
         #endregion
     }

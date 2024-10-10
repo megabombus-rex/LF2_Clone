@@ -74,6 +74,7 @@ namespace LF2Clone.Systems
             if (_currentScene != null)
             {
                 _currentScene.Update();
+                _currentScene.Draw();
             }
         }
 
@@ -415,7 +416,9 @@ namespace LF2Clone.Systems
                 _logger.LogInfo(string.Format("Scene with name {0} is not loaded.", name));
                 return false;
             }
-            return false;
+            _currentScene._nodes.ForEach(x => { if (x.GetLoggingCount() < 1) x.MessageSent += _logger.LogFromExternal; });
+            _currentScene._nodes.ForEach(x => x.LogMessage(string.Format("Logger connected to Node {0}.", x._name)));
+            return true;
         }
 
         private async Task<bool> TryChangeSceneAsync(Scene? scene)

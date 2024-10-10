@@ -8,13 +8,17 @@
         void LogDebug(string message);
         void LogTrace(string message);
         LogLevel ParseLoggingLevel(string value);
+
+        void LogFromExternal(object sender, string message);
+
         public enum LogLevel
         {
             Trace = 0,
             Debug = 1,
             Info = 2,
             Warning = 3,
-            Error = 4
+            Error = 4,
+            External = 100
         }
     }
 }

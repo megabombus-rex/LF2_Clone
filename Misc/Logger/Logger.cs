@@ -16,6 +16,9 @@
         protected ConsoleColor _defaultForegroundColor = ConsoleColor.White;
         protected ConsoleColor _defaultBackgroundColor = ConsoleColor.Black;
 
+        protected const ConsoleColor _externalForegroundColor = ConsoleColor.Gray;
+        protected const ConsoleColor _externalBackgroundColor = ConsoleColor.Black;
+
         protected ILogger.LogLevel _loggingLevel = ILogger.LogLevel.Info;
         protected StreamWriter _writer;
 
@@ -102,8 +105,14 @@
                 "Info" => ILogger.LogLevel.Info,
                 "Warning" => ILogger.LogLevel.Warning,
                 "Error" => ILogger.LogLevel.Error,
+                "External" => ILogger.LogLevel.External,
                 _ => ILogger.LogLevel.Info,
             };
+        }
+
+        public void LogFromExternal(object sender, string message)
+        {
+            Log(_externalForegroundColor, _externalBackgroundColor, ILogger.LogLevel.External, message);
         }
     }
 
