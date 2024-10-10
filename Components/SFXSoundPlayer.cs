@@ -1,6 +1,5 @@
 ﻿using LF2Clone.Base;
 using LF2Clone.Events;
-using LF2Clone.Resources;
 
 namespace LF2Clone.Components
 {

@@ -1,5 +1,4 @@
 ﻿using LF2Clone.Base;
-using LF2Clone.Exceptions;
 using LF2Clone.Misc.Logger;
 using Newtonsoft.Json;
 

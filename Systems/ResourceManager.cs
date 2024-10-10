@@ -2,7 +2,6 @@
 using LF2Clone.Events;
 using LF2Clone.Misc.Logger;
 using LF2Clone.Resources;
-using static LF2Clone.Systems.ResourceManager;
 
 namespace LF2Clone.Systems
 {

@@ -1,6 +1,4 @@
-﻿using LF2Clone.Resources;
-
-namespace LF2Clone.Events
+﻿namespace LF2Clone.Events
 {
     public sealed class SFXEventArgs : EventArgs
     {

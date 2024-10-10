@@ -2,8 +2,8 @@
 using LF2Clone.Exceptions;
 using LF2Clone.Misc.Helpers;
 using Newtonsoft.Json;
-using Raylib_cs;
 using System.Numerics;
+using Raylib = Raylib_cs.Raylib;
 
 namespace LF2Clone.Base
 {
@@ -12,14 +12,14 @@ namespace LF2Clone.Base
     {
 #if DEBUG
         // Used for testing only.
-        private Rectangle _bounds;
+        private Raylib_cs.Rectangle _bounds;
         private float _baseWidth;
         private float _baseHeight;
-        private Color _boundsColor;
+        private Raylib_cs.Color _boundsColor;
 #endif
         // Relative to parent's transform, if root -> doesn't matter, if child of root -> _relativeTransform = _globalTransform
-        public Transform _relativeTransform; 
-        public Transform _globalTransform;
+        public Raylib_cs.Transform _relativeTransform; 
+        public Raylib_cs.Transform _globalTransform;
         private float _rotation;
 
         // Ids should not repeat on one scene.
@@ -51,27 +51,27 @@ namespace LF2Clone.Base
             _parentId = 0;
             _children = new List<Node>();
             _components = new List<Component>();
-            _relativeTransform = new Transform()    // relative
+            _relativeTransform = new Raylib_cs.Transform()    // relative
             {
                 Translation = new Vector3(),
                 Rotation = new Quaternion(),
                 Scale = new Vector3()
             };
-            _globalTransform = new Transform()      // non-relative
+            _globalTransform = new Raylib_cs.Transform()      // non-relative
             {
                 Translation = new Vector3(),
                 Rotation = new Quaternion(),
                 Scale = new Vector3()
             };
 #if DEBUG
-            _bounds = new Rectangle() {
+            _bounds = new Raylib_cs.Rectangle() {
             X = _globalTransform.Translation.X,
             Y = _globalTransform.Translation.Y,
                 Width = 30.0f,
                 Height = 30.0f
             };
             var rand = new Random();
-            _boundsColor = new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
+            _boundsColor = new Raylib_cs.Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
 #endif
         }
 
@@ -90,7 +90,7 @@ namespace LF2Clone.Base
             _components = new List<Component>();
             parent._children.Add(this);
             _parentId = parent._id;
-            _relativeTransform = new Transform()                // always relative so it's 0, 0, 0 at the beggining
+            _relativeTransform = new Raylib_cs.Transform()                // always relative so it's 0, 0, 0 at the beggining
             {
                 Translation = new Vector3(),
                 Rotation = new Quaternion(),
@@ -98,7 +98,7 @@ namespace LF2Clone.Base
             };
             _globalTransform = parent._globalTransform;         // at the beggining it is the same
 #if DEBUG
-            _bounds = new Rectangle()
+            _bounds = new Raylib_cs.Rectangle()
             {
                 X = _globalTransform.Translation.X,
                 Y = _globalTransform.Translation.Y,
@@ -106,7 +106,7 @@ namespace LF2Clone.Base
                 Height = 30.0f
             };
             var rand = new Random();
-            _boundsColor = new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
+            _boundsColor = new Raylib_cs.Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
 #endif
         }
 
@@ -119,7 +119,7 @@ namespace LF2Clone.Base
         /// <param name="globalTransform"> Deserialized global transform. </param>
         /// <param name="relativeTransform"> Deserialized relative transform. </param>
         [JsonConstructor]
-        public Node(int id, string name, int parentId, Transform globalTransform, Transform relativeTransform)
+        public Node(int id, string name, int parentId, Raylib_cs.Transform globalTransform, Raylib_cs.Transform relativeTransform)
         {
             if (id == 0)
             {
@@ -139,7 +139,7 @@ namespace LF2Clone.Base
             _globalTransform = globalTransform;
             _relativeTransform = relativeTransform;
 #if DEBUG
-            _bounds = new Rectangle()
+            _bounds = new Raylib_cs.Rectangle()
             {
                 X = globalTransform.Translation.X,
                 Y = globalTransform.Translation.Y,
@@ -147,7 +147,7 @@ namespace LF2Clone.Base
                 Height = 30.0f
             };
             var rand = new Random();
-            _boundsColor = new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
+            _boundsColor = new Raylib_cs.Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256), 255);
 #endif
         }
 

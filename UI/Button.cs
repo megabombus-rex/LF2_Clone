@@ -1,34 +1,34 @@
 ﻿using LF2Clone.Base;
 using LF2Clone.Misc.Helpers;
-using Raylib_cs;
 using System.Numerics;
+using Raylib = Raylib_cs.Raylib;
 
 namespace LF2Clone.UI
 {
     public class Button : UIComponent
     {
         // update this so rotation is added, check if highlighting works
-        private Rectangle _btnBounds;
-        private Rectangle _targetBounds;
+        private Raylib_cs.Rectangle _btnBounds;
+        private Raylib_cs.Rectangle _targetBounds;
         private string _text;
         private Vector2 _btnCenter;
         ButtonState _btnState;
 
-        private readonly Texture2D _texture;
-        private readonly Texture2D? _texturePressed;
-        private readonly Texture2D? _textureHighlight;
-        private Texture2D _currentTexture;
+        private readonly Raylib_cs.Texture2D _texture;
+        private readonly Raylib_cs.Texture2D? _texturePressed;
+        private readonly Raylib_cs.Texture2D? _textureHighlight;
+        private Raylib_cs.Texture2D _currentTexture;
         private Vector2 _position;
 
         // may use label here or just extract it as a "Text" struct
-        private Font _font;
+        private Raylib_cs.Font _font;
         private float _fontSize;
-        private Color _textColor;
+        private Raylib_cs.Color _textColor;
         private float _textSpacing;
 
         // the textures setting may have to be moved to Awake method also, they should be cached 
-        public Button(string text, Texture2D texture, Texture2D? texturePressed, Texture2D? textureHighlight,
-            Font font, float fontSize, Color textColor, float textSpacing,
+        public Button(string text, Raylib_cs.Texture2D texture, Raylib_cs.Texture2D? texturePressed, Raylib_cs.Texture2D? textureHighlight,
+            Raylib_cs.Font font, float fontSize, Raylib_cs.Color textColor, float textSpacing,
             float rotation, Node? node, bool isActive, int id) 
             : base(rotation, node, isActive, id)
         {
@@ -36,7 +36,7 @@ namespace LF2Clone.UI
             _texture = texture;
             _texturePressed = texturePressed;
             _textureHighlight = textureHighlight;
-            _btnBounds = new Rectangle(node._globalTransform.Translation.X, node._globalTransform.Translation.Y, _texture.Width, _texture.Height);
+            _btnBounds = new Raylib_cs.Rectangle(node._globalTransform.Translation.X, node._globalTransform.Translation.Y, _texture.Width, _texture.Height);
             _position = new Vector2(node._globalTransform.Translation.X, node._globalTransform.Translation.Y);
             _font = font;
             _fontSize = fontSize;
@@ -61,10 +61,10 @@ namespace LF2Clone.UI
             // Check button state
             if (Raylib.CheckCollisionPointRec(mousePoint, _btnBounds))
             {
-                if (Raylib.IsMouseButtonDown(MouseButton.Left)) _btnState = ButtonState.Pressed;
+                if (Raylib.IsMouseButtonDown(Raylib_cs.MouseButton.Left)) _btnState = ButtonState.Pressed;
                 else _btnState = ButtonState.MouseHovering;
 
-                if (Raylib.IsMouseButtonReleased(MouseButton.Left)) btnAction = true;
+                if (Raylib.IsMouseButtonReleased(Raylib_cs.MouseButton.Left)) btnAction = true;
             }
             else
             {
@@ -87,7 +87,7 @@ namespace LF2Clone.UI
         public override void Draw()
         {
             base.Draw();
-            Raylib.DrawTexturePro(_currentTexture, _btnBounds, _btnBounds, Vector2.Zero, _rotation, Color.White);
+            Raylib.DrawTexturePro(_currentTexture, _btnBounds, _btnBounds, Vector2.Zero, _rotation, Raylib_cs.Color.White);
             Raylib.DrawTextPro(_font, _text, _position, Vector2.Zero, _rotation, _fontSize, _textSpacing, _textColor);
         }
 
