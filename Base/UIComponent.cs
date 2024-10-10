@@ -4,7 +4,7 @@
     {
         protected Raylib_cs.Rectangle _baseRec;
 
-        public UIComponent(float rotation, Node node, bool isActive, int id) : base(node, true, isActive, id)
+        public UIComponent(float rotation, Node? node, bool isActive, int id) : base(node, true, isActive, id)
         {
             _rotation = rotation;
         }

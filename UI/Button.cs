@@ -29,7 +29,7 @@ namespace LF2Clone.UI
         // the textures setting may have to be moved to Awake method also, they should be cached 
         public Button(string text, Texture2D texture, Texture2D? texturePressed, Texture2D? textureHighlight,
             Font font, float fontSize, Color textColor, float textSpacing,
-            float rotation, Node node, bool isActive, int id) 
+            float rotation, Node? node, bool isActive, int id) 
             : base(rotation, node, isActive, id)
         {
             _text = text;

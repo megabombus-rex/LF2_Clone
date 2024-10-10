@@ -1,6 +1,5 @@
 ﻿using LF2Clone.Base.Interfaces;
 using LF2Clone.Exceptions;
-using Raylib_cs;
 
 namespace LF2Clone.Base
 {
@@ -11,18 +10,24 @@ namespace LF2Clone.Base
         public bool _isActive;
         public int _id;
 
-        protected Node _node;
+        protected Node? _node;
                 
         public Component()
         {
         }
 
-        public Component(Node node, bool isDrawable, bool isActive, int id)
+        public Component(Node? node, bool isDrawable, bool isActive, int id)
         {
             _isDrawable = isDrawable;
             _isActive = isActive;
             _id = id;
             _node = node;
+        }
+
+        // this should be called after adding component to a node
+        public void SetNode(Node componentsNode)
+        {
+            _node = componentsNode;
         }
 
         public virtual void Draw()
@@ -35,11 +40,19 @@ namespace LF2Clone.Base
 
         public virtual void Awake()
         {
+            if (_node == null)
+            {
+                throw new NodeNotSetException("Node is not set.");
+            }
             _isActive = true;
         }
 
         public virtual void Activate()
         {
+            if (_node == null)
+            {
+                throw new NodeNotSetException("Node is not set.");
+            }
             _isActive = true;
         }
 
@@ -60,6 +73,10 @@ namespace LF2Clone.Base
 
         protected virtual void LogMessage(string message)
         {
+            if (_node == null)
+            {
+                throw new NodeNotSetException("Node is not set.");
+            }
             var fullMessage = string.Format("Node: {0} \nComponent type: {1} \nMessage: {2}", _node._name, GetType().FullName, message);
             _node.LogMessage(fullMessage);
         }

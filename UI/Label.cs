@@ -15,7 +15,7 @@ namespace LF2Clone.UI
         private Font _font;
 
         public Label(string text, int fontSize, float spacing, int sizeX, int sizeY,Texture2D backText, Font font,
-             float rotation, Node node, bool isActive, int id) : base(rotation, node, isActive, id)
+             float rotation, Node? node, bool isActive, int id) : base(rotation, node, isActive, id)
         {
             _text = text;
             _fontSize = fontSize;
