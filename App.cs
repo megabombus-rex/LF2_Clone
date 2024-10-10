@@ -192,27 +192,19 @@ namespace LF2Clone
 
             _sceneManager.TrySetCurrentSceneAsync("default").Wait();
             _sceneManager.ShowLoadedScenes();
-
+            
             var btnImgPath = Path.GetFullPath(string.Format("{0}\\{1}", _assetsBaseRoot, "UI\\Buttons\\Button_normal.png"));
-
             _resourceManager.LoadResource(btnImgPath);
 
             var image = _resourceManager._loadedTexturesDict[btnImgPath];
-
-            var node = _sceneManager.CurrentScene.GetNodeById(1);
-
-            node.MessageSent += _logger.LogFromExternal;
-
-            var imgComponent = new Image(image._texture.Width, image._texture.Height, 0.0f, node, true, 1);
+            var imgComponent = new Image(0.0f, null, true, 1);
             imgComponent.SetImage(image);
-            var customComponent = new TestScript(node, false, true, 2);
-            node.AddComponent(imgComponent);
-            node.AddComponent(customComponent);
+            var customComponent = new TestScript(null, false, true, 2);
+            
+            _sceneManager.CurrentScene.GetNodeById(1).AddComponent(imgComponent);
+            _sceneManager.CurrentScene.GetNodeById(1).AddComponent(customComponent);
 
-            imgComponent.Awake();
-            imgComponent.Activate();
-            customComponent.Awake();
-            customComponent.Activate();
+            _sceneManager.AwakeCurrentScene();
 
             Raylib.SetTargetFPS(60);
 

@@ -8,14 +8,14 @@ namespace LF2Clone.Components.CustomScripts
     {
         private Image? _image;
 
-        public TestScript(Node node, bool isDrawable, bool isActive, int id) : base(node, isDrawable, isActive, id)
+        public TestScript(Node? node, bool isDrawable, bool isActive, int id) : base(node, isDrawable, isActive, id)
         {
         }
 
         public override void Awake()
         {
             base.Awake();
-            _image = _node.GetComponentByType<Image>();
+            _image = _node!.GetComponentByType<Image>(); // works
         }
 
         public override void Activate()
