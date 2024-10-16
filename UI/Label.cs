@@ -14,7 +14,7 @@ namespace LF2Clone.UI
         private Raylib_cs.Texture2D _backgroundTexture;
         private Raylib_cs.Font _font;
 
-        public Label(string text, int fontSize, float spacing, int sizeX, int sizeY,Texture2D backText, Font font,
+        public Label(string text, int fontSize, float spacing, int sizeX, int sizeY, Raylib_cs.Texture2D backText, Raylib_cs.Font font,
              float rotation, Node? node, bool isActive, int id) : base(rotation, node, isActive, id)
         {
             _text = text;
