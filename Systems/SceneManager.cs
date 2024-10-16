@@ -79,7 +79,7 @@ namespace LF2Clone.Systems
 
         public override void Destroy()
         {
-            TryUnloadSceneAsync(_currentScene._name);
+            TryUnloadSceneAsync(_currentScene._name).Wait();
             base.Destroy();
         }
 
@@ -318,13 +318,14 @@ namespace LF2Clone.Systems
                 var nodeList = scene._nodes;
                 foreach (var node in nodeList)
                 {
-                    var parent = scene._nodes.FirstOrDefault(x => x._id == node._parentId);
+                    var parent = scene._nodes.FirstOrDefault(x => x._id == node._parentId)!;
                     node.SetParent(parent);
-                    if(node._id == 0)
+                    node.SetSceneReference(scene);
+                    if (node._id == 0)
                     {
                         continue; // do not add _root as a child of _root
                     }
-                    node.GetParent().AddChild(node);
+                    node.GetParent()!.AddChild(node);
                 }
             }
             catch

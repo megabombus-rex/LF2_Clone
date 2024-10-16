@@ -101,7 +101,9 @@ namespace LF2Clone.Base
             var nextID = NamingHelper.GetNextAvailableId(_nodes.Select(x => x._id));
             var name = _defaultRootName;
             name = NamingHelper.GetNextValidName(parent.GetChildren().Select(x => x._name), name);
-            _nodes.Add(new Node(parent, nextID, name));
+            var node = new Node(parent, nextID, name);
+            _nodes.Add(node);
+            node.SetSceneReference(this);
         }
 
         // Renames a node selected by nodeId (param) to a newName (param) or next possible name.
