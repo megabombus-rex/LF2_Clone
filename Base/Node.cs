@@ -33,6 +33,8 @@ namespace LF2Clone.Base
         // List of current's Node children, the children are unique for a list.
         private List<Node> _children;
 
+        private Scene? _scene;
+
         // Only one component of each type is permitted, except different CustomScripts (different derived classes are needed though).
         private List<Component> _components = new();
         private IEnumerable<Component> _activeComponents = Enumerable.Empty<Component>();
@@ -121,6 +123,7 @@ namespace LF2Clone.Base
         [JsonConstructor]
         public Node(int id, string name, int parentId, Raylib_cs.Transform globalTransform, Raylib_cs.Transform relativeTransform)
         {
+            _scene = null;
             if (id == 0)
             {
                 _parent = this;
@@ -154,6 +157,15 @@ namespace LF2Clone.Base
         #endregion
 
         #region Children-parent relations
+
+        /// <summary>
+        /// Method used while scene is loaded or a node is added to a scene.
+        /// </summary>
+        /// <param name="scene"> Reference to the Scene of given node.</param>
+        public void SetSceneReference(Scene scene)
+        {
+            _scene = scene;
+        }
 
         /// <summary>
         /// Returns a list of nodes consisting of the children of this Node.
